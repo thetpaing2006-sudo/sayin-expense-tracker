@@ -1,1690 +1,1109 @@
 <!DOCTYPE html>
-<html lang="my" class="light">
+<html lang="my" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sayin (စာရင်း) — Multi-Pool Expense & Analysis</title>
-
-  <!-- Google Fonts: Inter & Noto Sans Myanmar for crisp bilingual typography -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'Noto Sans Myanmar', 'system-ui', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#ECFDF5',
-              100: '#D1FAE5',
-              500: '#10B981',
-              600: '#059669',
-              700: '#047857',
-            }
-          }
-        }
-      }
-    };
-  </script>
-
+  <title>Sayin — စာရင်း & Shared Expense Portal</title>
   <style>
-    /* Ensure aligned numeric columns and smooth transitions */
-    .tabular-nums {
-      font-variant-numeric: tabular-nums;
+    :root {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --border: rgba(148, 163, 184, 0.16);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-ink: #041322;
+      --income: #10b981;
+      --expense: #f43f5e;
+      --saving: #a855f7;
+      --warn: #f59e0b;
+      --radius: 14px;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
     }
+
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --border: rgba(15, 23, 42, 0.12);
+      --text: #0f172a;
+      --muted: #475569;
+      --primary: #0284c7;
+      --primary-ink: #ffffff;
+      --income: #059669;
+      --expense: #e11d48;
+      --saving: #7e22ce;
+      --warn: #d97706;
+      --shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Inter', 'Noto Sans Myanmar', system-ui, sans-serif;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Myanmar", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      transition: background 0.2s ease, color 0.2s ease;
     }
-    /* Custom subtle scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+
+    .container { max-width: 1240px; margin: 0 auto; padding: 20px 16px 56px; }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
     }
-    ::-webkit-scrollbar-track {
-      background: transparent;
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-badge {
+      width: 40px; height: 40px; border-radius: 11px;
+      background: linear-gradient(135deg, var(--primary), var(--income));
+      color: #fff; font-weight: 800; font-size: 18px;
+      display: grid; place-items: center;
     }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(148, 163, 184, 0.4);
-      border-radius: 9999px;
+    .brand h1 { margin: 0; font-size: 19px; font-weight: 700; }
+    .brand p { margin: 0; font-size: 12px; color: var(--muted); }
+
+    .topbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+    /* Form Controls & Buttons */
+    input, select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(148, 163, 184, 0.65);
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+
+    button {
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.15s ease, background 0.15s ease;
     }
+    button:hover { opacity: 0.92; }
+    button:active { transform: scale(0.98); }
+    button.primary { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
+    button.danger { background: rgba(244, 63, 94, 0.14); color: var(--expense); border-color: rgba(244, 63, 94, 0.3); }
+    button.small { padding: 6px 10px; font-size: 12px; }
+
+    /* Auth Card */
+    .auth-wrap { max-width: 460px; margin: 36px auto; }
+    .auth-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+    .auth-tabs button.active { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
+
+    /* Tabs */
+    .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .nav-tabs button.active { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
+
+    /* Cards & Grids */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .card h2, .card h3 { margin: 0 0 12px; font-size: 16px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 16px; }
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .kpi .label { font-size: 12px; color: var(--muted); }
+    .kpi .val { font-size: 22px; font-weight: 800; margin-top: 4px; }
+    .val.inc { color: var(--income); }
+    .val.exp { color: var(--expense); }
+    .val.sav { color: var(--saving); }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+
+    /* Bars */
+    .bar-row { margin-bottom: 12px; }
+    .bar-meta { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
+    .bar-track { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; background: var(--primary); transition: width 0.25s ease; }
+    .bar-fill.inc { background: var(--income); }
+    .bar-fill.exp { background: var(--expense); }
+    .bar-fill.sav { background: var(--saving); }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+    th { color: var(--muted); font-weight: 700; font-size: 12px; }
+    .pill {
+      display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    }
+    .pill.Income { background: rgba(16, 185, 129, 0.16); color: var(--income); }
+    .pill.Expense { background: rgba(244, 63, 94, 0.16); color: var(--expense); }
+    .pill.Saving { background: rgba(168, 85, 247, 0.16); color: var(--saving); }
+
+    .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .hidden { display: none !important; }
+
+    /* Toast */
+    #toast {
+      position: fixed; right: 18px; bottom: 18px; z-index: 9999;
+      max-width: 360px; padding: 12px 16px; border-radius: 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      box-shadow: var(--shadow); font-size: 13px; font-weight: 600;
+      opacity: 0; transform: translateY(10px); pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.error { border-color: var(--expense); color: var(--expense); }
+    #toast.success { border-color: var(--income); color: var(--income); }
   </style>
 </head>
-<body class="bg-[#F8FAFC] text-[#0F172A] dark:bg-[#0F172A] dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
-
-  <!-- ==================== TOP NAVIGATION HEADER ==================== -->
-  <header class="sticky top-0 z-30 bg-white/90 dark:bg-[#1E293B]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-700/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-wrap items-center justify-between gap-3 py-3.5">
-
-        <!-- Brand Logo -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white shadow-sm shadow-emerald-600/20">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
-              <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
-            </svg>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">Sayin</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70">စာရင်း</span>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Multi-Pool Expense & Analysis</p>
-          </div>
-        </div>
-
-        <!-- Global Controls: Pool Switcher, Period Filter, Theme Toggle, + Add Entry -->
-        <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 ml-auto">
-
-          <!-- Global Pool Switcher -->
-          <div class="relative">
-            <select id="globalPoolSelect" aria-label="Select Pool"
-              class="appearance-none pl-3 pr-8 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer transition">
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-slate-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-            </div>
-          </div>
-
-          <!-- Period Filter -->
-          <div class="relative">
-            <select id="globalPeriodSelect" aria-label="Select Period"
-              class="appearance-none pl-3 pr-8 py-2 text-xs sm:text-sm font-medium rounded-xl bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer transition">
-              <option value="this_month">This Month (ယခုလ)</option>
-              <option value="last_month">Last Month (ပြီးခဲ့သည့်လ)</option>
-              <option value="all_time">All Time (အားလုံး)</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-slate-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-            </div>
-          </div>
-
-          <!-- Light/Dark Mode Toggle -->
-          <button id="themeToggleBtn" type="button" title="Toggle Light / Dark Theme"
-            class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-            <!-- Sun Icon (shown in dark mode) -->
-            <svg id="iconSun" class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-            </svg>
-            <!-- Moon Icon (shown in light mode) -->
-            <svg id="iconMoon" class="w-4 h-4 block dark:hidden text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-            </svg>
-          </button>
-
-          <!-- Primary Add Entry CTA -->
-          <button id="openAddModalBtn" type="button"
-            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-emerald-600/25 transition cursor-pointer">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            <span>Add Entry</span>
-          </button>
+<body>
+  <div class="container">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">S</div>
+        <div>
+          <h1>Sayin စာရင်း</h1>
+          <p id="userSubtitle">Cloudflare D1 & R2 Shared Workspace</p>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
-      <nav class="flex items-center gap-1 sm:gap-2 -mb-px overflow-x-auto" aria-label="Main Tabs">
-        <button data-tab="dashboard" class="nav-tab active-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 dark:border-emerald-400 whitespace-nowrap transition cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-          <span>Dashboard <span class="hidden sm:inline font-normal opacity-80">(Analysis)</span></span>
-        </button>
-
-        <button data-tab="transactions" class="nav-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 whitespace-nowrap transition cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-          <span>Transactions <span class="hidden sm:inline font-normal opacity-80">(စာရင်းမှတ်တမ်း)</span></span>
-        </button>
-
-        <button data-tab="manage" class="nav-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 whitespace-nowrap transition cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-          <span>Pools & Categories <span class="hidden sm:inline font-normal opacity-80">(စီမံခန့်ခွဲမှု)</span></span>
-        </button>
-      </nav>
-    </div>
-  </header>
-
-  <!-- ==================== MAIN CONTENT AREA ==================== -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-
-    <!-- Sample Data Banner (Dismissible / Clearable if demo data is active) -->
-    <div id="sampleDataBanner" class="hidden mb-6 p-3.5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2.5 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
-        <span class="text-base">💡</span>
-        <span>လက်ရှိတွင် နမူနာစာရင်း (Sample Data) များ ထည့်သွင်းပြသထားပါသည်။ ကိုယ်ပိုင်စာရင်း အသစ်စတင်လိုပါက ရှင်းလင်းနိုင်ပါသည်။</span>
+      <div class="topbar-actions">
+        <div id="wsSelectorWrap" class="hidden" style="min-width: 190px;">
+          <select id="workspaceSelect" title="Workspace / Pool"></select>
+        </div>
+        <div id="monthWrap" class="hidden" style="width: 145px;">
+          <input type="month" id="monthFilter" />
+        </div>
+        <button type="button" id="themeToggleBtn">Light / Dark</button>
+        <button type="button" id="logoutBtn" class="danger hidden">Logout</button>
       </div>
-      <button id="clearSampleDataBtn" type="button" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition cursor-pointer">
-        Clear Sample Data
-      </button>
-    </div>
+    </header>
 
-    <!-- ==================== TAB 1: DASHBOARD (ANALYSIS) ==================== -->
-    <section id="tab-dashboard" class="tab-panel space-y-6">
+    <!-- Auth Section -->
+    <section id="authSection" class="auth-wrap">
+      <div class="card">
+        <h2>Sayin Account Sign In</h2>
+        <p class="muted" style="margin-bottom: 14px;">
+          D1 database နဲ့ R2 receipt storage ချိတ်ဆက်ရန် သင့် account ဖြင့် ဝင်ရောက်ပါ။
+        </p>
 
-      <!-- 4 KPI Summary Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Total Net Balance -->
-        <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Net Balance (လက်ကျန်ငွေ)</span>
-            <span class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">💰</span>
+        <div style="margin-bottom: 14px;">
+          <label for="apiBaseInput">Backend Worker API Base URL</label>
+          <input type="url" id="apiBaseInput" placeholder="https://expense-portal-api.<your-subdomain>.workers.dev" />
+          <div class="muted" style="margin-top: 4px;">
+            လိုအပ်ပါက ကိုယ့် <code>expense-portal-api</code> Worker URL ကို ထည့်ပြီး Save လုပ်ပါ။
           </div>
-          <div id="kpiBalance" class="space-y-1 tabular-nums"></div>
-          <p id="kpiBalanceSub" class="text-xs text-slate-400 dark:text-slate-500 mt-2">Across selected pool(s)</p>
-        </div>
-
-        <!-- Period Income -->
-        <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Income (ဝင်ငွေ)</span>
-            <span class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/70 flex items-center justify-center text-emerald-600 dark:text-emerald-400">↗</span>
-          </div>
-          <div id="kpiIncome" class="space-y-1 tabular-nums"></div>
-          <p id="kpiIncomeCount" class="text-xs text-slate-400 dark:text-slate-500 mt-2">0 income entries</p>
-        </div>
-
-        <!-- Period Expense -->
-        <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400">Expense (ထွက်ငွေ)</span>
-            <span class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-950/70 flex items-center justify-center text-rose-600 dark:text-rose-400">↘</span>
-          </div>
-          <div id="kpiExpense" class="space-y-1 tabular-nums"></div>
-          <p id="kpiExpenseCount" class="text-xs text-slate-400 dark:text-slate-500 mt-2">0 expense entries</p>
-        </div>
-
-        <!-- Savings Rate / Cashflow Health -->
-        <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Savings Rate (စုဆောင်းနိုင်မှု)</span>
-            <span class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 flex items-center justify-center text-indigo-600 dark:text-indigo-400">📊</span>
-          </div>
-          <div id="kpiSavingsRate" class="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">--%</div>
-          <p id="kpiSavingsHealth" class="text-xs text-slate-500 dark:text-slate-400 mt-2">Cashflow health indicator</p>
-        </div>
-      </div>
-
-      <!-- Income vs Expense Comparison Bar + Daily Spending Trend -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-        <!-- Income vs Expense & Pool Breakdown (5 cols) -->
-        <div class="lg:col-span-5 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h2 class="text-base font-bold text-slate-900 dark:text-white">Cashflow Comparison</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">ဝင်ငွေနှင့် ထွက်ငွေ နှိုင်းယှဉ်ချက်</p>
-              </div>
-              <span id="cashflowBadge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Healthy</span>
-            </div>
-
-            <div id="cashflowComparisonContainer" class="space-y-4">
-              <!-- Populated dynamically per currency -->
-            </div>
-          </div>
-
-          <!-- Pool Summary Mini Cards -->
-          <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-700/80">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Active Pools Overview</span>
-              <button type="button" onclick="switchTab('manage')" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer">Manage Pools →</button>
-            </div>
-            <div id="dashboardPoolList" class="space-y-2.5"></div>
+          <div style="margin-top: 8px; display: flex; gap: 8px;">
+            <button type="button" id="saveApiBaseBtn" class="small">Save API URL</button>
+            <button type="button" id="testHealthBtn" class="small">Test API</button>
           </div>
         </div>
 
-        <!-- Daily Spending Trend Chart (7 cols) -->
-        <div class="lg:col-span-7 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs flex flex-col">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-            <div>
-              <h2 class="text-base font-bold text-slate-900 dark:text-white">Daily Spending Trend</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">နေ့စဉ် အသုံးစရိတ် ပြောင်းလဲမှုပြ ဂရပ်</p>
-            </div>
-            <div id="trendCurrencySelectorWrap" class="flex items-center gap-2">
-              <span class="text-xs text-slate-400">Currency:</span>
-              <select id="trendCurrencySelect" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none"></select>
-            </div>
-          </div>
-
-          <div id="dailyTrendChartContainer" class="flex-1 min-h-[230px] flex items-end">
-            <!-- SVG Bar Chart injected here -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Category Spending Breakdown + Recent 5 Transactions -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-        <!-- Category Breakdown (6 cols) -->
-        <div class="lg:col-span-6 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
-            <div>
-              <h2 class="text-base font-bold text-slate-900 dark:text-white">Expense by Category</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">ကဏ္ဍအလိုက် သုံးစွဲမှု အချိုးအစား</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <select id="categoryCurrencySelect" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none"></select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center">
-            <!-- Donut Ring Chart -->
-            <div id="categoryDonutContainer" class="sm:col-span-5 flex items-center justify-center"></div>
-            <!-- Horizontal Progress Bars -->
-            <div id="categoryBarsContainer" class="sm:col-span-7 space-y-3"></div>
-          </div>
+        <div class="auth-tabs">
+          <button type="button" id="tabLogin" class="active">Login</button>
+          <button type="button" id="tabRegister">Register</button>
+          <button type="button" id="tabForgot">Reset PW</button>
         </div>
 
-        <!-- Recent 5 Transactions (6 cols) -->
-        <div class="lg:col-span-6 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="text-base font-bold text-slate-900 dark:text-white">Recent Transactions</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">နောက်ဆုံး မှတ်တမ်းတင်ထားသည့် စာရင်း (၅) ခု</p>
-            </div>
-            <button type="button" onclick="switchTab('transactions')" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition cursor-pointer">
-              View All →
-            </button>
+        <!-- Login Form -->
+        <form id="loginForm">
+          <div style="margin-bottom: 10px;">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" required placeholder="you@example.com" />
           </div>
-
-          <div id="recentTransactionsList" class="divide-y divide-slate-100 dark:divide-slate-700/70 flex-1"></div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ==================== TAB 2: TRANSACTIONS (စာရင်းမှတ်တမ်း) ==================== -->
-    <section id="tab-transactions" class="tab-panel hidden space-y-5">
-
-      <!-- Filter & Export Toolbar -->
-      <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <!-- Search & Filters -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 flex-1">
-            <!-- Search Input -->
-            <div class="relative">
-              <input id="txSearchInput" type="text" placeholder="Search note, category..."
-                class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-              <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            </div>
-
-            <!-- Type Filter -->
-            <select id="txTypeFilter" class="px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-              <option value="all">All Types (ဝင်ငွေ + ထွက်ငွေ)</option>
-              <option value="expense">Expense Only (ထွက်ငွေ)</option>
-              <option value="income">Income Only (ဝင်ငွေ)</option>
-            </select>
-
-            <!-- Category Filter -->
-            <select id="txCategoryFilter" class="px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-              <option value="all">All Categories</option>
-            </select>
-
-            <!-- Payment Method Filter -->
-            <select id="txPaymentFilter" class="px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-              <option value="all">All Payment Methods</option>
-              <option value="KBZPay">KBZPay</option>
-              <option value="WavePay">WavePay</option>
-              <option value="Cash">Cash (ငွေသား)</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Credit/Debit Card">Credit/Debit Card</option>
-            </select>
+          <div style="margin-bottom: 14px;">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••" />
           </div>
+          <button type="submit" class="primary" style="width: 100%;">Sign In</button>
+        </form>
 
-          <!-- Export CSV Button -->
-          <div class="flex items-center justify-end gap-2">
-            <span id="txFilteredCount" class="text-xs text-slate-500 dark:text-slate-400 mr-1">0 items</span>
-            <button id="exportCsvBtn" type="button"
-              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              <span>Export CSV</span>
-            </button>
+        <!-- Register Form -->
+        <form id="registerForm" class="hidden">
+          <div style="margin-bottom: 10px;">
+            <label for="regName">Display Name</label>
+            <input type="text" id="regName" required placeholder="Thet Paing Soe" />
           </div>
-        </div>
-      </div>
-
-      <!-- Desktop Table View -->
-      <div class="hidden md:block bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-xs overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="border-b border-slate-200/80 dark:border-slate-700/80 bg-slate-50/80 dark:bg-slate-800/60 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                <th class="py-3.5 px-4">Date</th>
-                <th class="py-3.5 px-4">Pool</th>
-                <th class="py-3.5 px-4">Category</th>
-                <th class="py-3.5 px-4">Note / Description</th>
-                <th class="py-3.5 px-4">Payment</th>
-                <th class="py-3.5 px-4 text-right">Amount</th>
-                <th class="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="txDesktopTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/70 text-sm"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Mobile Stacked Cards View -->
-      <div id="txMobileCardsList" class="md:hidden space-y-3"></div>
-    </section>
-
-    <!-- ==================== TAB 3: POOLS & CATEGORIES (စီမံခန့်ခွဲမှု) ==================== -->
-    <section id="tab-manage" class="tab-panel hidden space-y-6">
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-        <!-- Manage Pools (7 cols) -->
-        <div class="lg:col-span-7 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-5">
-          <div>
-            <h2 class="text-base font-bold text-slate-900 dark:text-white">Manage Pools (ငွေစာရင်းအုပ်စုများ)</h2>
-            <p class="text-xs text-slate-500 dark:text-slate-400">ကိုယ်ပိုင်သုံး၊ မိသားစုသုံး သို့မဟုတ် နိုင်ငံခြားငွေ Pool များ ခွဲခြားစီမံပါ</p>
+          <div style="margin-bottom: 10px;">
+            <label for="regEmail">Email</label>
+            <input type="email" id="regEmail" required placeholder="you@example.com" />
           </div>
+          <div style="margin-bottom: 14px;">
+            <label for="regPassword">Password (min 6 chars)</label>
+            <input type="password" id="regPassword" minlength="6" required placeholder="At least 6 characters" />
+          </div>
+          <button type="submit" class="primary" style="width: 100%;">Create Account</button>
+        </form>
 
-          <!-- Add New Pool Form -->
-          <form id="addPoolForm" class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-            <div class="sm:col-span-4">
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Pool Name</label>
-              <input id="newPoolName" type="text" required placeholder="e.g. Side Business"
-                class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            </div>
-            <div class="sm:col-span-3">
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Currency</label>
-              <select id="newPoolCurrency" class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                <option value="MMK">MMK (Ks)</option>
-                <option value="USD">USD ($)</option>
-                <option value="THB">THB (฿)</option>
-                <option value="SGD">SGD (S$)</option>
-                <option value="EUR">EUR (€)</option>
-              </select>
-            </div>
-            <div class="sm:col-span-3">
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Initial Balance</label>
-              <input id="newPoolInitial" type="number" step="any" value="0"
-                class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            </div>
-            <div class="sm:col-span-2">
-              <button type="submit" class="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
-                + Add
-              </button>
+        <!-- Forgot / Reset Password Form -->
+        <div id="forgotWrap" class="hidden">
+          <form id="forgotForm" style="margin-bottom: 14px;">
+            <label for="forgotEmail">Account Email (Send 6-digit Reset Code)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="email" id="forgotEmail" required placeholder="you@example.com" />
+              <button type="submit" class="primary small">Send Code</button>
             </div>
           </form>
-
-          <!-- Pools Grid -->
-          <div id="managePoolsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div>
-        </div>
-
-        <!-- Manage Categories & Data Backup (5 cols) -->
-        <div class="lg:col-span-5 space-y-6">
-
-          <!-- Categories Card -->
-          <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-4">
-            <div>
-              <h2 class="text-base font-bold text-slate-900 dark:text-white">Custom Categories (ကဏ္ဍများ)</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">ဝင်ငွေနှင့် ထွက်ငွေ အမျိုးအစားများ ထပ်တိုးနိုင်ပါသည်</p>
+          <form id="resetForm">
+            <div style="margin-bottom: 10px;">
+              <label for="resetCode">Reset Code</label>
+              <input type="text" id="resetCode" required placeholder="123456" />
             </div>
-
-            <form id="addCategoryForm" class="grid grid-cols-12 gap-2 items-end">
-              <div class="col-span-2">
-                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Icon</label>
-                <input id="newCatEmoji" type="text" maxlength="4" value="🏷️" required
-                  class="w-full px-2 py-2 text-center text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
-              </div>
-              <div class="col-span-5">
-                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Category Name</label>
-                <input id="newCatName" type="text" placeholder="e.g. Coffee / Tea" required
-                  class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
-              </div>
-              <div class="col-span-3">
-                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Type</label>
-                <select id="newCatType" class="w-full px-2 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                  <option value="expense">Expense</option>
-                  <option value="income">Income</option>
-                </select>
-              </div>
-              <div class="col-span-2">
-                <button type="submit" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white text-xs font-semibold cursor-pointer">
-                  Add
-                </button>
-              </div>
-            </form>
-
-            <div id="manageCategoriesList" class="flex flex-wrap gap-2 pt-2 max-h-56 overflow-y-auto"></div>
-          </div>
-
-          <!-- Data Backup & Restore Card -->
-          <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-4">
-            <div>
-              <h2 class="text-base font-bold text-slate-900 dark:text-white">Data Backup & Reset</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">စာရင်းများကို JSON ဖိုင်ဖြင့် သိမ်းဆည်းခြင်း / ပြန်သွင်းခြင်း</p>
+            <div style="margin-bottom: 14px;">
+              <label for="resetNewPassword">New Password (min 6 chars)</label>
+              <input type="password" id="resetNewPassword" minlength="6" required />
             </div>
-
-            <div class="flex flex-wrap gap-2.5">
-              <button id="exportJsonBtn" type="button" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition cursor-pointer">
-                ⬇ Export JSON Backup
-              </button>
-
-              <label class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition cursor-pointer">
-                ⬆ Import JSON
-                <input id="importJsonInput" type="file" accept=".json" class="hidden" />
-              </label>
-
-              <button id="resetAllDataBtn" type="button" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 text-xs font-semibold transition cursor-pointer">
-                Reset All Data
-              </button>
-            </div>
-          </div>
-
+            <button type="submit" class="primary" style="width: 100%;">Update Password</button>
+          </form>
         </div>
       </div>
     </section>
 
-  </main>
+    <!-- Main App Section -->
+    <main id="appSection" class="hidden">
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button type="button" data-tab="dashboard" class="active">Dashboard</button>
+        <button type="button" data-tab="transactions">Transactions & Add</button>
+        <button type="button" data-tab="workspace">Workspace & Categories</button>
+      </nav>
 
-  <!-- ==================== ADD / EDIT TRANSACTION MODAL ==================== -->
-  <div id="transactionModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-    <div class="bg-white dark:bg-[#1E293B] w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-      <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
-        <h3 id="modalTitle" class="text-base font-bold text-slate-900 dark:text-white">Add Transaction (စာရင်းသွင်းရန်)</h3>
-        <button id="closeModalBtn" type="button" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <form id="transactionForm" class="p-6 space-y-4">
-        <input type="hidden" id="txIdInput" />
-
-        <!-- Segmented Type Toggle: Expense vs Income -->
-        <div class="grid grid-cols-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-800">
-          <button type="button" id="typeBtnExpense" data-type="expense"
-            class="py-2 text-xs sm:text-sm font-bold rounded-lg bg-rose-600 text-white shadow-xs transition cursor-pointer">
-            ↘ Expense (ထွက်ငွေ)
-          </button>
-          <button type="button" id="typeBtnIncome" data-type="income"
-            class="py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-600 dark:text-slate-300 transition cursor-pointer">
-            ↗ Income (ဝင်ငွေ)
-          </button>
-        </div>
-
-        <!-- Pool & Date -->
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Pool (ငွေစာရင်း)</label>
-            <select id="txPoolInput" required class="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
+      <!-- TAB 1: DASHBOARD -->
+      <section id="tab-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="label">Total Income</div>
+            <div class="val inc" id="kpiIncome">0</div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date (ရက်စွဲ)</label>
-            <input id="txDateInput" type="date" required class="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          <div class="kpi">
+            <div class="label">Total Expense</div>
+            <div class="val exp" id="kpiExpense">0</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Total Saving</div>
+            <div class="val sav" id="kpiSaving">0</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Net Balance</div>
+            <div class="val" id="kpiNet">0</div>
           </div>
         </div>
 
-        <!-- Amount -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Amount (ငွေပမာဏ)</label>
-          <div class="relative">
-            <input id="txAmountInput" type="number" step="any" min="0.01" required placeholder="0"
-              class="w-full pl-3.5 pr-16 py-2.5 text-lg font-extrabold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            <span id="txCurrencyBadge" class="absolute right-3.5 top-3 text-xs font-bold text-slate-400">MMK</span>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Cashflow Breakdown</h3>
+            <div id="cashflowBars"></div>
+          </div>
+          <div class="card">
+            <h3>Category Summary (Selected Month)</h3>
+            <div id="categorySummaryBars"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: TRANSACTIONS & ADD -->
+      <section id="tab-transactions" class="hidden">
+        <div class="card">
+          <h2 id="txFormTitle">Add New Transaction (D1 + R2 Receipt)</h2>
+          <form id="txForm">
+            <input type="hidden" id="editingTxId" value="" />
+            <div class="grid-4" style="margin-bottom: 12px;">
+              <div>
+                <label for="txDate">Date</label>
+                <input type="date" id="txDate" required />
+              </div>
+              <div>
+                <label for="txMember">Member</label>
+                <select id="txMember" required></select>
+              </div>
+              <div>
+                <label for="txType">Type</label>
+                <select id="txType" required>
+                  <option value="Expense">Expense</option>
+                  <option value="Income">Income</option>
+                  <option value="Saving">Saving</option>
+                </select>
+              </div>
+              <div>
+                <label for="txCategory">Category</label>
+                <select id="txCategory" required></select>
+              </div>
+            </div>
+
+            <div class="grid-4" style="margin-bottom: 12px;">
+              <div>
+                <label for="txAmount">Amount (<span id="currencyLabel">MMK</span>)</label>
+                <input type="number" id="txAmount" step="any" min="0.01" required placeholder="0" />
+              </div>
+              <div>
+                <label for="txPayment">Payment Method</label>
+                <select id="txPayment"></select>
+              </div>
+              <div>
+                <label for="txNotes">Notes</label>
+                <input type="text" id="txNotes" placeholder="Optional note" />
+              </div>
+              <div id="receiptInputWrap">
+                <label for="txReceipt">Receipt Image (R2)</label>
+                <input type="file" id="txReceipt" accept="image/*,application/pdf" />
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="submit" class="primary" id="txSubmitBtn">Save Transaction</button>
+              <button type="button" id="txCancelEditBtn" class="hidden">Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+            <h2 style="margin: 0;">Transactions</h2>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <input type="search" id="txSearch" placeholder="Search category, member, note..." style="width: 220px;" />
+              <select id="txTypeFilter" style="width: 140px;">
+                <option value="">All Types</option>
+                <option value="Income">Income</option>
+                <option value="Expense">Expense</option>
+                <option value="Saving">Saving</option>
+              </select>
+              <button type="button" id="exportCsvBtn">Export CSV</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Member</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Payment</th>
+                  <th>Notes</th>
+                  <th>Receipt</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="txTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: WORKSPACE & CATEGORIES -->
+      <section id="tab-workspace" class="hidden">
+        <div class="grid-2">
+          <div class="card">
+            <h2>Create New Workspace / Pool</h2>
+            <form id="createWsForm">
+              <div style="margin-bottom: 10px;">
+                <label for="newWsName">Workspace Name</label>
+                <input type="text" id="newWsName" required placeholder="e.g. Side Project / Household" />
+              </div>
+              <div style="margin-bottom: 12px;">
+                <label for="newWsId">Workspace ID (optional)</label>
+                <input type="text" id="newWsId" placeholder="auto-generated if empty" />
+              </div>
+              <button type="submit" class="primary">Create Workspace</button>
+            </form>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 18px 0;" />
+
+            <h3>Invite Member by Email</h3>
+            <form id="inviteMemberForm" style="display: flex; gap: 8px;">
+              <input type="email" id="inviteEmail" required placeholder="member@example.com" />
+              <button type="submit" class="primary small">Add</button>
+            </form>
+            <div id="memberList" class="muted" style="margin-top: 10px;"></div>
+          </div>
+
+          <div class="card">
+            <h2>Workspace Settings</h2>
+            <form id="settingsForm">
+              <div style="margin-bottom: 10px;">
+                <label for="setWsName">Workspace Name</label>
+                <input type="text" id="setWsName" required />
+              </div>
+              <div style="margin-bottom: 10px;">
+                <label for="setCurrency">Currency</label>
+                <input type="text" id="setCurrency" required placeholder="MMK" />
+              </div>
+              <div style="margin-bottom: 10px;">
+                <label for="setMembers">Members (comma-separated)</label>
+                <input type="text" id="setMembers" />
+              </div>
+              <div style="margin-bottom: 12px;">
+                <label for="setPayments">Payment Methods (comma-separated)</label>
+                <input type="text" id="setPayments" />
+              </div>
+              <button type="submit" class="primary">Save Settings</button>
+            </form>
           </div>
         </div>
 
-        <!-- Category & Payment Method -->
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Category (ကဏ္ဍ)</label>
-            <select id="txCategoryInput" required class="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Method</label>
-            <select id="txPaymentInput" class="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-              <option value="KBZPay">KBZPay</option>
-              <option value="WavePay">WavePay</option>
-              <option value="Cash">Cash (ငွေသား)</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Credit/Debit Card">Credit/Debit Card</option>
+        <div class="card">
+          <h2>Categories</h2>
+          <form id="addCategoryForm" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
+            <input type="text" id="newCatName" required placeholder="New category name" style="max-width: 240px;" />
+            <select id="newCatType" style="max-width: 160px;">
+              <option value="Expense">Expense</option>
+              <option value="Income">Income</option>
+              <option value="Saving">Saving</option>
             </select>
-          </div>
+            <button type="submit" class="primary">Add Category</button>
+          </form>
+          <div id="categoryChips" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
         </div>
-
-        <!-- Note -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Note / Description (မှတ်ချက်)</label>
-          <input id="txNoteInput" type="text" placeholder="ဥပမာ - နေ့လယ်စာ၊ လျှပ်စစ်မီတာခ၊ လစာ..."
-            class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-        </div>
-
-        <!-- Submit Buttons -->
-        <div class="pt-2 flex items-center justify-end gap-2.5">
-          <button type="button" id="cancelModalBtn" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold cursor-pointer">
-            Cancel
-          </button>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm shadow-emerald-600/25 cursor-pointer">
-            Save Entry
-          </button>
-        </div>
-      </form>
-    </div>
+      </section>
+    </main>
   </div>
 
-  <!-- ==================== CUSTOM CONFIRMATION DIALOG ==================== -->
-  <div id="confirmDialog" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-    <div class="bg-white dark:bg-[#1E293B] w-full max-w-sm rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-2xl space-y-4">
-      <h4 id="confirmTitle" class="text-base font-bold text-slate-900 dark:text-white">Confirm Action</h4>
-      <p id="confirmMessage" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
-      <div class="flex justify-end gap-2 pt-2">
-        <button id="confirmCancelBtn" type="button" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer">Cancel</button>
-        <button id="confirmOkBtn" type="button" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer">Confirm</button>
-      </div>
-    </div>
-  </div>
+  <div id="toast"></div>
 
-  <!-- ==================== TOAST NOTIFICATION ==================== -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-  <!-- ==================== APPLICATION JAVASCRIPT ==================== -->
   <script>
-    /**
-     * Sayin (စာရင်း) — Multi-Pool Expense & Financial Analysis SPA
-     * Storage Key: sayin_expense_tracker_v1
-     */
-    const STORAGE_KEY = 'sayin_expense_tracker_v1';
-
-    // Currency formatting configuration
-    const CURRENCY_META = {
-      MMK: { symbol: 'Ks', decimals: 0, position: 'suffix' },
-      USD: { symbol: '$', decimals: 2, position: 'prefix' },
-      THB: { symbol: '฿', decimals: 2, position: 'prefix' },
-      SGD: { symbol: 'S$', decimals: 2, position: 'prefix' },
-      EUR: { symbol: '€', decimals: 2, position: 'prefix' },
+    const STORAGE_KEYS = {
+      apiBase: 'sayin_api_base_url',
+      token: 'sayin_auth_token',
+      wsId: 'sayin_active_ws_id',
+      theme: 'sayin_theme'
     };
 
-    const CATEGORY_COLORS = [
-      '#059669', '#0284C7', '#D97706', '#E11D48', '#7C3AED',
-      '#0D9488', '#DB2777', '#EA580C', '#4F46E5', '#65A30D'
-    ];
+    const state = {
+      apiBase: localStorage.getItem(STORAGE_KEYS.apiBase) || window.location.origin,
+      token: localStorage.getItem(STORAGE_KEYS.token) || '',
+      user: null,
+      workspaces: [],
+      wsId: localStorage.getItem(STORAGE_KEYS.wsId) || '',
+      month: new Date().toISOString().slice(0, 7),
+      settings: null,
+      categories: [],
+      transactions: [],
+      summary: null
+    };
 
-    // Helper: Get YYYY-MM-DD for relative offsets
-    function getOffsetDate(daysOffset = 0) {
-      const d = new Date();
-      d.setDate(d.getDate() + daysOffset);
-      return d.toISOString().split('T')[0];
+    const $ = (id) => document.getElementById(id);
+
+    function toast(msg, tone = 'info') {
+      const el = $('toast');
+      el.textContent = msg;
+      el.className = `show ${tone}`;
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => { el.className = ''; }, 3200);
     }
 
-    // Default starter state on first visit
-    function createInitialSeedState() {
-      return {
-        theme: 'light',
-        isSampleData: true,
-        selectedPoolId: 'all',
-        selectedPeriod: 'this_month',
-        pools: [
-          { id: 'pool_personal', name: 'Personal', currency: 'MMK', initialBalance: 850000, color: '#059669' },
-          { id: 'pool_family', name: 'Family', currency: 'MMK', initialBalance: 1500000, color: '#0284C7' },
-          { id: 'pool_fx', name: 'Travel / FX', currency: 'USD', initialBalance: 650, color: '#7C3AED' }
-        ],
-        categories: [
-          { id: 'cat_food', name: 'Food & Dining (အစားအသောက်)', emoji: '🍜', type: 'expense', color: '#E11D48' },
-          { id: 'cat_transport', name: 'Transport & Fuel (သွားလာရေး)', emoji: '🚕', type: 'expense', color: '#D97706' },
-          { id: 'cat_utilities', name: 'Bills & Utilities (မီတာ/အင်တာနက်)', emoji: '⚡', type: 'expense', color: '#0284C7' },
-          { id: 'cat_groceries', name: 'Groceries & Home (အိမ်သုံး)', emoji: '🛒', type: 'expense', color: '#0D9488' },
-          { id: 'cat_health', name: 'Health & Medical (ကျန်းမာရေး)', emoji: '💊', type: 'expense', color: '#7C3AED' },
-          { id: 'cat_shopping', name: 'Shopping (အဝတ်အထည်/အသုံးအဆောင်)', emoji: '🛍️', type: 'expense', color: '#DB2777' },
-          { id: 'cat_salary', name: 'Salary & Bonus (လစာ)', emoji: '💼', type: 'income', color: '#059669' },
-          { id: 'cat_freelance', name: 'Freelance / Business (အပိုဝင်ငွေ)', emoji: '💻', type: 'income', color: '#10B981' }
-        ],
-        transactions: [
-          { id: 'tx_1', poolId: 'pool_personal', type: 'income', amount: 1200000, date: getOffsetDate(-12), categoryId: 'cat_salary', paymentMethod: 'Bank Transfer', note: 'Monthly Salary' },
-          { id: 'tx_2', poolId: 'pool_personal', type: 'expense', amount: 18500, date: getOffsetDate(-6), categoryId: 'cat_food', paymentMethod: 'KBZPay', note: 'နေ့လယ်စာနှင့် ကော်ဖီ' },
-          { id: 'tx_3', poolId: 'pool_personal', type: 'expense', amount: 12000, date: getOffsetDate(-4), categoryId: 'cat_transport', paymentMethod: 'WavePay', note: 'Grab Taxi အသွားအပြန်' },
-          { id: 'tx_4', poolId: 'pool_family', type: 'expense', amount: 85000, date: getOffsetDate(-3), categoryId: 'cat_groceries', paymentMethod: 'KBZPay', note: 'အပတ်စဉ် မီးဖိုချောင်သုံးပစ္စည်း' },
-          { id: 'tx_5', poolId: 'pool_family', type: 'expense', amount: 45000, date: getOffsetDate(-2), categoryId: 'cat_utilities', paymentMethod: 'KBZPay', note: 'Fiber Internet လစဉ်ကြေး' },
-          { id: 'tx_6', poolId: 'pool_personal', type: 'income', amount: 250000, date: getOffsetDate(-1), categoryId: 'cat_freelance', paymentMethod: 'Bank Transfer', note: 'UI Design Freelance' },
-          { id: 'tx_7', poolId: 'pool_personal', type: 'expense', amount: 32000, date: getOffsetDate(0), categoryId: 'cat_health', paymentMethod: 'Cash', note: 'ဆေးဝါးနှင့် ဗီတာမင်' },
-          { id: 'tx_8', poolId: 'pool_fx', type: 'expense', amount: 48.50, date: getOffsetDate(-2), categoryId: 'cat_shopping', paymentMethod: 'Credit/Debit Card', note: 'Cloud Hosting & Domain' }
-        ]
-      };
-    }
-
-    // Load & Save State
-    let appState = loadState();
-    let currentTab = 'dashboard';
-    let modalTxType = 'expense';
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) {
-          const seed = createInitialSeedState();
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
-          return seed;
-        }
-        return JSON.parse(raw);
-      } catch (e) {
-        console.error('Failed to load state:', e);
-        return createInitialSeedState();
-      }
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-      } catch (e) {
-        showToast('Storage quota exceeded or blocked.', 'error');
-      }
-    }
-
-    // Format Currency cleanly
-    function formatMoney(amount, currency = 'MMK', showSign = false) {
-      const meta = CURRENCY_META[currency] || { symbol: currency, decimals: 2, position: 'suffix' };
-      const absVal = Math.abs(Number(amount) || 0);
-      const formattedNum = absVal.toLocaleString('en-US', {
-        minimumFractionDigits: meta.decimals,
-        maximumFractionDigits: meta.decimals
-      });
-      const sign = amount < 0 ? '-' : (showSign && amount > 0 ? '+' : '');
-      if (meta.position === 'prefix') {
-        return `${sign}${meta.symbol}${formattedNum}`;
-      }
-      return `${sign}${formattedNum} ${meta.symbol}`;
-    }
-
-    // Toast Notification
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toastContainer');
-      const el = document.createElement('div');
-      const bgClass = type === 'error'
-        ? 'bg-rose-600 text-white'
-        : 'bg-slate-900 dark:bg-emerald-600 text-white';
-      el.className = `pointer-events-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-2 transition-all duration-200 ${bgClass}`;
-      el.innerHTML = `<span>${type === 'error' ? '⚠️' : '✓'}</span><span>${message}</span>`;
-      container.appendChild(el);
-      setTimeout(() => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(6px)';
-        setTimeout(() => el.remove(), 200);
-      }, 2600);
-    }
-
-    // Custom Confirmation Modal (never uses window.confirm)
-    function showConfirm(title, message, onConfirm) {
-      const dialog = document.getElementById('confirmDialog');
-      document.getElementById('confirmTitle').textContent = title;
-      document.getElementById('confirmMessage').textContent = message;
-      dialog.classList.remove('hidden');
-      dialog.classList.add('flex');
-
-      const cleanup = () => {
-        dialog.classList.add('hidden');
-        dialog.classList.remove('flex');
-      };
-
-      document.getElementById('confirmCancelBtn').onclick = cleanup;
-      document.getElementById('confirmOkBtn').onclick = () => {
-        cleanup();
-        onConfirm();
-      };
-    }
-
-    // Theme Management
     function applyTheme(theme) {
-      const html = document.documentElement;
-      if (theme === 'dark') {
-        html.classList.add('dark');
-        html.classList.remove('light');
-      } else {
-        html.classList.add('light');
-        html.classList.remove('dark');
-      }
-      appState.theme = theme;
-      saveState();
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem(STORAGE_KEYS.theme, theme);
     }
 
-    // Filter Transactions by Global Pool & Period
-    function getScopedTransactions() {
-      const now = new Date();
-      const curYear = now.getFullYear();
-      const curMonth = now.getMonth();
+    function getApiUrl(path) {
+      const base = (state.apiBase || '').replace(/\/+$/, '');
+      return `${base}${path}`;
+    }
 
-      const lastMonthDate = new Date(curYear, curMonth - 1, 1);
-      const lastYear = lastMonthDate.getFullYear();
-      const lastMonth = lastMonthDate.getMonth();
+    async function apiFetch(path, options = {}) {
+      const headers = new Headers(options.headers || {});
+      if (state.token) headers.set('Authorization', `Bearer ${state.token}`);
+      if (!(options.body instanceof FormData) && !headers.has('Content-Type') && options.method && options.method !== 'GET') {
+        headers.set('Content-Type', 'application/json');
+      }
+      const res = await fetch(getApiUrl(path), { ...options, headers });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (res.status === 401) {
+          handleLogout(false);
+        }
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+      return data;
+    }
 
-      return appState.transactions.filter(tx => {
-        // Pool check
-        if (appState.selectedPoolId !== 'all' && tx.poolId !== appState.selectedPoolId) {
-          return false;
-        }
-        // Period check
-        if (appState.selectedPeriod === 'all_time') return true;
-        const [y, m] = tx.date.split('-').map(Number);
-        if (appState.selectedPeriod === 'this_month') {
-          return y === curYear && (m - 1) === curMonth;
-        }
-        if (appState.selectedPeriod === 'last_month') {
-          return y === lastYear && (m - 1) === lastMonth;
+    function fmtNum(n) {
+      return Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+    }
+
+    function setAuthUi(loggedIn) {
+      $('authSection').classList.toggle('hidden', loggedIn);
+      $('appSection').classList.toggle('hidden', !loggedIn);
+      $('wsSelectorWrap').classList.toggle('hidden', !loggedIn);
+      $('monthWrap').classList.toggle('hidden', !loggedIn);
+      $('logoutBtn').classList.toggle('hidden', !loggedIn);
+      $('userSubtitle').textContent = loggedIn && state.user
+        ? `${state.user.display_name} (${state.user.email})`
+        : 'Cloudflare D1 & R2 Shared Workspace';
+    }
+
+    function handleLogout(callApi = true) {
+      if (callApi && state.token) {
+        apiFetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+      }
+      state.token = '';
+      state.user = null;
+      localStorage.removeItem(STORAGE_KEYS.token);
+      setAuthUi(false);
+    }
+
+    async function loadWorkspacesAndData() {
+      const wsRes = await apiFetch('/api/workspaces');
+      state.workspaces = wsRes.data || [];
+      if (!state.workspaces.length) return;
+
+      if (!state.wsId || !state.workspaces.some((w) => w.workspace_id === state.wsId)) {
+        state.wsId = state.user?.default_workspace_id || state.workspaces[0].workspace_id;
+      }
+      localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
+
+      $('workspaceSelect').innerHTML = state.workspaces
+        .map((w) => `<option value="${w.workspace_id}" ${w.workspace_id === state.wsId ? 'selected' : ''}>${w.workspace_name} (${w.currency})</option>`)
+        .join('');
+
+      await loadWorkspaceDetails();
+    }
+
+    async function loadWorkspaceDetails() {
+      if (!state.wsId) return;
+      const ws = encodeURIComponent(state.wsId);
+      const m = encodeURIComponent(state.month);
+
+      const [setRes, catRes, txRes, sumRes, memRes] = await Promise.all([
+        apiFetch(`/api/workspaces/${ws}/settings`),
+        apiFetch(`/api/workspaces/${ws}/categories`),
+        apiFetch(`/api/workspaces/${ws}/transactions?month=${m}`),
+        apiFetch(`/api/workspaces/${ws}/summary?month=${m}`),
+        apiFetch(`/api/workspaces/${ws}/members`)
+      ]);
+
+      state.settings = setRes.data;
+      state.categories = catRes.data || [];
+      state.transactions = txRes.data || [];
+      state.summary = sumRes.summary || { total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0 };
+
+      renderFormOptions();
+      renderSettingsForm(memRes.data || []);
+      renderCategories();
+      renderDashboard();
+      renderTransactions();
+    }
+
+    function renderFormOptions() {
+      const s = state.settings || {};
+      $('currencyLabel').textContent = s.currency || 'MMK';
+
+      const members = Array.isArray(s.members) && s.members.length ? s.members : [state.user?.display_name || 'Member'];
+      $('txMember').innerHTML = members.map((m) => `<option value="${m}">${m}</option>`).join('');
+
+      const payments = Array.isArray(s.payment_methods) && s.payment_methods.length ? s.payment_methods : ['Cash'];
+      $('txPayment').innerHTML = payments.map((p) => `<option value="${p}">${p}</option>`).join('');
+
+      updateCategoryDropdown();
+    }
+
+    function updateCategoryDropdown() {
+      const typeVal = $('txType').value;
+      const filtered = state.categories.filter((c) => c.entry_type === typeVal);
+      const list = filtered.length ? filtered : state.categories;
+      $('txCategory').innerHTML = list.map((c) => `<option value="${c.name}">${c.name}</option>`).join('');
+    }
+
+    function renderSettingsForm(membersList) {
+      const s = state.settings || {};
+      $('setWsName').value = s.workspace_name || '';
+      $('setCurrency').value = s.currency || 'MMK';
+      $('setMembers').value = (s.members || []).join(', ');
+      $('setPayments').value = (s.payment_methods || []).join(', ');
+      $('memberList').textContent = 'Workspace Members: ' + (membersList.map((m) => `${m.display_name} (${m.email})`).join(', ') || '-');
+    }
+
+    function renderCategories() {
+      $('categoryChips').innerHTML = state.categories.length
+        ? state.categories.map((c) => `<span class="pill ${c.entry_type}">${c.name} · ${c.entry_type}</span>`).join('')
+        : '<span class="muted">No categories</span>';
+    }
+
+    function renderDashboard() {
+      const cur = state.settings?.currency || 'MMK';
+      const sum = state.summary || { total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0 };
+
+      $('kpiIncome').textContent = `${fmtNum(sum.total_income)} ${cur}`;
+      $('kpiExpense').textContent = `${fmtNum(sum.total_expense)} ${cur}`;
+      $('kpiSaving').textContent = `${fmtNum(sum.total_saving)} ${cur}`;
+      $('kpiNet').textContent = `${fmtNum(sum.net_balance)} ${cur}`;
+
+      const maxFlow = Math.max(sum.total_income, sum.total_expense, sum.total_saving, 1);
+      $('cashflowBars').innerHTML = [
+        { label: 'Income', val: sum.total_income, cls: 'inc' },
+        { label: 'Expense', val: sum.total_expense, cls: 'exp' },
+        { label: 'Saving', val: sum.total_saving, cls: 'sav' }
+      ].map((item) => `
+        <div class="bar-row">
+          <div class="bar-meta"><span>${item.label}</span><span>${fmtNum(item.val)} ${cur}</span></div>
+          <div class="bar-track"><div class="bar-fill ${item.cls}" style="width:${Math.min(100, (item.val / maxFlow) * 100)}%"></div></div>
+        </div>
+      `).join('');
+
+      const cats = sumResCats();
+      const maxCat = Math.max(...cats.map((c) => Number(c.total_mmk || 0)), 1);
+      $('categorySummaryBars').innerHTML = cats.length
+        ? cats.slice(0, 8).map((c) => `
+          <div class="bar-row">
+            <div class="bar-meta"><span>${c.category} (${c.entry_type})</span><span>${fmtNum(c.total_mmk)} ${cur}</span></div>
+            <div class="bar-track"><div class="bar-fill ${c.entry_type === 'Income' ? 'inc' : c.entry_type === 'Saving' ? 'sav' : 'exp'}" style="width:${Math.min(100, (Number(c.total_mmk || 0) / maxCat) * 100)}%"></div></div>
+          </div>
+        `).join('')
+        : '<div class="muted">No data for this month.</div>';
+    }
+
+    function sumResCats() {
+      return state._categoriesSummary || [];
+    }
+
+    // Patch loadWorkspaceDetails slightly to store category summary
+    const _origLoadWorkspaceDetails = loadWorkspaceDetails;
+    loadWorkspaceDetails = async function() {
+      if (!state.wsId) return;
+      const ws = encodeURIComponent(state.wsId);
+      const m = encodeURIComponent(state.month);
+      const [setRes, catRes, txRes, sumRes, memRes] = await Promise.all([
+        apiFetch(`/api/workspaces/${ws}/settings`),
+        apiFetch(`/api/workspaces/${ws}/categories`),
+        apiFetch(`/api/workspaces/${ws}/transactions?month=${m}`),
+        apiFetch(`/api/workspaces/${ws}/summary?month=${m}`),
+        apiFetch(`/api/workspaces/${ws}/members`)
+      ]);
+      state.settings = setRes.data;
+      state.categories = catRes.data || [];
+      state.transactions = txRes.data || [];
+      state.summary = sumRes.summary || { total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0 };
+      state._categoriesSummary = sumRes.categories || [];
+      renderFormOptions();
+      renderSettingsForm(memRes.data || []);
+      renderCategories();
+      renderDashboard();
+      renderTransactions();
+    };
+
+    function getFilteredTransactions() {
+      const q = ($('txSearch').value || '').trim().toLowerCase();
+      const t = $('txTypeFilter').value;
+      return state.transactions.filter((row) => {
+        if (t && row.entry_type !== t) return false;
+        if (q) {
+          const hay = `${row.category || ''} ${row.member_name || ''} ${row.notes || ''} ${row.payment_method || ''}`.toLowerCase();
+          if (!hay.includes(q)) return false;
         }
         return true;
       });
     }
 
-    // Calculate live balance of a pool (Initial Balance + All-time Income - All-time Expense)
-    function getPoolLiveBalance(pool) {
-      let bal = Number(pool.initialBalance) || 0;
-      for (const tx of appState.transactions) {
-        if (tx.poolId === pool.id) {
-          bal += tx.type === 'income' ? Number(tx.amount) : -Number(tx.amount);
-        }
-      }
-      return bal;
-    }
-
-    // ==================== RENDER GLOBAL SELECTORS ====================
-    function renderGlobalSelectors() {
-      const poolSelect = document.getElementById('globalPoolSelect');
-      const currentVal = appState.selectedPoolId;
-
-      let optionsHtml = `<option value="all">🌐 All Pools (Summary)</option>`;
-      appState.pools.forEach(p => {
-        optionsHtml += `<option value="${p.id}">${p.name} (${p.currency})</option>`;
-      });
-      poolSelect.innerHTML = optionsHtml;
-      poolSelect.value = appState.pools.some(p => p.id === currentVal) ? currentVal : 'all';
-      appState.selectedPoolId = poolSelect.value;
-
-      document.getElementById('globalPeriodSelect').value = appState.selectedPeriod;
-
-      // Sample data banner visibility
-      const banner = document.getElementById('sampleDataBanner');
-      if (appState.isSampleData) {
-        banner.classList.remove('hidden');
-      } else {
-        banner.classList.add('hidden');
+    async function openReceipt(key) {
+      try {
+        const res = await fetch(getApiUrl(`/api/receipts/${key}`), {
+          headers: { Authorization: `Bearer ${state.token}` }
+        });
+        if (!res.ok) throw new Error('Receipt fetch failed');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank', 'noopener');
+      } catch (err) {
+        toast(err.message, 'error');
       }
     }
 
-    // ==================== RENDER DASHBOARD (TAB 1) ====================
-    function renderDashboard() {
-      const scopedTxs = getScopedTransactions();
-      const activePools = appState.selectedPoolId === 'all'
-        ? appState.pools
-        : appState.pools.filter(p => p.id === appState.selectedPoolId);
-
-      // Group Net Balance by currency (never falsely summing MMK + USD together)
-      const balanceByCurrency = {};
-      activePools.forEach(p => {
-        balanceByCurrency[p.currency] = (balanceByCurrency[p.currency] || 0) + getPoolLiveBalance(p);
-      });
-
-      // Group Period Income & Expense by currency
-      const incomeByCurrency = {};
-      const expenseByCurrency = {};
-      let incomeCount = 0;
-      let expenseCount = 0;
-
-      scopedTxs.forEach(tx => {
-        const pool = appState.pools.find(p => p.id === tx.poolId);
-        const cur = pool ? pool.currency : 'MMK';
-        if (tx.type === 'income') {
-          incomeByCurrency[cur] = (incomeByCurrency[cur] || 0) + Number(tx.amount);
-          incomeCount++;
-        } else {
-          expenseByCurrency[cur] = (expenseByCurrency[cur] || 0) + Number(tx.amount);
-          expenseCount++;
-        }
-      });
-
-      // Render KPI 1: Net Balance
-      const kpiBalanceEl = document.getElementById('kpiBalance');
-      const balEntries = Object.entries(balanceByCurrency);
-      kpiBalanceEl.innerHTML = balEntries.length
-        ? balEntries.map(([cur, val], idx) => `
-            <div class="${idx === 0 ? 'text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white' : 'text-sm font-bold text-slate-600 dark:text-slate-300'}">
-              ${formatMoney(val, cur)}
-            </div>
-          `).join('')
-        : `<div class="text-xl font-bold text-slate-400">0</div>`;
-      document.getElementById('kpiBalanceSub').textContent =
-        appState.selectedPoolId === 'all' ? `${activePools.length} active pools` : `${activePools[0]?.name || ''} live balance`;
-
-      // Render KPI 2: Income
-      const kpiIncomeEl = document.getElementById('kpiIncome');
-      const incEntries = Object.entries(incomeByCurrency);
-      kpiIncomeEl.innerHTML = incEntries.length
-        ? incEntries.map(([cur, val], idx) => `
-            <div class="${idx === 0 ? 'text-xl sm:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400' : 'text-sm font-bold text-emerald-600/80 dark:text-emerald-400/80'}">
-              ${formatMoney(val, cur, true)}
-            </div>
-          `).join('')
-        : `<div class="text-xl font-bold text-slate-400">0</div>`;
-      document.getElementById('kpiIncomeCount').textContent = `${incomeCount} income entr${incomeCount === 1 ? 'y' : 'ies'}`;
-
-      // Render KPI 3: Expense
-      const kpiExpenseEl = document.getElementById('kpiExpense');
-      const expEntries = Object.entries(expenseByCurrency);
-      kpiExpenseEl.innerHTML = expEntries.length
-        ? expEntries.map(([cur, val], idx) => `
-            <div class="${idx === 0 ? 'text-xl sm:text-2xl font-extrabold text-rose-600 dark:text-rose-400' : 'text-sm font-bold text-rose-600/80 dark:text-rose-400/80'}">
-              ${formatMoney(val, cur)}
-            </div>
-          `).join('')
-        : `<div class="text-xl font-bold text-slate-400">0</div>`;
-      document.getElementById('kpiExpenseCount').textContent = `${expenseCount} expense entr${expenseCount === 1 ? 'y' : 'ies'}`;
-
-      // Render KPI 4: Savings Rate (computed on primary currency in view)
-      const allCurrencies = Array.from(new Set([...Object.keys(balanceByCurrency), ...Object.keys(incomeByCurrency), ...Object.keys(expenseByCurrency)]));
-      const primaryCur = allCurrencies[0] || 'MMK';
-      const pInc = incomeByCurrency[primaryCur] || 0;
-      const pExp = expenseByCurrency[primaryCur] || 0;
-
-      const savingsRateEl = document.getElementById('kpiSavingsRate');
-      const savingsHealthEl = document.getElementById('kpiSavingsHealth');
-      const cashflowBadge = document.getElementById('cashflowBadge');
-
-      if (pInc > 0) {
-        const rate = ((pInc - pExp) / pInc) * 100;
-        savingsRateEl.textContent = `${rate.toFixed(1)}%`;
-        if (rate >= 20) {
-          savingsRateEl.className = 'text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums';
-          savingsHealthEl.textContent = `Strong savings (${primaryCur})`;
-          cashflowBadge.textContent = 'Healthy Surplus';
-          cashflowBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300';
-        } else if (rate >= 0) {
-          savingsRateEl.className = 'text-2xl font-extrabold text-amber-600 dark:text-amber-400 tabular-nums';
-          savingsHealthEl.textContent = `Positive margin (${primaryCur})`;
-          cashflowBadge.textContent = 'Balanced';
-          cashflowBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300';
-        } else {
-          savingsRateEl.className = 'text-2xl font-extrabold text-rose-600 dark:text-rose-400 tabular-nums';
-          savingsHealthEl.textContent = `Overspending (${primaryCur})`;
-          cashflowBadge.textContent = 'Deficit Alert';
-          cashflowBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300';
-        }
-      } else {
-        savingsRateEl.textContent = pExp > 0 ? '0.0%' : '--%';
-        savingsRateEl.className = 'text-2xl font-extrabold text-slate-700 dark:text-slate-200 tabular-nums';
-        savingsHealthEl.textContent = pExp > 0 ? `No ${primaryCur} income recorded` : 'Add entries to calculate';
-        cashflowBadge.textContent = 'Active';
-      }
-
-      // Render Cashflow Comparison Bars (per currency)
-      const cfContainer = document.getElementById('cashflowComparisonContainer');
-      if (allCurrencies.length === 0) {
-        cfContainer.innerHTML = `<p class="text-xs text-slate-400 py-4">No transactions in this period.</p>`;
-      } else {
-        cfContainer.innerHTML = allCurrencies.map(cur => {
-          const inc = incomeByCurrency[cur] || 0;
-          const exp = expenseByCurrency[cur] || 0;
-          const maxVal = Math.max(inc, exp, 1);
-          const incPct = Math.round((inc / maxVal) * 100);
-          const expPct = Math.round((exp / maxVal) * 100);
-          return `
-            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-2.5">
-              <div class="flex items-center justify-between text-xs font-bold">
-                <span class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200/70 dark:border-slate-700">${cur}</span>
-                <span class="tabular-nums ${inc - exp >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
-                  Net: ${formatMoney(inc - exp, cur, true)}
-                </span>
+    function renderTransactions() {
+      const cur = state.settings?.currency || 'MMK';
+      const rows = getFilteredTransactions();
+      $('txTableBody').innerHTML = rows.length
+        ? rows.map((r) => `
+          <tr>
+            <td>${r.tx_date}</td>
+            <td>${r.member_name}</td>
+            <td><span class="pill ${r.entry_type}">${r.entry_type}</span></td>
+            <td>${r.category}</td>
+            <td><strong>${fmtNum(r.amount_mmk)}</strong> ${cur}</td>
+            <td>${r.payment_method || '-'}</td>
+            <td>${r.notes || '-'}</td>
+            <td>${r.receipt_key ? `<button type="button" class="small" onclick="openReceipt('${r.receipt_key.replace(/'/g, "\\'")}')">View</button>` : '-'}</td>
+            <td>
+              <div class="row-actions">
+                <button type="button" class="small" onclick="startEditTx(${r.id})">Edit</button>
+                <button type="button" class="small danger" onclick="deleteTx(${r.id})">Delete</button>
               </div>
-              <div class="space-y-1.5">
-                <div class="flex justify-between text-xs">
-                  <span class="text-slate-500 dark:text-slate-400">Income</span>
-                  <span class="font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">${formatMoney(inc, cur)}</span>
-                </div>
-                <div class="w-full h-2 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden">
-                  <div class="h-full rounded-full bg-emerald-500 transition-all duration-300" style="width: ${incPct}%"></div>
-                </div>
-              </div>
-              <div class="space-y-1.5">
-                <div class="flex justify-between text-xs">
-                  <span class="text-slate-500 dark:text-slate-400">Expense</span>
-                  <span class="font-semibold text-rose-600 dark:text-rose-400 tabular-nums">${formatMoney(exp, cur)}</span>
-                </div>
-                <div class="w-full h-2 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden">
-                  <div class="h-full rounded-full bg-rose-500 transition-all duration-300" style="width: ${expPct}%"></div>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      // Render Active Pools Overview mini list
-      const poolListEl = document.getElementById('dashboardPoolList');
-      poolListEl.innerHTML = appState.pools.map(p => {
-        const bal = getPoolLiveBalance(p);
-        const isSelected = appState.selectedPoolId === p.id;
-        return `
-          <div onclick="selectPoolFromCard('${p.id}')" class="flex items-center justify-between p-2.5 rounded-xl border ${isSelected ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30' : 'border-slate-100 dark:border-slate-700/70 hover:bg-slate-50 dark:hover:bg-slate-800/60'} transition cursor-pointer">
-            <div class="flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${p.color}"></span>
-              <span class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100">${p.name}</span>
-              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">${p.currency}</span>
-            </div>
-            <span class="text-xs sm:text-sm font-bold tabular-nums text-slate-900 dark:text-white">${formatMoney(bal, p.currency)}</span>
-          </div>
-        `;
-      }).join('');
-
-      // Sync Currency Selectors for Charts
-      syncChartCurrencySelectors(allCurrencies);
-      renderDailyTrendChart(scopedTxs);
-      renderCategoryBreakdown(scopedTxs);
-      renderRecentTransactions(scopedTxs);
-    }
-
-    function selectPoolFromCard(poolId) {
-      appState.selectedPoolId = appState.selectedPoolId === poolId ? 'all' : poolId;
-      saveState();
-      renderAll();
-    }
-
-    function syncChartCurrencySelectors(currencies) {
-      const list = currencies.length ? currencies : ['MMK'];
-      ['trendCurrencySelect', 'categoryCurrencySelect'].forEach(id => {
-        const sel = document.getElementById(id);
-        const prev = sel.value;
-        sel.innerHTML = list.map(c => `<option value="${c}">${c}</option>`).join('');
-        sel.value = list.includes(prev) ? prev : list[0];
-      });
-    }
-
-    // Render Daily Spending Trend SVG Bar Chart
-    function renderDailyTrendChart(scopedTxs) {
-      const container = document.getElementById('dailyTrendChartContainer');
-      const targetCur = document.getElementById('trendCurrencySelect').value || 'MMK';
-
-      const expenseTxs = scopedTxs.filter(tx => {
-        const pool = appState.pools.find(p => p.id === tx.poolId);
-        return tx.type === 'expense' && (pool ? pool.currency : 'MMK') === targetCur;
-      });
-
-      // Aggregate by date
-      const dailyMap = {};
-      expenseTxs.forEach(tx => {
-        dailyMap[tx.date] = (dailyMap[tx.date] || 0) + Number(tx.amount);
-      });
-
-      const sortedDates = Object.keys(dailyMap).sort();
-      if (sortedDates.length === 0) {
-        container.innerHTML = `
-          <div class="w-full h-48 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-4">
-            <span class="text-2xl mb-1">📉</span>
-            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">No ${targetCur} expense data for this period.</p>
-          </div>
-        `;
-        return;
-      }
-
-      const maxAmt = Math.max(...Object.values(dailyMap), 1);
-      const barsHtml = sortedDates.slice(-14).map(dateStr => {
-        const val = dailyMap[dateStr];
-        const heightPct = Math.max(Math.round((val / maxAmt) * 100), 6);
-        const shortDate = dateStr.slice(5); // MM-DD
-        return `
-          <div class="flex-1 flex flex-col items-center justify-end h-full group min-w-[26px]">
-            <div class="opacity-0 group-hover:opacity-100 transition-opacity mb-1.5 px-2 py-0.5 rounded bg-slate-900 dark:bg-slate-700 text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none tabular-nums shadow-sm">
-              ${formatMoney(val, targetCur)}
-            </div>
-            <div class="w-full max-w-[32px] bg-rose-500/85 hover:bg-rose-500 dark:bg-rose-500/80 dark:hover:bg-rose-400 rounded-t-lg transition-all duration-300" style="height: ${heightPct}%"></div>
-            <span class="mt-2 text-[10px] font-medium text-slate-400 dark:text-slate-500 tabular-nums">${shortDate}</span>
-          </div>
-        `;
-      }).join('');
-
-      container.innerHTML = `
-        <div class="w-full h-52 pt-6 px-2 flex items-end justify-between gap-1.5 sm:gap-2.5 border-b border-slate-200 dark:border-slate-700">
-          ${barsHtml}
-        </div>
-      `;
-    }
-
-    // Render Category Spending Breakdown (Donut SVG + Progress Bars)
-    function renderCategoryBreakdown(scopedTxs) {
-      const targetCur = document.getElementById('categoryCurrencySelect').value || 'MMK';
-      const donutEl = document.getElementById('categoryDonutContainer');
-      const barsEl = document.getElementById('categoryBarsContainer');
-
-      const expenseTxs = scopedTxs.filter(tx => {
-        const pool = appState.pools.find(p => p.id === tx.poolId);
-        return tx.type === 'expense' && (pool ? pool.currency : 'MMK') === targetCur;
-      });
-
-      const totalExp = expenseTxs.reduce((sum, tx) => sum + Number(tx.amount), 0);
-
-      if (totalExp <= 0) {
-        donutEl.innerHTML = `
-          <div class="w-36 h-36 rounded-full border-8 border-slate-100 dark:border-slate-800 flex items-center justify-center text-xs text-slate-400">
-            No data
-          </div>
-        `;
-        barsEl.innerHTML = `<p class="text-xs text-slate-400">No ${targetCur} expenses recorded in this period.</p>`;
-        return;
-      }
-
-      // Group by categoryId
-      const catTotals = {};
-      expenseTxs.forEach(tx => {
-        catTotals[tx.categoryId] = (catTotals[tx.categoryId] || 0) + Number(tx.amount);
-      });
-
-      const items = Object.entries(catTotals)
-        .map(([catId, amount], idx) => {
-          const cat = appState.categories.find(c => c.id === catId) || { name: 'Uncategorized', emoji: '📦', color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length] };
-          return {
-            ...cat,
-            amount,
-            pct: (amount / totalExp) * 100
-          };
-        })
-        .sort((a, b) => b.amount - a.amount);
-
-      // Build SVG Donut Ring
-      const radius = 54;
-      const circumference = 2 * Math.PI * radius;
-      let cumulativePct = 0;
-
-      const circles = items.map(item => {
-        const dash = (item.pct / 100) * circumference;
-        const offset = -((cumulativePct / 100) * circumference);
-        cumulativePct += item.pct;
-        return `<circle cx="70" cy="70" r="${radius}" fill="transparent" stroke="${item.color}" stroke-width="18" stroke-dasharray="${dash} ${circumference}" stroke-dashoffset="${offset}" />`;
-      }).join('');
-
-      donutEl.innerHTML = `
-        <div class="relative w-40 h-40 flex items-center justify-center">
-          <svg viewBox="0 0 140 140" class="w-full h-full -rotate-90">
-            ${circles}
-          </svg>
-          <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-3">
-            <span class="text-[10px] font-semibold uppercase text-slate-400">Total</span>
-            <span class="text-xs font-extrabold text-slate-900 dark:text-white tabular-nums truncate max-w-[90px]">${formatMoney(totalExp, targetCur)}</span>
-          </div>
-        </div>
-      `;
-
-      // Build Progress Bars
-      barsEl.innerHTML = items.slice(0, 6).map(item => `
-        <div class="space-y-1">
-          <div class="flex items-center justify-between text-xs">
-            <span class="font-semibold text-slate-700 dark:text-slate-200 truncate pr-2">${item.emoji} ${item.name}</span>
-            <span class="font-bold text-slate-900 dark:text-white tabular-nums whitespace-nowrap">${formatMoney(item.amount, targetCur)} <span class="text-slate-400 font-normal">(${item.pct.toFixed(0)}%)</span></span>
-          </div>
-          <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-            <div class="h-full rounded-full transition-all duration-300" style="width: ${item.pct.toFixed(1)}%; background-color: ${item.color}"></div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // Render Recent 5 Transactions on Dashboard
-    function renderRecentTransactions(scopedTxs) {
-      const container = document.getElementById('recentTransactionsList');
-      const sorted = [...scopedTxs].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
-
-      if (sorted.length === 0) {
-        container.innerHTML = `
-          <div class="py-10 text-center">
-            <p class="text-xs sm:text-sm text-slate-400">စာရင်းမှတ်တမ်း မရှိသေးပါ။ "+ Add Entry" ကို နှိပ်ပြီး စတင်ထည့်သွင်းပါ။</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = sorted.map(tx => {
-        const pool = appState.pools.find(p => p.id === tx.poolId) || { name: 'Unknown', currency: 'MMK', color: '#64748B' };
-        const cat = appState.categories.find(c => c.id === tx.categoryId) || { name: 'Other', emoji: '📌' };
-        const isInc = tx.type === 'income';
-        return `
-          <div class="py-3 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-base shrink-0">
-                ${cat.emoji}
-              </div>
-              <div class="min-w-0">
-                <p class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white truncate">${tx.note || cat.name}</p>
-                <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
-                  <span>${tx.date}</span>
-                  <span>•</span>
-                  <span class="font-medium text-slate-500 dark:text-slate-300">${pool.name}</span>
-                  <span>•</span>
-                  <span>${tx.paymentMethod}</span>
-                </div>
-              </div>
-            </div>
-            <div class="text-right shrink-0 tabular-nums">
-              <span class="text-xs sm:text-sm font-extrabold ${isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
-                ${formatMoney(isInc ? tx.amount : -tx.amount, pool.currency, true)}
-              </span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // ==================== RENDER TRANSACTIONS TAB (TAB 2) ====================
-    function getFilteredTransactionsForTable() {
-      const baseTxs = getScopedTransactions();
-      const query = document.getElementById('txSearchInput').value.trim().toLowerCase();
-      const typeFilter = document.getElementById('txTypeFilter').value;
-      const catFilter = document.getElementById('txCategoryFilter').value;
-      const payFilter = document.getElementById('txPaymentFilter').value;
-
-      return baseTxs
-        .filter(tx => {
-          if (typeFilter !== 'all' && tx.type !== typeFilter) return false;
-          if (catFilter !== 'all' && tx.categoryId !== catFilter) return false;
-          if (payFilter !== 'all' && tx.paymentMethod !== payFilter) return false;
-          if (query) {
-            const cat = appState.categories.find(c => c.id === tx.categoryId);
-            const pool = appState.pools.find(p => p.id === tx.poolId);
-            const hay = `${tx.note || ''} ${cat?.name || ''} ${pool?.name || ''} ${tx.paymentMethod || ''}`.toLowerCase();
-            if (!hay.includes(query)) return false;
-          }
-          return true;
-        })
-        .sort((a, b) => b.date.localeCompare(a.date));
-    }
-
-    function renderTransactionsTab() {
-      // Populate Category Filter dropdown
-      const catFilterSel = document.getElementById('txCategoryFilter');
-      const prevCat = catFilterSel.value;
-      catFilterSel.innerHTML = `<option value="all">All Categories</option>` +
-        appState.categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
-      catFilterSel.value = appState.categories.some(c => c.id === prevCat) ? prevCat : 'all';
-
-      const rows = getFilteredTransactionsForTable();
-      document.getElementById('txFilteredCount').textContent = `${rows.length} item${rows.length === 1 ? '' : 's'}`;
-
-      const tbody = document.getElementById('txDesktopTableBody');
-      const mobileList = document.getElementById('txMobileCardsList');
-
-      if (rows.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-center text-sm text-slate-400">No matching transactions found.</td></tr>`;
-        mobileList.innerHTML = `<div class="bg-white dark:bg-[#1E293B] rounded-2xl p-8 text-center text-xs text-slate-400 border border-slate-200/80 dark:border-slate-700/80">No matching transactions found.</div>`;
-        return;
-      }
-
-      // Desktop rows
-      tbody.innerHTML = rows.map(tx => {
-        const pool = appState.pools.find(p => p.id === tx.poolId) || { name: 'Unknown', currency: 'MMK', color: '#64748B' };
-        const cat = appState.categories.find(c => c.id === tx.categoryId) || { name: 'Other', emoji: '📌' };
-        const isInc = tx.type === 'income';
-        return `
-          <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
-            <td class="py-3.5 px-4 text-xs font-medium text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">${tx.date}</td>
-            <td class="py-3.5 px-4 whitespace-nowrap">
-              <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
-                <span class="w-2 h-2 rounded-full" style="background-color: ${pool.color}"></span>
-                ${pool.name}
-              </span>
-            </td>
-            <td class="py-3.5 px-4 text-xs font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">${cat.emoji} ${cat.name}</td>
-            <td class="py-3.5 px-4 text-xs text-slate-600 dark:text-slate-300 max-w-xs truncate">${tx.note || '-'}</td>
-            <td class="py-3.5 px-4 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">${tx.paymentMethod}</td>
-            <td class="py-3.5 px-4 text-right text-sm font-extrabold tabular-nums whitespace-nowrap ${isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
-              ${formatMoney(isInc ? tx.amount : -tx.amount, pool.currency, true)}
-            </td>
-            <td class="py-3.5 px-4 text-right whitespace-nowrap">
-              <button type="button" onclick="openEditTransactionModal('${tx.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition cursor-pointer" title="Edit">
-                ✏️
-              </button>
-              <button type="button" onclick="deleteTransaction('${tx.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition cursor-pointer" title="Delete">
-                🗑️
-              </button>
             </td>
           </tr>
-        `;
-      }).join('');
-
-      // Mobile stacked cards
-      mobileList.innerHTML = rows.map(tx => {
-        const pool = appState.pools.find(p => p.id === tx.poolId) || { name: 'Unknown', currency: 'MMK', color: '#64748B' };
-        const cat = appState.categories.find(c => c.id === tx.categoryId) || { name: 'Other', emoji: '📌' };
-        const isInc = tx.type === 'income';
-        return `
-          <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-2.5">
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex items-center gap-2.5 min-w-0">
-                <span class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-base shrink-0">${cat.emoji}</span>
-                <div class="min-w-0">
-                  <p class="text-sm font-bold text-slate-900 dark:text-white truncate">${tx.note || cat.name}</p>
-                  <p class="text-[11px] text-slate-400">${cat.name}</p>
-                </div>
-              </div>
-              <span class="text-sm font-extrabold tabular-nums shrink-0 ${isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
-                ${formatMoney(isInc ? tx.amount : -tx.amount, pool.currency, true)}
-              </span>
-            </div>
-            <div class="pt-2 border-t border-slate-100 dark:border-slate-700/70 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-              <div class="flex items-center gap-2">
-                <span>${tx.date}</span>
-                <span>•</span>
-                <span class="font-semibold text-slate-700 dark:text-slate-200">${pool.name}</span>
-                <span>•</span>
-                <span>${tx.paymentMethod}</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <button type="button" onclick="openEditTransactionModal('${tx.id}')" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">Edit</button>
-                <button type="button" onclick="deleteTransaction('${tx.id}')" class="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-semibold">Del</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
+        `).join('')
+        : '<tr><td colspan="9" class="muted">No transactions found.</td></tr>';
     }
 
-    // Export CSV with UTF-8 BOM (\uFEFF) for Myanmar Unicode compatibility in Excel
-    function exportFilteredCsv() {
-      const rows = getFilteredTransactionsForTable();
-      if (rows.length === 0) {
-        showToast('Export လုပ်ရန် စာရင်း မရှိသေးပါ။', 'error');
-        return;
-      }
+    window.openReceipt = openReceipt;
 
-      const headers = ['Date', 'Pool', 'Currency', 'Type', 'Category', 'Payment Method', 'Amount', 'Note'];
-      const csvLines = [headers.join(',')];
-
-      rows.forEach(tx => {
-        const pool = appState.pools.find(p => p.id === tx.poolId) || { name: 'Unknown', currency: 'MMK' };
-        const cat = appState.categories.find(c => c.id === tx.categoryId) || { name: 'Other' };
-        const signedAmt = tx.type === 'income' ? Number(tx.amount) : -Number(tx.amount);
-        const line = [
-          tx.date,
-          `"${pool.name.replace(/"/g, '""')}"`,
-          pool.currency,
-          tx.type,
-          `"${cat.name.replace(/"/g, '""')}"`,
-          `"${(tx.paymentMethod || '').replace(/"/g, '""')}"`,
-          signedAmt,
-          `"${(tx.note || '').replace(/"/g, '""')}"`
-        ];
-        csvLines.push(line.join(','));
-      });
-
-      const csvContent = '\uFEFF' + csvLines.join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `sayin-export-${getOffsetDate(0)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast(`Exported ${rows.length} rows to CSV`);
-    }
-
-    // ==================== RENDER MANAGE TAB (TAB 3) ====================
-    function renderManageTab() {
-      // Render Pools
-      const poolsContainer = document.getElementById('managePoolsList');
-      poolsContainer.innerHTML = appState.pools.map(pool => {
-        const bal = getPoolLiveBalance(pool);
-        const txCount = appState.transactions.filter(t => t.poolId === pool.id).length;
-        return `
-          <div class="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/60 dark:bg-slate-800/50 flex flex-col justify-between gap-3">
-            <div class="flex items-start justify-between">
-              <div class="flex items-center gap-2.5">
-                <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${pool.color}"></span>
-                <div>
-                  <h3 class="text-sm font-bold text-slate-900 dark:text-white">${pool.name}</h3>
-                  <span class="text-[11px] font-semibold text-slate-400">${pool.currency} • ${txCount} entries</span>
-                </div>
-              </div>
-              ${appState.pools.length > 1 ? `
-                <button type="button" onclick="deletePool('${pool.id}')" class="text-xs text-rose-500 hover:text-rose-600 font-semibold px-2 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/50 cursor-pointer">
-                  Delete
-                </button>
-              ` : ''}
-            </div>
-            <div class="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-baseline justify-between">
-              <span class="text-[11px] text-slate-400">Current Balance</span>
-              <span class="text-base font-extrabold text-slate-900 dark:text-white tabular-nums">${formatMoney(bal, pool.currency)}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      // Render Categories
-      const catContainer = document.getElementById('manageCategoriesList');
-      catContainer.innerHTML = appState.categories.map(cat => `
-        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border ${cat.type === 'income' ? 'bg-emerald-50/70 border-emerald-200/80 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800/60 dark:text-emerald-300' : 'bg-slate-50 border-slate-200/80 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200'}">
-          <span>${cat.emoji}</span>
-          <span>${cat.name}</span>
-          <button type="button" onclick="deleteCategory('${cat.id}')" class="ml-1 text-slate-400 hover:text-rose-500 cursor-pointer" title="Remove">×</button>
-        </div>
-      `).join('');
-    }
-
-    // ==================== ADD / EDIT MODAL LOGIC ====================
-    function setModalType(type) {
-      modalTxType = type;
-      const expBtn = document.getElementById('typeBtnExpense');
-      const incBtn = document.getElementById('typeBtnIncome');
-
-      if (type === 'expense') {
-        expBtn.className = 'py-2 text-xs sm:text-sm font-bold rounded-lg bg-rose-600 text-white shadow-xs transition cursor-pointer';
-        incBtn.className = 'py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-600 dark:text-slate-300 transition cursor-pointer';
-      } else {
-        incBtn.className = 'py-2 text-xs sm:text-sm font-bold rounded-lg bg-emerald-600 text-white shadow-xs transition cursor-pointer';
-        expBtn.className = 'py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-600 dark:text-slate-300 transition cursor-pointer';
-      }
-
-      // Populate Category select filtered by type
-      const catSel = document.getElementById('txCategoryInput');
-      const matchingCats = appState.categories.filter(c => c.type === type);
-      const list = matchingCats.length ? matchingCats : appState.categories;
-      catSel.innerHTML = list.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
-    }
-
-    function updateModalCurrencyBadge() {
-      const poolId = document.getElementById('txPoolInput').value;
-      const pool = appState.pools.find(p => p.id === poolId);
-      document.getElementById('txCurrencyBadge').textContent = pool ? pool.currency : 'MMK';
-    }
-
-    function openAddTransactionModal() {
-      document.getElementById('modalTitle').textContent = 'Add Transaction (စာရင်းသွင်းရန်)';
-      document.getElementById('txIdInput').value = '';
-      document.getElementById('txAmountInput').value = '';
-      document.getElementById('txNoteInput').value = '';
-      document.getElementById('txDateInput').value = getOffsetDate(0);
-
-      // Populate Pool select
-      const poolSel = document.getElementById('txPoolInput');
-      poolSel.innerHTML = appState.pools.map(p => `<option value="${p.id}">${p.name} (${p.currency})</option>`).join('');
-      if (appState.selectedPoolId !== 'all' && appState.pools.some(p => p.id === appState.selectedPoolId)) {
-        poolSel.value = appState.selectedPoolId;
-      }
-      updateModalCurrencyBadge();
-      setModalType('expense');
-
-      const modal = document.getElementById('transactionModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      setTimeout(() => document.getElementById('txAmountInput').focus(), 60);
-    }
-
-    function openEditTransactionModal(txId) {
-      const tx = appState.transactions.find(t => t.id === txId);
+    window.startEditTx = function(id) {
+      const tx = state.transactions.find((x) => x.id === id);
       if (!tx) return;
+      $('editingTxId').value = String(tx.id);
+      $('txFormTitle').textContent = `Edit Transaction #${tx.id}`;
+      $('txDate').value = tx.tx_date;
+      $('txMember').value = tx.member_name;
+      $('txType').value = tx.entry_type;
+      updateCategoryDropdown();
+      $('txCategory').value = tx.category;
+      $('txAmount').value = tx.amount_mmk;
+      $('txPayment').value = tx.payment_method || 'Cash';
+      $('txNotes').value = tx.notes || '';
+      $('receiptInputWrap').classList.add('hidden');
+      $('txSubmitBtn').textContent = 'Update Transaction';
+      $('txCancelEditBtn').classList.remove('hidden');
 
-      document.getElementById('modalTitle').textContent = 'Edit Transaction (စာရင်းပြင်ဆင်ရန်)';
-      document.getElementById('txIdInput').value = tx.id;
+      document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === 'transactions'));
+      ['dashboard', 'transactions', 'workspace'].forEach((t) => $('tab-' + t).classList.toggle('hidden', t !== 'transactions'));
+    };
 
-      const poolSel = document.getElementById('txPoolInput');
-      poolSel.innerHTML = appState.pools.map(p => `<option value="${p.id}">${p.name} (${p.currency})</option>`).join('');
-      poolSel.value = tx.poolId;
-      updateModalCurrencyBadge();
-
-      setModalType(tx.type);
-      document.getElementById('txCategoryInput').value = tx.categoryId;
-      document.getElementById('txAmountInput').value = tx.amount;
-      document.getElementById('txDateInput').value = tx.date;
-      document.getElementById('txPaymentInput').value = tx.paymentMethod || 'KBZPay';
-      document.getElementById('txNoteInput').value = tx.note || '';
-
-      const modal = document.getElementById('transactionModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+    function resetTxForm() {
+      $('editingTxId').value = '';
+      $('txFormTitle').textContent = 'Add New Transaction (D1 + R2 Receipt)';
+      $('txDate').value = new Date().toISOString().slice(0, 10);
+      $('txAmount').value = '';
+      $('txNotes').value = '';
+      $('txReceipt').value = '';
+      $('receiptInputWrap').classList.remove('hidden');
+      $('txSubmitBtn').textContent = 'Save Transaction';
+      $('txCancelEditBtn').classList.add('hidden');
     }
 
-    function closeTransactionModal() {
-      const modal = document.getElementById('transactionModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
+    window.deleteTx = async function(id) {
+      if (!confirm('Delete this transaction?')) return;
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${id}`, { method: 'DELETE' });
+        toast('Transaction deleted', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
 
-    // ==================== CRUD ACTIONS ====================
-    function deleteTransaction(txId) {
-      showConfirm('Delete Transaction?', 'ဤစာရင်းမှတ်တမ်းကို ဖျက်ပစ်ရန် သေချာပါသလား?', () => {
-        appState.transactions = appState.transactions.filter(t => t.id !== txId);
-        saveState();
-        renderAll();
-        showToast('Transaction deleted');
+    // Event Listeners
+    $('themeToggleBtn').addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+
+    $('apiBaseInput').value = state.apiBase;
+    $('saveApiBaseBtn').addEventListener('click', () => {
+      state.apiBase = $('apiBaseInput').value.trim() || window.location.origin;
+      localStorage.setItem(STORAGE_KEYS.apiBase, state.apiBase);
+      toast('API Base URL saved', 'success');
+    });
+
+    $('testHealthBtn').addEventListener('click', async () => {
+      try {
+        const res = await fetch(getApiUrl('/'));
+        const txt = await res.text();
+        toast(txt || `Status ${res.status}`, res.ok ? 'success' : 'error');
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    // Auth Tabs
+    ['login', 'register', 'forgot'].forEach((mode) => {
+      $('tab' + mode[0].toUpperCase() + mode.slice(1)).addEventListener('click', () => {
+        $('tabLogin').classList.toggle('active', mode === 'login');
+        $('tabRegister').classList.toggle('active', mode === 'register');
+        $('tabForgot').classList.toggle('active', mode === 'forgot');
+        $('loginForm').classList.toggle('hidden', mode !== 'login');
+        $('registerForm').classList.toggle('hidden', mode !== 'register');
+        $('forgotWrap').classList.toggle('hidden', mode !== 'forgot');
       });
-    }
+    });
 
-    function deletePool(poolId) {
-      showConfirm('Delete Pool?', 'ဤ Pool နှင့် ၎င်းအောက်ရှိ စာရင်းမှတ်တမ်းများအားလုံးကို ဖျက်ပစ်ပါမည်။ ဆက်လုပ်မလား?', () => {
-        appState.pools = appState.pools.filter(p => p.id !== poolId);
-        appState.transactions = appState.transactions.filter(t => t.poolId !== poolId);
-        if (appState.selectedPoolId === poolId) appState.selectedPoolId = 'all';
-        saveState();
-        renderAll();
-        showToast('Pool deleted');
+    $('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const data = await apiFetch('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: $('loginEmail').value.trim(),
+            password: $('loginPassword').value
+          })
+        });
+        state.token = data.token;
+        state.user = { ...data.user, default_workspace_id: data.default_workspace_id };
+        state.wsId = data.default_workspace_id || '';
+        localStorage.setItem(STORAGE_KEYS.token, state.token);
+        setAuthUi(true);
+        toast('Signed in successfully', 'success');
+        await loadWorkspacesAndData();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const data = await apiFetch('/api/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({
+            display_name: $('regName').value.trim(),
+            email: $('regEmail').value.trim(),
+            password: $('regPassword').value
+          })
+        });
+        state.token = data.token;
+        state.user = { ...data.user, default_workspace_id: data.default_workspace_id };
+        state.wsId = data.default_workspace_id || '';
+        localStorage.setItem(STORAGE_KEYS.token, state.token);
+        setAuthUi(true);
+        toast('Account created', 'success');
+        await loadWorkspacesAndData();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $('forgotForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await apiFetch('/api/auth/forgot-password', {
+          method: 'POST',
+          body: JSON.stringify({ email: $('forgotEmail').value.trim() })
+        });
+        $('resetCode').value = res.reset_code || '';
+        toast(res.message + (res.reset_code ? ` (Code: ${res.reset_code})` : ''), 'success');
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $('resetForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await apiFetch('/api/auth/reset-password', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: $('forgotEmail').value.trim(),
+            code: $('resetCode').value.trim(),
+            new_password: $('resetNewPassword').value
+          })
+        });
+        toast(res.message || 'Password updated', 'success');
+        $('tabLogin').click();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $('logoutBtn').addEventListener('click', () => handleLogout(true));
+
+    // Nav Tabs
+    document.querySelectorAll('.nav-tabs button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tab;
+        document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b === btn));
+        ['dashboard', 'transactions', 'workspace'].forEach((t) => $('tab-' + t).classList.toggle('hidden', t !== target));
       });
-    }
+    });
 
-    function deleteCategory(catId) {
-      if (appState.categories.length <= 2) {
-        showToast('အနည်းဆုံး Category ၂ ခု ကျန်ရှိရပါမည်။', 'error');
+    $('workspaceSelect').addEventListener('change', async (e) => {
+      state.wsId = e.target.value;
+      localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
+      resetTxForm();
+      await loadWorkspaceDetails();
+    });
+
+    $('monthFilter').value = state.month;
+    $('monthFilter').addEventListener('change', async (e) => {
+      if (!e.target.value) return;
+      state.month = e.target.value;
+      await loadWorkspaceDetails();
+    });
+
+    $('txType').addEventListener('change', updateCategoryDropdown);
+    $('txCancelEditBtn').addEventListener('click', resetTxForm);
+
+    $('txForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ws = encodeURIComponent(state.wsId);
+      const editId = $('editingTxId').value;
+
+      try {
+        if (editId) {
+          await apiFetch(`/api/workspaces/${ws}/transactions/${editId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+              tx_date: $('txDate').value,
+              member_name: $('txMember').value,
+              entry_type: $('txType').value,
+              category: $('txCategory').value,
+              amount_mmk: Number($('txAmount').value),
+              payment_method: $('txPayment').value,
+              notes: $('txNotes').value.trim()
+            })
+          });
+          toast('Transaction updated', 'success');
+        } else {
+          const fd = new FormData();
+          fd.append('tx_date', $('txDate').value);
+          fd.append('member_name', $('txMember').value);
+          fd.append('entry_type', $('txType').value);
+          fd.append('category', $('txCategory').value);
+          fd.append('amount_mmk', String(Number($('txAmount').value)));
+          fd.append('payment_method', $('txPayment').value);
+          if ($('txNotes').value.trim()) fd.append('notes', $('txNotes').value.trim());
+          const file = $('txReceipt').files[0];
+          if (file) fd.append('receipt', file);
+
+          await apiFetch(`/api/workspaces/${ws}/transactions`, {
+            method: 'POST',
+            body: fd
+          });
+          toast('Saved to D1 & R2', 'success');
+        }
+        resetTxForm();
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $('txSearch').addEventListener('input', renderTransactions);
+    $('txTypeFilter').addEventListener('change', renderTransactions);
+
+    $('exportCsvBtn').addEventListener('click', () => {
+      const rows = getFilteredTransactions();
+      const headers = ['Date', 'Member', 'Type', 'Category', 'Amount', 'Payment', 'Notes', 'ReceiptKey'];
+      const lines = [headers.join(',')].concat(
+        rows.map((r) => [
+          r.tx_date, r.member_name, r.entry_type, r.category,
+          r.amount_mmk, r.payment_method || '', r.notes || '', r.receipt_key || ''
+        ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      );
+      const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `sayin-${state.wsId}-${state.month}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    $('createWsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await apiFetch('/api/workspaces', {
+          method: 'POST',
+          body: JSON.stringify({
+            workspace_name: $('newWsName').value.trim(),
+            workspace_id: $('newWsId').value.trim()
+          })
+        });
+        state.wsId = res.workspace_id;
+        $('newWsName').value = '';
+        $('newWsId').value = '';
+        toast('Workspace created', 'success');
+        await loadWorkspacesAndData();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $('inviteMemberForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/members`, {
+          method: 'POST',
+          body: JSON.stringify({ email: $('inviteEmail').value.trim() })
+        });
+        $('inviteEmail').value = '';
+        toast('Member added', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $('settingsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/settings`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            workspace_name: $('setWsName').value.trim(),
+            currency: $('setCurrency').value.trim().toUpperCase(),
+            members: $('setMembers').value.split(',').map((s) => s.trim()).filter(Boolean),
+            payment_methods: $('setPayments').value.split(',').map((s) => s.trim()).filter(Boolean)
+          })
+        });
+        toast('Settings updated', 'success');
+        await loadWorkspacesAndData();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $('addCategoryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories`, {
+          method: 'POST',
+          body: JSON.stringify({
+            name: $('newCatName').value.trim(),
+            entry_type: $('newCatType').value
+          })
+        });
+        $('newCatName').value = '';
+        toast('Category saved', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    // Init
+    applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
+    $('txDate').value = new Date().toISOString().slice(0, 10);
+
+    (async function boot() {
+      if (!state.token) {
+        setAuthUi(false);
         return;
       }
-      appState.categories = appState.categories.filter(c => c.id !== catId);
-      saveState();
-      renderAll();
-      showToast('Category removed');
-    }
-
-    // ==================== TAB NAVIGATION ====================
-    function switchTab(tabName) {
-      currentTab = tabName;
-      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
-      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-
-      document.querySelectorAll('.nav-tab').forEach(btn => {
-        const isMatch = btn.dataset.tab === tabName;
-        if (isMatch) {
-          btn.className = 'nav-tab active-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 dark:border-emerald-400 whitespace-nowrap transition cursor-pointer';
-        } else {
-          btn.className = 'nav-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 whitespace-nowrap transition cursor-pointer';
-        }
-      });
-
-      renderAll();
-    }
-
-    function renderAll() {
-      renderGlobalSelectors();
-      renderDashboard();
-      renderTransactionsTab();
-      renderManageTab();
-    }
-
-    // ==================== EVENT LISTENERS INIT ====================
-    document.addEventListener('DOMContentLoaded', () => {
-      // Apply saved theme
-      applyTheme(appState.theme || 'light');
-
-      // Theme Toggle
-      document.getElementById('themeToggleBtn').addEventListener('click', () => {
-        applyTheme(appState.theme === 'dark' ? 'light' : 'dark');
-      });
-
-      // Tab buttons
-      document.querySelectorAll('.nav-tab').forEach(btn => {
-        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-      });
-
-      // Global Selectors
-      document.getElementById('globalPoolSelect').addEventListener('change', (e) => {
-        appState.selectedPoolId = e.target.value;
-        saveState();
-        renderAll();
-      });
-
-      document.getElementById('globalPeriodSelect').addEventListener('change', (e) => {
-        appState.selectedPeriod = e.target.value;
-        saveState();
-        renderAll();
-      });
-
-      // Chart currency selectors
-      document.getElementById('trendCurrencySelect').addEventListener('change', () => renderDailyTrendChart(getScopedTransactions()));
-      document.getElementById('categoryCurrencySelect').addEventListener('change', () => renderCategoryBreakdown(getScopedTransactions()));
-
-      // Clear Sample Data
-      document.getElementById('clearSampleDataBtn').addEventListener('click', () => {
-        showConfirm('Clear Sample Data?', 'နမူနာစာရင်းများကို ဖျက်ပြီး ကိုယ်ပိုင်စာရင်း အသစ်စတင်မလား?', () => {
-          appState.transactions = [];
-          appState.pools.forEach(p => p.initialBalance = 0);
-          appState.isSampleData = false;
-          saveState();
-          renderAll();
-          showToast('Sample data cleared. Ready for your entries!');
-        });
-      });
-
-      // Modal Controls
-      document.getElementById('openAddModalBtn').addEventListener('click', openAddTransactionModal);
-      document.getElementById('closeModalBtn').addEventListener('click', closeTransactionModal);
-      document.getElementById('cancelModalBtn').addEventListener('click', closeTransactionModal);
-      document.getElementById('typeBtnExpense').addEventListener('click', () => setModalType('expense'));
-      document.getElementById('typeBtnIncome').addEventListener('click', () => setModalType('income'));
-      document.getElementById('txPoolInput').addEventListener('change', updateModalCurrencyBadge);
-
-      // Transaction Form Submit
-      document.getElementById('transactionForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const existingId = document.getElementById('txIdInput').value;
-        const payload = {
-          id: existingId || `tx_${Date.now()}`,
-          poolId: document.getElementById('txPoolInput').value,
-          type: modalTxType,
-          amount: parseFloat(document.getElementById('txAmountInput').value),
-          date: document.getElementById('txDateInput').value,
-          categoryId: document.getElementById('txCategoryInput').value,
-          paymentMethod: document.getElementById('txPaymentInput').value,
-          note: document.getElementById('txNoteInput').value.trim()
-        };
-
-        if (!payload.amount || payload.amount <= 0) {
-          showToast('ငွေပမာဏ မှန်ကန်စွာ ထည့်သွင်းပါ။', 'error');
-          return;
-        }
-
-        if (existingId) {
-          const idx = appState.transactions.findIndex(t => t.id === existingId);
-          if (idx !== -1) appState.transactions[idx] = payload;
-          showToast('Entry updated');
-        } else {
-          appState.transactions.unshift(payload);
-          appState.isSampleData = false;
-          showToast('Entry saved');
-        }
-
-        saveState();
-        closeTransactionModal();
-        renderAll();
-      });
-
-      // Transactions Tab Filters & Export
-      ['txSearchInput', 'txTypeFilter', 'txCategoryFilter', 'txPaymentFilter'].forEach(id => {
-        document.getElementById(id).addEventListener('input', renderTransactionsTab);
-        document.getElementById(id).addEventListener('change', renderTransactionsTab);
-      });
-      document.getElementById('exportCsvBtn').addEventListener('click', exportFilteredCsv);
-
-      // Add Pool Form
-      document.getElementById('addPoolForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('newPoolName').value.trim();
-        const currency = document.getElementById('newPoolCurrency').value;
-        const initialBalance = parseFloat(document.getElementById('newPoolInitial').value) || 0;
-        if (!name) return;
-
-        const color = CATEGORY_COLORS[appState.pools.length % CATEGORY_COLORS.length];
-        appState.pools.push({
-          id: `pool_${Date.now()}`,
-          name,
-          currency,
-          initialBalance,
-          color
-        });
-        document.getElementById('newPoolName').value = '';
-        document.getElementById('newPoolInitial').value = '0';
-        saveState();
-        renderAll();
-        showToast(`Pool "${name}" created`);
-      });
-
-      // Add Category Form
-      document.getElementById('addCategoryForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const emoji = document.getElementById('newCatEmoji').value.trim() || '🏷️';
-        const name = document.getElementById('newCatName').value.trim();
-        const type = document.getElementById('newCatType').value;
-        if (!name) return;
-
-        const color = CATEGORY_COLORS[appState.categories.length % CATEGORY_COLORS.length];
-        appState.categories.push({
-          id: `cat_${Date.now()}`,
-          name,
-          emoji,
-          type,
-          color
-        });
-        document.getElementById('newCatName').value = '';
-        saveState();
-        renderAll();
-        showToast(`Category "${name}" added`);
-      });
-
-      // JSON Export / Import / Reset
-      document.getElementById('exportJsonBtn').addEventListener('click', () => {
-        const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `sayin-backup-${getOffsetDate(0)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('JSON backup exported');
-      });
-
-      document.getElementById('importJsonInput').addEventListener('change', (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          try {
-            const parsed = JSON.parse(ev.target.result);
-            if (!Array.isArray(parsed.pools) || !Array.isArray(parsed.transactions)) {
-              throw new Error('Invalid backup structure');
-            }
-            appState = parsed;
-            saveState();
-            renderAll();
-            showToast('Backup restored successfully');
-          } catch (err) {
-            showToast('Invalid JSON backup file', 'error');
-          }
-        };
-        reader.readAsText(file);
-        e.target.value = '';
-      });
-
-      document.getElementById('resetAllDataBtn').addEventListener('click', () => {
-        showConfirm('Reset All Data?', 'စာရင်းအားလုံးကို ဖျက်ပြီး မူလအခြေအနေသို့ ပြန်ပြောင်းမလား?', () => {
-          localStorage.removeItem(STORAGE_KEY);
-          appState = createInitialSeedState();
-          saveState();
-          renderAll();
-          showToast('Reset to initial state');
-        });
-      });
-
-      // Initial render
-      renderAll();
-    });
+      try {
+        const me = await apiFetch('/api/auth/me');
+        state.user = me.user;
+        setAuthUi(true);
+        await loadWorkspacesAndData();
+      } catch {
+        handleLogout(false);
+      }
+    })();
   </script>
 </body>
 </html>
