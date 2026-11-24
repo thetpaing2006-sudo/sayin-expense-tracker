@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sayin — စာရင်း & Shared Expense Portal</title>
+  <title>Sayin — စာရင်း & Budget Pool Portal</title>
   <style>
     :root {
       --bg: #0b1120;
@@ -17,6 +17,7 @@
       --income: #10b981;
       --expense: #f43f5e;
       --saving: #a855f7;
+      --warn: #f59e0b;
       --radius: 14px;
       --shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
     }
@@ -33,6 +34,7 @@
       --income: #059669;
       --expense: #e11d48;
       --saving: #7e22ce;
+      --warn: #d97706;
       --shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
     }
 
@@ -124,7 +126,7 @@
     }
     .card h2, .card h3 { margin: 0 0 10px; font-size: 17px; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 16px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px; }
     .kpi {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -133,13 +135,30 @@
       box-shadow: var(--shadow);
     }
     .kpi .label { font-size: 12px; color: var(--muted); }
-    .kpi .val { font-size: 22px; font-weight: 800; margin-top: 4px; }
+    .kpi .val { font-size: 21px; font-weight: 800; margin-top: 4px; }
     .val.inc { color: var(--income); }
     .val.exp { color: var(--expense); }
     .val.sav { color: var(--saving); }
+    .val.warn { color: var(--warn); }
 
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+    .pool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+
+    .pool-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .pool-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .pool-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .pool-dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+    .pool-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; margin-bottom: 10px; }
+    .pool-metrics span.m-lbl { color: var(--muted); display: block; }
+    .pool-metrics strong.rem-ok { color: var(--income); font-size: 14px; }
+    .pool-metrics strong.rem-warn { color: var(--warn); font-size: 14px; }
+    .pool-metrics strong.rem-over { color: var(--expense); font-size: 14px; }
 
     .bar-row { margin-bottom: 12px; }
     .bar-meta { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
@@ -148,6 +167,7 @@
     .bar-fill.inc { background: var(--income); }
     .bar-fill.exp { background: var(--expense); }
     .bar-fill.sav { background: var(--saving); }
+    .bar-fill.warn { background: var(--warn); }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -157,6 +177,7 @@
     .pill.Income { background: rgba(16, 185, 129, 0.16); color: var(--income); }
     .pill.Expense { background: rgba(244, 63, 94, 0.16); color: var(--expense); }
     .pill.Saving { background: rgba(168, 85, 247, 0.16); color: var(--saving); }
+    .pill.Pool { background: rgba(56, 189, 248, 0.15); color: var(--primary); }
 
     .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .muted { color: var(--muted); font-size: 12px; }
@@ -185,13 +206,13 @@
         <div class="brand-badge">S</div>
         <div>
           <h1>Sayin စာရင်း</h1>
-          <p id="userSubtitle">Shared Expense Workspace</p>
+          <p id="userSubtitle">Shared Expense & Budget Pool Workspace</p>
         </div>
       </div>
 
       <div class="topbar-actions">
         <div id="wsSelectorWrap" class="hidden" style="min-width: 190px;">
-          <select id="workspaceSelect" title="Workspace / Pool"></select>
+          <select id="workspaceSelect" title="Workspace"></select>
         </div>
         <div id="monthWrap" class="hidden" style="width: 145px;">
           <input type="month" id="monthFilter" />
@@ -206,7 +227,7 @@
       <div class="card">
         <h2>Sayin Sign In</h2>
         <p class="muted" style="margin-bottom: 16px;">
-          သင့် account ဖြင့် ဝင်ရောက်ပြီး စာရင်းများကို စီမံခန့်ခွဲပါ။
+          သင့် account ဖြင့် ဝင်ရောက်ပြီး ဝင်ငွေ၊ Budget Pool နဲ့ စာရင်းများကို စီမံခန့်ခွဲပါ။
         </p>
 
         <div class="auth-tabs">
@@ -290,33 +311,47 @@
       <nav class="nav-tabs">
         <button type="button" data-tab="dashboard" class="active">Dashboard</button>
         <button type="button" data-tab="transactions">Transactions & Add</button>
-        <button type="button" data-tab="workspace">Workspace & Categories</button>
+        <button type="button" data-tab="workspace">Workspace & Pools</button>
         <button type="button" data-tab="admin" class="hidden">Admin</button>
       </nav>
 
+      <!-- Dashboard Tab -->
       <section id="tab-dashboard">
         <div class="kpi-grid">
           <div class="kpi">
-            <div class="label">Total Income</div>
+            <div class="label">Total Income (Month)</div>
             <div class="val inc" id="kpiIncome">0</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Total Pool Budget</div>
+            <div class="val" id="kpiPoolAllocated">0</div>
           </div>
           <div class="kpi">
             <div class="label">Total Expense</div>
             <div class="val exp" id="kpiExpense">0</div>
           </div>
           <div class="kpi">
-            <div class="label">Total Saving</div>
-            <div class="val sav" id="kpiSaving">0</div>
+            <div class="label">Remaining Pool Balance</div>
+            <div class="val inc" id="kpiPoolRemaining">0</div>
           </div>
-          <div class="kpi">
-            <div class="label">Net Balance</div>
-            <div class="val" id="kpiNet">0</div>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+            <div>
+              <h2 style="margin: 0;">Budget Pools Balance & Utilization</h2>
+              <p class="muted" style="margin: 2px 0 0;" id="poolPlanNote">
+                လစဉ် ကြိုတင်သတ်မှတ်ထားသော Budget Pool များ၏ လက်ကျန်ငွေနှင့် သုံးစွဲမှု အခြေအနေ။
+              </p>
+            </div>
+            <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
           </div>
+          <div id="dashboardPoolCards" class="pool-grid"></div>
         </div>
 
         <div class="grid-2">
           <div class="card">
-            <h3>Cashflow Breakdown</h3>
+            <h3>Cashflow & Saving Breakdown</h3>
             <div id="cashflowBars"></div>
           </div>
           <div class="card">
@@ -326,6 +361,7 @@
         </div>
       </section>
 
+      <!-- Transactions Tab -->
       <section id="tab-transactions" class="hidden">
         <div class="card">
           <h2 id="txFormTitle">Add New Transaction</h2>
@@ -356,6 +392,11 @@
 
             <div class="grid-4" style="margin-bottom: 12px;">
               <div>
+                <label for="txPool">Budget Pool (Expense Source)</label>
+                <select id="txPool"></select>
+                <div class="muted" id="txPoolBalanceHint" style="margin-top: 4px;">Pool Balance: -</div>
+              </div>
+              <div>
                 <label for="txAmount">Amount (<span id="currencyLabel">MMK</span>)</label>
                 <input type="number" id="txAmount" step="any" min="0.01" required placeholder="0" />
               </div>
@@ -367,6 +408,9 @@
                 <label for="txNotes">Notes</label>
                 <input type="text" id="txNotes" placeholder="Optional note" />
               </div>
+            </div>
+
+            <div class="grid-4" style="margin-bottom: 12px;">
               <div id="receiptInputWrap">
                 <label for="txReceipt">Receipt Image</label>
                 <input type="file" id="txReceipt" accept="image/*,application/pdf" />
@@ -384,7 +428,7 @@
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
             <h2 style="margin: 0;">Transactions</h2>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <input type="search" id="txSearch" placeholder="Search category, member, note..." style="width: 220px;" />
+              <input type="search" id="txSearch" placeholder="Search pool, category, member, note..." style="width: 230px;" />
               <select id="txTypeFilter" style="width: 140px;">
                 <option value="">All Types</option>
                 <option value="Income">Income</option>
@@ -402,6 +446,7 @@
                   <th>Date</th>
                   <th>Member</th>
                   <th>Type</th>
+                  <th>Budget Pool</th>
                   <th>Category</th>
                   <th>Amount</th>
                   <th>Payment</th>
@@ -416,14 +461,67 @@
         </div>
       </section>
 
+      <!-- Workspace & Budget Pools Tab -->
       <section id="tab-workspace" class="hidden">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+            <div>
+              <h2 style="margin: 0;">Monthly Budget Pools (<span id="poolManageMonthLabel">-</span>)</h2>
+              <p class="muted" style="margin: 4px 0 0;">
+                ကုန်ကျစရိတ် ထုတ်သုံးမည့် Pool များကို ဖန်တီးပါ။ လစဉ် Default amount ထားနိုင်သလို ရွေးထားတဲ့လအတွက်လည်း ပြင်ဆင်နိုင်ပါတယ်။
+              </p>
+            </div>
+          </div>
+
+          <form id="createPoolForm" class="grid-4" style="margin-bottom: 16px; align-items: end;">
+            <div>
+              <label for="newPoolName">Pool Name</label>
+              <input type="text" id="newPoolName" required placeholder="e.g. Dining Out / Kids School" />
+            </div>
+            <div>
+              <label for="newPoolDefaultAmt">Monthly Default Amount</label>
+              <input type="number" id="newPoolDefaultAmt" min="0" step="any" required placeholder="200000" />
+            </div>
+            <div>
+              <label for="newPoolColor">Color Tag</label>
+              <select id="newPoolColor">
+                <option value="#10b981">Emerald (Green)</option>
+                <option value="#38bdf8">Sky (Blue)</option>
+                <option value="#f59e0b">Amber (Yellow/Orange)</option>
+                <option value="#a855f7">Purple</option>
+                <option value="#f43f5e">Rose (Red)</option>
+              </select>
+            </div>
+            <div>
+              <button type="submit" class="primary" style="width: 100%;">Add / Save Pool</button>
+            </div>
+          </form>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Budget Pool</th>
+                  <th>Monthly Default</th>
+                  <th>Selected Month Budget</th>
+                  <th>Spent</th>
+                  <th>Remaining Balance</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="poolManageTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
         <div class="grid-2">
           <div class="card">
-            <h2>Create New Workspace / Pool</h2>
+            <h2>Create New Workspace</h2>
             <form id="createWsForm">
               <div style="margin-bottom: 10px;">
                 <label for="newWsName">Workspace Name</label>
-                <input type="text" id="newWsName" required placeholder="e.g. Side Project / Household" />
+                <input type="text" id="newWsName" required placeholder="e.g. Household / Side Project" />
               </div>
               <div style="margin-bottom: 12px;">
                 <label for="newWsId">Workspace ID (optional)</label>
@@ -496,7 +594,7 @@
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <button type="button" class="small primary" id="adminReloadBtn">Refresh All Admin Data</button>
-              <button type="button" class="small" id="adminJumpWorkspaceBtn">Workspace & Categories</button>
+              <button type="button" class="small" id="adminJumpWorkspaceBtn">Workspace & Pools</button>
             </div>
           </div>
 
@@ -516,7 +614,6 @@
           </div>
         </div>
 
-        <!-- Created Accounts (Registered Users) -->
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
             <h2 style="margin: 0;">Created Accounts (Registered Users)</h2>
@@ -540,7 +637,6 @@
           </div>
         </div>
 
-        <!-- Global Admin & Admin Access -->
         <div class="card">
           <h2>Global Admin & Portal Admin Access</h2>
           <p class="muted" style="margin-bottom: 12px;">
@@ -567,9 +663,8 @@
           </div>
         </div>
 
-        <!-- All Portal Workspaces -->
         <div class="card">
-          <h2>All Portal Workspaces & Pools</h2>
+          <h2>All Portal Workspaces</h2>
           <div class="table-wrap">
             <table>
               <thead>
@@ -588,14 +683,13 @@
           </div>
         </div>
 
-        <!-- Portal Data Inspector (User Transactions) -->
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
             <h2 style="margin: 0;">User Data Inspector (All Transactions)</h2>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <select id="adminInspectorWs" style="width: 210px;"></select>
               <input type="month" id="adminInspectorMonth" style="width: 145px;" />
-              <input type="search" id="adminTxSearch" placeholder="Search member, category, note..." style="width: 210px;" />
+              <input type="search" id="adminTxSearch" placeholder="Search pool, member, category, note..." style="width: 210px;" />
               <button type="button" class="small primary" id="adminLoadTxBtn">Filter</button>
               <button type="button" class="small" id="adminExportTxCsvBtn">Export CSV</button>
             </div>
@@ -608,6 +702,7 @@
                   <th>Workspace</th>
                   <th>Member / Creator</th>
                   <th>Type</th>
+                  <th>Budget Pool</th>
                   <th>Category</th>
                   <th>Amount</th>
                   <th>Payment</th>
@@ -645,6 +740,7 @@
       month: new Date().toISOString().slice(0, 7),
       settings: null,
       categories: [],
+      pools: [],
       transactions: [],
       summary: null,
       categorySummary: [],
@@ -750,7 +846,7 @@
       $('logoutBtn').classList.toggle('hidden', !loggedIn);
       $('userSubtitle').textContent = loggedIn && state.user
         ? `${state.user.display_name} (${state.user.email})`
-        : 'Shared Expense Workspace';
+        : 'Shared Expense & Budget Pool Workspace';
       updateAdminTabVisibility();
     }
 
@@ -808,23 +904,34 @@
       const ws = encodeURIComponent(state.wsId);
       const m = encodeURIComponent(state.month);
 
-      const [setRes, catRes, txRes, sumRes, memRes] = await Promise.all([
+      const [setRes, catRes, txRes, sumRes, memRes, poolRes] = await Promise.all([
         apiFetch(`/api/workspaces/${ws}/settings`),
         apiFetch(`/api/workspaces/${ws}/categories`),
         apiFetch(`/api/workspaces/${ws}/transactions?month=${m}`),
         apiFetch(`/api/workspaces/${ws}/summary?month=${m}`),
-        apiFetch(`/api/workspaces/${ws}/members`)
+        apiFetch(`/api/workspaces/${ws}/members`),
+        apiFetch(`/api/workspaces/${ws}/pools?month=${m}`)
       ]);
 
       state.settings = setRes.data;
       state.categories = catRes.data || [];
       state.transactions = txRes.data || [];
-      state.summary = sumRes.summary || { total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0 };
+      state.summary = sumRes.summary || {
+        total_income: 0,
+        total_expense: 0,
+        total_saving: 0,
+        net_balance: 0,
+        total_pool_allocated: 0,
+        total_pool_remaining: 0,
+        unallocated_income: 0
+      };
       state.categorySummary = sumRes.categories || [];
+      state.pools = poolRes.data || sumRes.pools || [];
 
       renderFormOptions();
       renderSettingsForm(memRes.data || []);
       renderCategories();
+      renderPoolManager();
       renderDashboard();
       renderTransactions();
     }
@@ -839,7 +946,33 @@
       const payments = Array.isArray(s.payment_methods) && s.payment_methods.length ? s.payment_methods : ['Cash'];
       $('txPayment').innerHTML = payments.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
 
+      const pools = state.pools || [];
+      $('txPool').innerHTML = '<option value="">No Specific Pool (General)</option>' + pools
+        .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.pool_name)} (Bal: ${fmtNum(p.remaining_balance)})</option>`)
+        .join('');
+
+      updatePoolBalanceHint();
       updateCategoryDropdown();
+    }
+
+    function updatePoolBalanceHint() {
+      const poolId = Number($('txPool')?.value || 0);
+      const cur = state.settings?.currency || 'MMK';
+      const hintEl = $('txPoolBalanceHint');
+      if (!hintEl) return;
+
+      if (!poolId) {
+        hintEl.textContent = 'Select a pool to check remaining balance before spending.';
+        return;
+      }
+
+      const pool = (state.pools || []).find((p) => Number(p.id) === poolId);
+      if (!pool) {
+        hintEl.textContent = 'Pool Balance: -';
+        return;
+      }
+
+      hintEl.innerHTML = `Available: <strong>${fmtNum(pool.remaining_balance)} ${escapeHtml(cur)}</strong> <span class="muted">(${fmtNum(pool.spent_amount)} / ${fmtNum(pool.available_budget)} ${escapeHtml(cur)})</span>`;
     }
 
     function updateCategoryDropdown() {
@@ -872,16 +1005,132 @@
         : '<span class="muted">No categories</span>';
     }
 
+    function renderPoolManager() {
+      const cur = state.settings?.currency || 'MMK';
+      if ($('poolManageMonthLabel')) $('poolManageMonthLabel').textContent = state.month;
+
+      const tbody = $('poolManageTableBody');
+      if (!tbody) return;
+
+      const pools = state.pools || [];
+      tbody.innerHTML = pools.length
+        ? pools.map((p) => {
+            const remCls = p.status === 'over_budget' ? 'rem-over' : p.status === 'warning' ? 'rem-warn' : 'rem-ok';
+            const statusPill = p.status === 'over_budget'
+              ? '<span class="pill Expense">Over Budget</span>'
+              : p.status === 'warning'
+                ? `<span class="pill Saving">${p.utilization_pct}% Used</span>`
+                : `<span class="pill Income">${p.utilization_pct}% Used</span>`;
+
+            return `
+              <tr>
+                <td>
+                  <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#38bdf8')}; margin-right:6px;"></span>
+                  <strong>${escapeHtml(p.pool_name)}</strong>
+                  ${p.override_amount !== null ? '<span class="muted"> (Custom Month)</span>' : '<span class="muted"> (Default)</span>'}
+                </td>
+                <td>
+                  <input type="number" step="any" min="0" id="poolDefInput_${p.id}" value="${escapeHtml(p.default_amount)}" style="width:120px; padding:6px 8px;" />
+                </td>
+                <td>
+                  <input type="number" step="any" min="0" id="poolMonthInput_${p.id}" value="${escapeHtml(p.allocated_amount)}" style="width:120px; padding:6px 8px;" />
+                </td>
+                <td>${fmtNum(p.spent_amount)} ${escapeHtml(cur)}</td>
+                <td><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></td>
+                <td>${statusPill}</td>
+                <td>
+                  <div class="row-actions">
+                    <button type="button" class="small primary" onclick="savePoolRow(${p.id})">Save</button>
+                    <button type="button" class="small danger" onclick="disablePoolRow(${p.id})">Hide</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('')
+        : '<tr><td colspan="7" class="muted">No budget pools configured yet.</td></tr>';
+    }
+
+    window.savePoolRow = async function(poolId) {
+      const defVal = Number($(`poolDefInput_${poolId}`)?.value);
+      const monthVal = Number($(`poolMonthInput_${poolId}`)?.value);
+      if (!(defVal >= 0) || !(monthVal >= 0)) {
+        toast('Budget amounts must be 0 or greater', 'error');
+        return;
+      }
+
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools/${poolId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            default_amount: defVal,
+            month: state.month,
+            month_allocated_amount: monthVal
+          })
+        });
+        toast('Budget pool updated', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
+    window.disablePoolRow = async function(poolId) {
+      if (!confirm('Hide this budget pool?')) return;
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools/${poolId}`, {
+          method: 'DELETE'
+        });
+        toast('Pool hidden', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
     function renderDashboard() {
       const cur = state.settings?.currency || 'MMK';
-      const sum = state.summary || { total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0 };
+      const sum = state.summary || {};
 
       $('kpiIncome').textContent = `${fmtNum(sum.total_income)} ${cur}`;
+      $('kpiPoolAllocated').textContent = `${fmtNum(sum.total_pool_allocated)} ${cur}`;
       $('kpiExpense').textContent = `${fmtNum(sum.total_expense)} ${cur}`;
-      $('kpiSaving').textContent = `${fmtNum(sum.total_saving)} ${cur}`;
-      $('kpiNet').textContent = `${fmtNum(sum.net_balance)} ${cur}`;
+      $('kpiPoolRemaining').textContent = `${fmtNum(sum.total_pool_remaining)} ${cur}`;
+      $('kpiPoolRemaining').className = `val ${Number(sum.total_pool_remaining || 0) < 0 ? 'exp' : 'inc'}`;
 
-      const maxFlow = Math.max(sum.total_income, sum.total_expense, sum.total_saving, 1);
+      const unalloc = Number(sum.unallocated_income || 0);
+      if ($('poolPlanNote')) {
+        $('poolPlanNote').textContent = unalloc >= 0
+          ? `Selected Month (${state.month}) · Unallocated Income: ${fmtNum(unalloc)} ${cur}`
+          : `Selected Month (${state.month}) · Pool allocations exceed monthly income by ${fmtNum(Math.abs(unalloc))} ${cur}`;
+      }
+
+      const poolCardsEl = $('dashboardPoolCards');
+      const pools = state.pools || [];
+      poolCardsEl.innerHTML = pools.length
+        ? pools.map((p) => {
+            const pct = Math.min(100, Number(p.utilization_pct || 0));
+            const barCls = p.status === 'over_budget' ? 'exp' : p.status === 'warning' ? 'warn' : 'inc';
+            const remCls = p.status === 'over_budget' ? 'rem-over' : p.status === 'warning' ? 'rem-warn' : 'rem-ok';
+            return `
+              <div class="pool-card">
+                <div class="pool-header">
+                  <div class="pool-title">
+                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#38bdf8')}"></span>
+                    <span>${escapeHtml(p.pool_name)}</span>
+                  </div>
+                  <span class="muted">${p.utilization_pct}%</span>
+                </div>
+                <div class="pool-metrics">
+                  <div><span class="m-lbl">Remaining</span><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></div>
+                  <div><span class="m-lbl">Spent / Budget</span><strong>${fmtNum(p.spent_amount)} / ${fmtNum(p.available_budget)}</strong></div>
+                </div>
+                <div class="bar-track"><div class="bar-fill ${barCls}" style="width:${pct}%"></div></div>
+              </div>
+            `;
+          }).join('')
+        : '<div class="muted">No budget pools found for this workspace.</div>';
+
+      const maxFlow = Math.max(Number(sum.total_income || 0), Number(sum.total_expense || 0), Number(sum.total_saving || 0), 1);
       $('cashflowBars').innerHTML = [
         { label: 'Income', val: sum.total_income, cls: 'inc' },
         { label: 'Expense', val: sum.total_expense, cls: 'exp' },
@@ -889,7 +1138,7 @@
       ].map((item) => `
         <div class="bar-row">
           <div class="bar-meta"><span>${item.label}</span><span>${fmtNum(item.val)} ${cur}</span></div>
-          <div class="bar-track"><div class="bar-fill ${item.cls}" style="width:${Math.min(100, (item.val / maxFlow) * 100)}%"></div></div>
+          <div class="bar-track"><div class="bar-fill ${item.cls}" style="width:${Math.min(100, (Number(item.val || 0) / maxFlow) * 100)}%"></div></div>
         </div>
       `).join('');
 
@@ -911,7 +1160,7 @@
       return state.transactions.filter((row) => {
         if (t && row.entry_type !== t) return false;
         if (q) {
-          const hay = `${row.category || ''} ${row.member_name || ''} ${row.notes || ''} ${row.payment_method || ''}`.toLowerCase();
+          const hay = `${row.pool_name || ''} ${row.category || ''} ${row.member_name || ''} ${row.notes || ''} ${row.payment_method || ''}`.toLowerCase();
           if (!hay.includes(q)) return false;
         }
         return true;
@@ -941,6 +1190,7 @@
             <td>${escapeHtml(r.tx_date)}</td>
             <td>${escapeHtml(r.member_name)}</td>
             <td><span class="pill ${escapeHtml(r.entry_type)}">${escapeHtml(r.entry_type)}</span></td>
+            <td>${r.pool_name ? `<span class="pill Pool">${escapeHtml(r.pool_name)}</span>` : '<span class="muted">General</span>'}</td>
             <td>${escapeHtml(r.category)}</td>
             <td><strong>${fmtNum(r.amount_mmk)}</strong> ${escapeHtml(cur)}</td>
             <td>${escapeHtml(r.payment_method || '-')}</td>
@@ -954,7 +1204,7 @@
             </td>
           </tr>
         `).join('')
-        : '<tr><td colspan="9" class="muted">No transactions found.</td></tr>';
+        : '<tr><td colspan="10" class="muted">No transactions found.</td></tr>';
     }
 
     window.openReceipt = openReceipt;
@@ -969,6 +1219,8 @@
       $('txType').value = tx.entry_type;
       updateCategoryDropdown();
       $('txCategory').value = tx.category;
+      $('txPool').value = tx.pool_id ? String(tx.pool_id) : '';
+      updatePoolBalanceHint();
       $('txAmount').value = tx.amount_mmk;
       $('txPayment').value = tx.payment_method || 'Cash';
       $('txNotes').value = tx.notes || '';
@@ -984,6 +1236,8 @@
       $('editingTxId').value = '';
       $('txFormTitle').textContent = 'Add New Transaction';
       $('txDate').value = new Date().toISOString().slice(0, 10);
+      $('txPool').value = '';
+      updatePoolBalanceHint();
       $('txAmount').value = '';
       $('txNotes').value = '';
       $('txReceipt').value = '';
@@ -1158,7 +1412,7 @@
             <td>
               <div class="row-actions">
                 <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${escapeHtml(w.workspace_id).replace(/'/g, "\\'")}', 'dashboard')">View</button>
-                <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${escapeHtml(w.workspace_id).replace(/'/g, "\\'")}', 'workspace')">Settings</button>
+                <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${escapeHtml(w.workspace_id).replace(/'/g, "\\'")}', 'workspace')">Pools & Settings</button>
               </div>
             </td>
           </tr>
@@ -1173,7 +1427,7 @@
 
       const rows = (state.adminTransactions || []).filter((r) => {
         if (!q) return true;
-        const hay = `${r.workspace_id || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase();
+        const hay = `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase();
         return hay.includes(q);
       });
 
@@ -1184,6 +1438,7 @@
             <td><code>${escapeHtml(r.workspace_id)}</code></td>
             <td>${escapeHtml(r.member_name)} <span class="muted">(${escapeHtml(r.creator_email || '-')})</span></td>
             <td><span class="pill ${escapeHtml(r.entry_type)}">${escapeHtml(r.entry_type)}</span></td>
+            <td>${r.pool_name ? `<span class="pill Pool">${escapeHtml(r.pool_name)}</span>` : '<span class="muted">General</span>'}</td>
             <td>${escapeHtml(r.category)}</td>
             <td><strong>${fmtNum(r.amount_mmk)}</strong></td>
             <td>${escapeHtml(r.payment_method || '-')}</td>
@@ -1193,7 +1448,7 @@
             </td>
           </tr>
         `).join('')
-        : '<tr><td colspan="9" class="muted">No transactions found.</td></tr>';
+        : '<tr><td colspan="10" class="muted">No transactions found.</td></tr>';
     }
 
     async function loadAdminInspectorTransactions() {
@@ -1249,17 +1504,21 @@
       document.querySelector('.nav-tabs button[data-tab="workspace"]')?.click();
     });
 
+    $('dashManagePoolsBtn')?.addEventListener('click', () => {
+      document.querySelector('.nav-tabs button[data-tab="workspace"]')?.click();
+    });
+
     $('adminUserSearch')?.addEventListener('input', renderAdminUsersTable);
     $('adminTxSearch')?.addEventListener('input', renderAdminInspectorTable);
     $('adminLoadTxBtn')?.addEventListener('click', loadAdminInspectorTransactions);
 
     $('adminExportTxCsvBtn')?.addEventListener('click', () => {
       const rows = state.adminTransactions || [];
-      const headers = ['Date', 'Workspace', 'Member', 'CreatorEmail', 'Type', 'Category', 'Amount', 'Payment', 'Notes'];
+      const headers = ['Date', 'Workspace', 'Member', 'CreatorEmail', 'Type', 'Pool', 'Category', 'Amount', 'Payment', 'Notes'];
       const lines = [headers.join(',')].concat(
         rows.map((r) => [
           r.tx_date, r.workspace_id, r.member_name, r.creator_email || '',
-          r.entry_type, r.category, r.amount_mmk, r.payment_method || '', r.notes || ''
+          r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''
         ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
       );
       const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
@@ -1498,12 +1757,14 @@
     });
 
     $('txType').addEventListener('change', updateCategoryDropdown);
+    $('txPool').addEventListener('change', updatePoolBalanceHint);
     $('txCancelEditBtn').addEventListener('click', resetTxForm);
 
     $('txForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const ws = encodeURIComponent(state.wsId);
       const editId = $('editingTxId').value;
+      const selectedPoolId = $('txPool').value ? Number($('txPool').value) : null;
 
       try {
         if (editId) {
@@ -1516,7 +1777,8 @@
               category: $('txCategory').value,
               amount_mmk: Number($('txAmount').value),
               payment_method: $('txPayment').value,
-              notes: $('txNotes').value.trim()
+              notes: $('txNotes').value.trim(),
+              pool_id: selectedPoolId
             })
           });
           toast('Transaction updated', 'success');
@@ -1528,6 +1790,7 @@
           fd.append('category', $('txCategory').value);
           fd.append('amount_mmk', String(Number($('txAmount').value)));
           fd.append('payment_method', $('txPayment').value);
+          if (selectedPoolId) fd.append('pool_id', String(selectedPoolId));
           if ($('txNotes').value.trim()) fd.append('notes', $('txNotes').value.trim());
           const file = $('txReceipt').files[0];
           if (file) fd.append('receipt', file);
@@ -1550,10 +1813,10 @@
 
     $('exportCsvBtn').addEventListener('click', () => {
       const rows = getFilteredTransactions();
-      const headers = ['Date', 'Member', 'Type', 'Category', 'Amount', 'Payment', 'Notes', 'ReceiptKey'];
+      const headers = ['Date', 'Member', 'Type', 'Pool', 'Category', 'Amount', 'Payment', 'Notes', 'ReceiptKey'];
       const lines = [headers.join(',')].concat(
         rows.map((r) => [
-          r.tx_date, r.member_name, r.entry_type, r.category,
+          r.tx_date, r.member_name, r.entry_type, r.pool_name || '', r.category,
           r.amount_mmk, r.payment_method || '', r.notes || '', r.receipt_key || ''
         ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
       );
@@ -1563,6 +1826,26 @@
       a.download = `sayin-${state.wsId}-${state.month}.csv`;
       a.click();
       URL.revokeObjectURL(a.href);
+    });
+
+    $('createPoolForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools`, {
+          method: 'POST',
+          body: JSON.stringify({
+            pool_name: $('newPoolName').value.trim(),
+            default_amount: Number($('newPoolDefaultAmt').value),
+            color_tag: $('newPoolColor').value
+          })
+        });
+        $('newPoolName').value = '';
+        $('newPoolDefaultAmt').value = '';
+        toast('Budget pool saved', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
     });
 
     $('createWsForm').addEventListener('submit', async (e) => {
