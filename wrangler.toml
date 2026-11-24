@@ -5,7 +5,7 @@ compatibility_date = "2026-01-01"
 [[d1_databases]]
 binding = "family_expense_portal_db"
 database_name = "family-expense-portal-db"
-database_id = "ဒီနေရာမှာ_D1_DATABASE_ID_ထည့်ပါ"
+database_id = "86853fe6-fa20-4c27-81c1-bd1d85ea1281"
 
 [[r2_buckets]]
 binding = "family_expense_receipts"
