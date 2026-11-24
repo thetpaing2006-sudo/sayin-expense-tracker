@@ -503,7 +503,7 @@
                 <tr>
                   <th>Budget Pool</th>
                   <th>Monthly Default</th>
-                  <th>Selected Month Budget</th>
+                  <th>This Month Budget</th>
                   <th>Spent</th>
                   <th>Remaining Balance</th>
                   <th>Status</th>
@@ -1005,7 +1005,7 @@
         : '<span class="muted">No categories</span>';
     }
 
-    function renderPoolManager() {
+ function renderPoolManager() {
       const cur = state.settings?.currency || 'MMK';
       if ($('poolManageMonthLabel')) $('poolManageMonthLabel').textContent = state.month;
 
@@ -1015,6 +1015,7 @@
       const pools = state.pools || [];
       tbody.innerHTML = pools.length
         ? pools.map((p) => {
+            const isCustom = p.override_amount !== null;
             const remCls = p.status === 'over_budget' ? 'rem-over' : p.status === 'warning' ? 'rem-warn' : 'rem-ok';
             const statusPill = p.status === 'over_budget'
               ? '<span class="pill Expense">Over Budget</span>'
@@ -1023,17 +1024,27 @@
                 : `<span class="pill Income">${p.utilization_pct}% Used</span>`;
 
             return `
-              <tr>
+              <tr data-pool-id="${p.id}" data-is-custom="${isCustom ? '1' : '0'}">
                 <td>
                   <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#38bdf8')}; margin-right:6px;"></span>
                   <strong>${escapeHtml(p.pool_name)}</strong>
-                  ${p.override_amount !== null ? '<span class="muted"> (Custom Month)</span>' : '<span class="muted"> (Default)</span>'}
+                  <div class="muted">${isCustom ? `Custom for ${escapeHtml(state.month)}` : 'Using Monthly Default'}</div>
                 </td>
                 <td>
-                  <input type="number" step="any" min="0" id="poolDefInput_${p.id}" value="${escapeHtml(p.default_amount)}" style="width:120px; padding:6px 8px;" />
+                  <input type="number" step="any" min="0" id="poolDefInput_${p.id}"
+                         value="${escapeHtml(p.default_amount)}"
+                         oninput="syncPoolDefaultInput(${p.id})"
+                         title="လတိုင်း သုံးမည့် ပုံသေပမာဏ"
+                         style="width:125px; padding:6px 8px;" />
                 </td>
                 <td>
-                  <input type="number" step="any" min="0" id="poolMonthInput_${p.id}" value="${escapeHtml(p.allocated_amount)}" style="width:120px; padding:6px 8px;" />
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <input type="number" step="any" min="0" id="poolMonthInput_${p.id}"
+                           value="${escapeHtml(p.allocated_amount)}"
+                           title="${escapeHtml(state.month)} တစ်လတည်းအတွက် ပမာဏ"
+                           style="width:125px; padding:6px 8px;" />
+                    ${isCustom ? `<button type="button" class="small" onclick="resetPoolMonthBudget(${p.id})" title="Default အတိုင်း ပြန်ထားရန်">Reset</button>` : ''}
+                  </div>
                 </td>
                 <td>${fmtNum(p.spent_amount)} ${escapeHtml(cur)}</td>
                 <td><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></td>
@@ -1049,6 +1060,16 @@
           }).join('')
         : '<tr><td colspan="7" class="muted">No budget pools configured yet.</td></tr>';
     }
+
+    window.syncPoolDefaultInput = function(poolId) {
+      const row = document.querySelector(`tr[data-pool-id="${poolId}"]`);
+      if (!row || row.dataset.isCustom === '1') return;
+      const defEl = $(`poolDefInput_${poolId}`);
+      const monthEl = $(`poolMonthInput_${poolId}`);
+      if (defEl && monthEl) {
+        monthEl.value = defEl.value;
+      }
+    };
 
     window.savePoolRow = async function(poolId) {
       const defVal = Number($(`poolDefInput_${poolId}`)?.value);
@@ -1068,6 +1089,18 @@
           })
         });
         toast('Budget pool updated', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
+    window.resetPoolMonthBudget = async function(poolId) {
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools/${poolId}/month-budget?month=${encodeURIComponent(state.month)}`, {
+          method: 'DELETE'
+        });
+        toast('Reset to monthly default', 'success');
         await loadWorkspaceDetails();
       } catch (err) {
         toast(err.message, 'error');
