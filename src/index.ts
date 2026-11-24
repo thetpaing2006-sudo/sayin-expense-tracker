@@ -858,8 +858,9 @@ app.patch('/api/workspaces/:wsId/pools/:poolId', async (c) => {
   if (!existing) return c.json({ error: 'Budget pool not found' }, 404)
 
   const body = await c.req.json().catch(() => ({}))
+  const oldDefault = Number(existing.default_amount)
   const poolName = typeof body.pool_name === 'string' && body.pool_name.trim() ? body.pool_name.trim() : existing.pool_name
-  const defaultAmount = body.default_amount !== undefined ? Number(body.default_amount) : Number(existing.default_amount)
+  const defaultAmount = body.default_amount !== undefined ? Number(body.default_amount) : oldDefault
   const colorTag = typeof body.color_tag === 'string' && body.color_tag.trim() ? body.color_tag.trim() : existing.color_tag
   const isActive = body.is_active !== undefined ? (body.is_active ? 1 : 0) : existing.is_active
 
@@ -877,18 +878,44 @@ app.patch('/api/workspaces/:wsId/pools/:poolId', async (c) => {
   if (body.month && body.month_allocated_amount !== undefined) {
     const month = String(body.month).trim()
     const monthAlloc = Number(body.month_allocated_amount)
+
     if (month && monthAlloc >= 0) {
-      await c.env.family_expense_portal_db
-        .prepare(
-          `INSERT INTO budget_pool_overrides (workspace_id, pool_id, tx_month, allocated_amount, updated_at)
-           VALUES (?, ?, ?, ?, datetime('now'))
-           ON CONFLICT(workspace_id, pool_id, tx_month)
-           DO UPDATE SET allocated_amount = excluded.allocated_amount, updated_at = datetime('now')`
-        )
-        .bind(wsId, poolId, month, monthAlloc)
-        .run()
+      // အကယ်၍ monthAlloc က defaultAmount နဲ့ အတူတူပဲဆိုရင် override မလိုတော့ဘဲ Default အတိုင်း ထားမယ်
+      if (monthAlloc === defaultAmount) {
+        await c.env.family_expense_portal_db
+          .prepare('DELETE FROM budget_pool_overrides WHERE workspace_id = ? AND pool_id = ? AND tx_month = ?')
+          .bind(wsId, poolId, month)
+          .run()
+      } else if (monthAlloc !== oldDefault || defaultAmount === oldDefault) {
+        await c.env.family_expense_portal_db
+          .prepare(
+            `INSERT INTO budget_pool_overrides (workspace_id, pool_id, tx_month, allocated_amount, updated_at)
+             VALUES (?, ?, ?, ?, datetime('now'))
+             ON CONFLICT(workspace_id, pool_id, tx_month)
+             DO UPDATE SET allocated_amount = excluded.allocated_amount, updated_at = datetime('now')`
+          )
+          .bind(wsId, poolId, month, monthAlloc)
+          .run()
+      }
     }
   }
+
+  return c.json({ success: true })
+})
+
+app.delete('/api/workspaces/:wsId/pools/:poolId/month-budget', async (c) => {
+  const user = c.get('user')
+  const wsId = c.req.param('wsId')
+  const poolId = Number(c.req.param('poolId'))
+  const month = String(c.req.query('month') || '').trim()
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
+  if (!poolId || !month) return c.json({ error: 'Valid poolId and month are required' }, 400)
+
+  await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
+  await c.env.family_expense_portal_db
+    .prepare('DELETE FROM budget_pool_overrides WHERE workspace_id = ? AND pool_id = ? AND tx_month = ?')
+    .bind(wsId, poolId, month)
+    .run()
 
   return c.json({ success: true })
 })
