@@ -17,7 +17,6 @@
       --income: #10b981;
       --expense: #f43f5e;
       --saving: #a855f7;
-      --warn: #f59e0b;
       --radius: 14px;
       --shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
     }
@@ -34,7 +33,6 @@
       --income: #059669;
       --expense: #e11d48;
       --saving: #7e22ce;
-      --warn: #d97706;
       --shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
     }
 
@@ -50,7 +48,6 @@
 
     .container { max-width: 1240px; margin: 0 auto; padding: 20px 16px 56px; }
 
-    /* Topbar */
     .topbar {
       display: flex;
       flex-wrap: wrap;
@@ -73,13 +70,11 @@
     }
     .brand h1 { margin: 0; font-size: 19px; font-weight: 700; }
     .brand p { margin: 0; font-size: 12px; color: var(--muted); }
-
     .topbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 
-    /* Form Controls & Buttons */
-    input, select, textarea {
+    input, select {
       width: 100%;
-      padding: 9px 12px;
+      padding: 10px 12px;
       border-radius: 10px;
       border: 1px solid var(--border);
       background: var(--surface-2);
@@ -87,7 +82,7 @@
       font-size: 14px;
       outline: none;
     }
-    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    input:focus, select:focus { border-color: var(--primary); }
     label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
 
     button {
@@ -99,33 +94,36 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.12s ease, opacity 0.15s ease, background 0.15s ease;
+      transition: transform 0.12s ease, opacity 0.15s ease;
     }
-    button:hover { opacity: 0.92; }
-    button:active { transform: scale(0.98); }
+    button:hover:not(:disabled) { opacity: 0.92; }
+    button:active:not(:disabled) { transform: scale(0.98); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
     button.primary { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
     button.danger { background: rgba(244, 63, 94, 0.14); color: var(--expense); border-color: rgba(244, 63, 94, 0.3); }
     button.small { padding: 6px 10px; font-size: 12px; }
+    button.link-btn {
+      background: none; border: none; padding: 0; color: var(--primary);
+      font-size: 12px; font-weight: 600; text-decoration: underline;
+    }
 
-    /* Auth Card */
-    .auth-wrap { max-width: 460px; margin: 36px auto; }
-    .auth-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+    .auth-wrap { max-width: 440px; margin: 36px auto; }
+    .auth-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
     .auth-tabs button.active { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
 
-    /* Tabs */
     .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
     .nav-tabs button.active { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
 
-    /* Cards & Grids */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px;
+      padding: 20px;
       box-shadow: var(--shadow);
       margin-bottom: 16px;
     }
-    .card h2, .card h3 { margin: 0 0 12px; font-size: 16px; }
+    .card h2, .card h3 { margin: 0 0 10px; font-size: 17px; }
+
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 16px; }
     .kpi {
       background: var(--surface);
@@ -143,7 +141,6 @@
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
 
-    /* Bars */
     .bar-row { margin-bottom: 12px; }
     .bar-meta { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
     .bar-track { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
@@ -152,23 +149,22 @@
     .bar-fill.exp { background: var(--expense); }
     .bar-fill.sav { background: var(--saving); }
 
-    /* Table */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 10px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
     th { color: var(--muted); font-weight: 700; font-size: 12px; }
-    .pill {
-      display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
-    }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .pill.Income { background: rgba(16, 185, 129, 0.16); color: var(--income); }
     .pill.Expense { background: rgba(244, 63, 94, 0.16); color: var(--expense); }
     .pill.Saving { background: rgba(168, 85, 247, 0.16); color: var(--saving); }
 
     .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .muted { color: var(--muted); font-size: 12px; }
+    .auth-status { margin-top: 10px; font-size: 12px; min-height: 18px; }
+    .auth-status.err { color: var(--expense); }
+    .auth-status.ok { color: var(--income); }
     .hidden { display: none !important; }
 
-    /* Toast */
     #toast {
       position: fixed; right: 18px; bottom: 18px; z-index: 9999;
       max-width: 360px; padding: 12px 16px; border-radius: 12px;
@@ -184,13 +180,12 @@
 </head>
 <body>
   <div class="container">
-    <!-- Top Bar -->
     <header class="topbar">
       <div class="brand">
         <div class="brand-badge">S</div>
         <div>
           <h1>Sayin စာရင်း</h1>
-          <p id="userSubtitle">Cloudflare D1 & R2 Shared Workspace</p>
+          <p id="userSubtitle">Shared Expense Workspace</p>
         </div>
       </div>
 
@@ -206,82 +201,93 @@
       </div>
     </header>
 
-    <!-- Auth Section -->
-    <!-- Auth Section (Clean Public Sign In) -->
-<section id="authSection" class="auth-wrap">
-  <div class="card">
-    <h2>Sayin Sign In</h2>
-    <p class="muted" style="margin-bottom: 14px;">
-      သင့် account ဖြင့် ဝင်ရောက်ပြီး စာရင်းများကို စီမံခန့်ခွဲပါ။
-    </p>
+    <!-- Public Auth Section: Login + Register + Forgot Password inside Login -->
+    <section id="authSection" class="auth-wrap">
+      <div class="card">
+        <h2>Sayin Sign In</h2>
+        <p class="muted" style="margin-bottom: 16px;">
+          သင့် account ဖြင့် ဝင်ရောက်ပြီး စာရင်းများကို စီမံခန့်ခွဲပါ။
+        </p>
 
-    <div class="auth-tabs">
-      <button type="button" id="tabLogin" class="active">Login</button>
-      <button type="button" id="tabRegister">Register</button>
-      <button type="button" id="tabForgot">Reset PW</button>
-    </div>
-
-    <form id="loginForm">
-      <div style="margin-bottom: 10px;">
-        <label for="loginEmail">Email</label>
-        <input type="email" id="loginEmail" required placeholder="you@example.com" />
-      </div>
-      <div style="margin-bottom: 14px;">
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" required placeholder="••••••••" />
-      </div>
-      <button type="submit" class="primary" style="width: 100%;">Sign In</button>
-    </form>
-
-    <form id="registerForm" class="hidden">
-      <div style="margin-bottom: 10px;">
-        <label for="regName">Display Name</label>
-        <input type="text" id="regName" required placeholder="Your Name" />
-      </div>
-      <div style="margin-bottom: 10px;">
-        <label for="regEmail">Email</label>
-        <input type="email" id="regEmail" required placeholder="you@example.com" />
-      </div>
-      <div style="margin-bottom: 14px;">
-        <label for="regPassword">Password (min 6 chars)</label>
-        <input type="password" id="regPassword" minlength="6" required placeholder="At least 6 characters" />
-      </div>
-      <button type="submit" class="primary" style="width: 100%;">Create Account</button>
-    </form>
-
-    <div id="forgotWrap" class="hidden">
-      <form id="forgotForm" style="margin-bottom: 14px;">
-        <label for="forgotEmail">Account Email (Send 6-digit Reset Code)</label>
-        <div style="display: flex; gap: 8px;">
-          <input type="email" id="forgotEmail" required placeholder="you@example.com" />
-          <button type="submit" class="primary small">Send Code</button>
+        <div class="auth-tabs">
+          <button type="button" id="tabLogin" class="active">Login</button>
+          <button type="button" id="tabRegister">Register</button>
         </div>
-      </form>
-      <form id="resetForm">
-        <div style="margin-bottom: 10px;">
-          <label for="resetCode">Reset Code</label>
-          <input type="text" id="resetCode" required placeholder="123456" />
+
+        <!-- Login Form -->
+        <form id="loginForm">
+          <div style="margin-bottom: 12px;">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" required placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div style="margin-bottom: 8px;">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 14px;">
+            <button type="button" id="openForgotBtn" class="link-btn">Forgot password?</button>
+          </div>
+          <button type="submit" class="primary" id="loginSubmitBtn" style="width: 100%;">Sign In</button>
+          <div id="loginStatus" class="auth-status"></div>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="hidden">
+          <div style="margin-bottom: 12px;">
+            <label for="regName">Display Name</label>
+            <input type="text" id="regName" required placeholder="Your Name" autocomplete="name" />
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label for="regEmail">Email</label>
+            <input type="email" id="regEmail" required placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div style="margin-bottom: 14px;">
+            <label for="regPassword">Password (min 6 chars)</label>
+            <input type="password" id="regPassword" minlength="6" required placeholder="At least 6 characters" autocomplete="new-password" />
+          </div>
+          <button type="submit" class="primary" id="regSubmitBtn" style="width: 100%;">Create Account</button>
+          <div id="regStatus" class="auth-status"></div>
+        </form>
+
+        <!-- Forgot / Reset Password Panel (Opened from Login) -->
+        <div id="forgotWrap" class="hidden">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <strong style="font-size: 14px;">Reset Password</strong>
+            <button type="button" id="backToLoginBtn" class="link-btn">Back to Login</button>
+          </div>
+
+          <form id="forgotForm" style="margin-bottom: 14px;">
+            <label for="forgotEmail">Account Email</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="email" id="forgotEmail" required placeholder="you@example.com" />
+              <button type="submit" class="primary small" id="sendCodeBtn">Send Code</button>
+            </div>
+          </form>
+
+          <form id="resetForm">
+            <div style="margin-bottom: 10px;">
+              <label for="resetCode">6-Digit Reset Code</label>
+              <input type="text" id="resetCode" required placeholder="123456" />
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label for="resetNewPassword">New Password (min 6 chars)</label>
+              <input type="password" id="resetNewPassword" minlength="6" required placeholder="New password" />
+            </div>
+            <button type="submit" class="primary" id="resetSubmitBtn" style="width: 100%;">Update Password</button>
+          </form>
+          <div id="forgotStatus" class="auth-status"></div>
         </div>
-        <div style="margin-bottom: 14px;">
-          <label for="resetNewPassword">New Password (min 6 chars)</label>
-          <input type="password" id="resetNewPassword" minlength="6" required />
-        </div>
-        <button type="submit" class="primary" style="width: 100%;">Update Password</button>
-      </form>
-    </div>
-  </div>
-</section>
+      </div>
+    </section>
 
     <!-- Main App Section -->
     <main id="appSection" class="hidden">
-      <!-- Navigation Tabs -->
       <nav class="nav-tabs">
         <button type="button" data-tab="dashboard" class="active">Dashboard</button>
         <button type="button" data-tab="transactions">Transactions & Add</button>
         <button type="button" data-tab="workspace">Workspace & Categories</button>
       </nav>
 
-      <!-- TAB 1: DASHBOARD -->
       <section id="tab-dashboard">
         <div class="kpi-grid">
           <div class="kpi">
@@ -314,10 +320,9 @@
         </div>
       </section>
 
-      <!-- TAB 2: TRANSACTIONS & ADD -->
       <section id="tab-transactions" class="hidden">
         <div class="card">
-          <h2 id="txFormTitle">Add New Transaction (D1 + R2 Receipt)</h2>
+          <h2 id="txFormTitle">Add New Transaction</h2>
           <form id="txForm">
             <input type="hidden" id="editingTxId" value="" />
             <div class="grid-4" style="margin-bottom: 12px;">
@@ -357,7 +362,7 @@
                 <input type="text" id="txNotes" placeholder="Optional note" />
               </div>
               <div id="receiptInputWrap">
-                <label for="txReceipt">Receipt Image (R2)</label>
+                <label for="txReceipt">Receipt Image</label>
                 <input type="file" id="txReceipt" accept="image/*,application/pdf" />
               </div>
             </div>
@@ -405,7 +410,6 @@
         </div>
       </section>
 
-      <!-- TAB 3: WORKSPACE & CATEGORIES -->
       <section id="tab-workspace" class="hidden">
         <div class="grid-2">
           <div class="card">
@@ -476,10 +480,10 @@
   <div id="toast"></div>
 
   <script>
+    // Replace with your deployed Cloudflare Worker URL (no trailing slash)
     const DEFAULT_API_BASE = 'https://expense-portal-api.YOUR_SUBDOMAIN.workers.dev';
 
     const STORAGE_KEYS = {
-      apiBase: 'sayin_api_base_url',
       token: 'sayin_auth_token',
       wsId: 'sayin_active_ws_id',
       theme: 'sayin_theme'
@@ -495,26 +499,8 @@
       settings: null,
       categories: [],
       transactions: [],
-      summary: null
-    };
-    const STORAGE_KEYS = {
-      apiBase: 'sayin_api_base_url',
-      token: 'sayin_auth_token',
-      wsId: 'sayin_active_ws_id',
-      theme: 'sayin_theme'
-    };
-
-    const state = {
-      apiBase: localStorage.getItem(STORAGE_KEYS.apiBase) || window.location.origin,
-      token: localStorage.getItem(STORAGE_KEYS.token) || '',
-      user: null,
-      workspaces: [],
-      wsId: localStorage.getItem(STORAGE_KEYS.wsId) || '',
-      month: new Date().toISOString().slice(0, 7),
-      settings: null,
-      categories: [],
-      transactions: [],
-      summary: null
+      summary: null,
+      categorySummary: []
     };
 
     const $ = (id) => document.getElementById(id);
@@ -524,7 +510,14 @@
       el.textContent = msg;
       el.className = `show ${tone}`;
       clearTimeout(toast._t);
-      toast._t = setTimeout(() => { el.className = ''; }, 3200);
+      toast._t = setTimeout(() => { el.className = ''; }, 3400);
+    }
+
+    function setStatus(id, msg, kind = '') {
+      const el = $(id);
+      if (!el) return;
+      el.textContent = msg || '';
+      el.className = `auth-status ${kind}`;
     }
 
     function applyTheme(theme) {
@@ -543,13 +536,20 @@
       if (!(options.body instanceof FormData) && !headers.has('Content-Type') && options.method && options.method !== 'GET') {
         headers.set('Content-Type', 'application/json');
       }
-      const res = await fetch(getApiUrl(path), { ...options, headers });
+
+      let res;
+      try {
+        res = await fetch(getApiUrl(path), { ...options, headers });
+      } catch {
+        throw new Error('Cannot reach API server. Check Worker URL / network.');
+      }
+
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         if (res.status === 401) {
           handleLogout(false);
         }
-        throw new Error(data.error || `HTTP ${res.status}`);
+        throw new Error(data.error || `Request failed (${res.status})`);
       }
       return data;
     }
@@ -566,7 +566,7 @@
       $('logoutBtn').classList.toggle('hidden', !loggedIn);
       $('userSubtitle').textContent = loggedIn && state.user
         ? `${state.user.display_name} (${state.user.email})`
-        : 'Cloudflare D1 & R2 Shared Workspace';
+        : 'Shared Expense Workspace';
     }
 
     function handleLogout(callApi = true) {
@@ -613,6 +613,7 @@
       state.categories = catRes.data || [];
       state.transactions = txRes.data || [];
       state.summary = sumRes.summary || { total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0 };
+      state.categorySummary = sumRes.categories || [];
 
       renderFormOptions();
       renderSettingsForm(memRes.data || []);
@@ -677,7 +678,7 @@
         </div>
       `).join('');
 
-      const cats = sumResCats();
+      const cats = state.categorySummary || [];
       const maxCat = Math.max(...cats.map((c) => Number(c.total_mmk || 0)), 1);
       $('categorySummaryBars').innerHTML = cats.length
         ? cats.slice(0, 8).map((c) => `
@@ -688,35 +689,6 @@
         `).join('')
         : '<div class="muted">No data for this month.</div>';
     }
-
-    function sumResCats() {
-      return state._categoriesSummary || [];
-    }
-
-    // Patch loadWorkspaceDetails slightly to store category summary
-    const _origLoadWorkspaceDetails = loadWorkspaceDetails;
-    loadWorkspaceDetails = async function() {
-      if (!state.wsId) return;
-      const ws = encodeURIComponent(state.wsId);
-      const m = encodeURIComponent(state.month);
-      const [setRes, catRes, txRes, sumRes, memRes] = await Promise.all([
-        apiFetch(`/api/workspaces/${ws}/settings`),
-        apiFetch(`/api/workspaces/${ws}/categories`),
-        apiFetch(`/api/workspaces/${ws}/transactions?month=${m}`),
-        apiFetch(`/api/workspaces/${ws}/summary?month=${m}`),
-        apiFetch(`/api/workspaces/${ws}/members`)
-      ]);
-      state.settings = setRes.data;
-      state.categories = catRes.data || [];
-      state.transactions = txRes.data || [];
-      state.summary = sumRes.summary || { total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0 };
-      state._categoriesSummary = sumRes.categories || [];
-      renderFormOptions();
-      renderSettingsForm(memRes.data || []);
-      renderCategories();
-      renderDashboard();
-      renderTransactions();
-    };
 
     function getFilteredTransactions() {
       const q = ($('txSearch').value || '').trim().toLowerCase();
@@ -795,7 +767,7 @@
 
     function resetTxForm() {
       $('editingTxId').value = '';
-      $('txFormTitle').textContent = 'Add New Transaction (D1 + R2 Receipt)';
+      $('txFormTitle').textContent = 'Add New Transaction';
       $('txDate').value = new Date().toISOString().slice(0, 10);
       $('txAmount').value = '';
       $('txNotes').value = '';
@@ -816,43 +788,44 @@
       }
     };
 
-    // Event Listeners
+    // Theme
     $('themeToggleBtn').addEventListener('click', () => {
       const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       applyTheme(next);
     });
 
-    $('apiBaseInput').value = state.apiBase;
-    $('saveApiBaseBtn').addEventListener('click', () => {
-      state.apiBase = $('apiBaseInput').value.trim() || window.location.origin;
-      localStorage.setItem(STORAGE_KEYS.apiBase, state.apiBase);
-      toast('API Base URL saved', 'success');
-    });
+    // Auth Tabs (Login / Register) + Forgot Password flow from Login
+    function showAuthMode(mode) {
+      const isLogin = mode === 'login';
+      const isReg = mode === 'register';
+      const isForgot = mode === 'forgot';
 
-    $('testHealthBtn').addEventListener('click', async () => {
-      try {
-        const res = await fetch(getApiUrl('/'));
-        const txt = await res.text();
-        toast(txt || `Status ${res.status}`, res.ok ? 'success' : 'error');
-      } catch (err) {
-        toast(err.message, 'error');
-      }
-    });
+      $('tabLogin').classList.toggle('active', isLogin || isForgot);
+      $('tabRegister').classList.toggle('active', isReg);
+      $('loginForm').classList.toggle('hidden', !isLogin);
+      $('registerForm').classList.toggle('hidden', !isReg);
+      $('forgotWrap').classList.toggle('hidden', !isForgot);
 
-    // Auth Tabs
-    ['login', 'register', 'forgot'].forEach((mode) => {
-      $('tab' + mode[0].toUpperCase() + mode.slice(1)).addEventListener('click', () => {
-        $('tabLogin').classList.toggle('active', mode === 'login');
-        $('tabRegister').classList.toggle('active', mode === 'register');
-        $('tabForgot').classList.toggle('active', mode === 'forgot');
-        $('loginForm').classList.toggle('hidden', mode !== 'login');
-        $('registerForm').classList.toggle('hidden', mode !== 'register');
-        $('forgotWrap').classList.toggle('hidden', mode !== 'forgot');
-      });
+      setStatus('loginStatus', '');
+      setStatus('regStatus', '');
+      setStatus('forgotStatus', '');
+    }
+
+    $('tabLogin').addEventListener('click', () => showAuthMode('login'));
+    $('tabRegister').addEventListener('click', () => showAuthMode('register'));
+    $('openForgotBtn').addEventListener('click', () => {
+      $('forgotEmail').value = $('loginEmail').value.trim();
+      showAuthMode('forgot');
     });
+    $('backToLoginBtn').addEventListener('click', () => showAuthMode('login'));
 
     $('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const btn = $('loginSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      setStatus('loginStatus', '');
+
       try {
         const data = await apiFetch('/api/auth/login', {
           method: 'POST',
@@ -869,12 +842,21 @@
         toast('Signed in successfully', 'success');
         await loadWorkspacesAndData();
       } catch (err) {
+        setStatus('loginStatus', err.message, 'err');
         toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
       }
     });
 
     $('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const btn = $('regSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+      setStatus('regStatus', '');
+
       try {
         const data = await apiFetch('/api/auth/register', {
           method: 'POST',
@@ -892,26 +874,45 @@
         toast('Account created', 'success');
         await loadWorkspacesAndData();
       } catch (err) {
+        setStatus('regStatus', err.message, 'err');
         toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
       }
     });
 
     $('forgotForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const btn = $('sendCodeBtn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      setStatus('forgotStatus', '');
+
       try {
         const res = await apiFetch('/api/auth/forgot-password', {
           method: 'POST',
           body: JSON.stringify({ email: $('forgotEmail').value.trim() })
         });
-        $('resetCode').value = res.reset_code || '';
-        toast(res.message + (res.reset_code ? ` (Code: ${res.reset_code})` : ''), 'success');
+        if (res.reset_code) $('resetCode').value = res.reset_code;
+        setStatus('forgotStatus', res.message + (res.reset_code ? ` (Code: ${res.reset_code})` : ''), 'ok');
+        toast('Reset code sent', 'success');
       } catch (err) {
+        setStatus('forgotStatus', err.message, 'err');
         toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send Code';
       }
     });
 
     $('resetForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const btn = $('resetSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Updating...';
+      setStatus('forgotStatus', '');
+
       try {
         const res = await apiFetch('/api/auth/reset-password', {
           method: 'POST',
@@ -922,15 +923,19 @@
           })
         });
         toast(res.message || 'Password updated', 'success');
-        $('tabLogin').click();
+        showAuthMode('login');
+        setStatus('loginStatus', 'Password updated. Please sign in.', 'ok');
       } catch (err) {
+        setStatus('forgotStatus', err.message, 'err');
         toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Update Password';
       }
     });
 
     $('logoutBtn').addEventListener('click', () => handleLogout(true));
 
-    // Nav Tabs
     document.querySelectorAll('.nav-tabs button').forEach((btn) => {
       btn.addEventListener('click', () => {
         const target = btn.dataset.tab;
@@ -1069,7 +1074,7 @@
           })
         });
         toast('Settings updated', 'success');
-        await loadWorkspacesAndData();
+        await loadWorkspaceDetails();
       } catch (err) {
         toast(err.message, 'error');
       }
@@ -1093,7 +1098,6 @@
       }
     });
 
-    // Init
     applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
     $('txDate').value = new Date().toISOString().slice(0, 10);
 
