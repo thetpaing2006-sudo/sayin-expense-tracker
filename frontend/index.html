@@ -1,363 +1,1690 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my" class="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sayin</title>
+  <title>Sayin (စာရင်း) — Multi-Pool Expense & Analysis</title>
+
+  <!-- Google Fonts: Inter & Noto Sans Myanmar for crisp bilingual typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans Myanmar', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ECFDF5',
+              100: '#D1FAE5',
+              500: '#10B981',
+              600: '#059669',
+              700: '#047857',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
   <style>
-    :root { --bg:#0b1020; --card:#11182e; --card2:#17213e; --bd:rgba(148,163,184,.18); --tx:#f1f5f9; --mu:#94a3b8; --ac:#6366f1; --ac2:#06b6d4; }
-    * { box-sizing:border-box; }
-    body { margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; color:var(--tx); background:var(--bg); }
-    .auth-wrap { min-height:100vh; display:grid; place-items:center; padding:16px; }
-    .auth-card { width:100%; max-width:430px; padding:24px; border-radius:16px; background:var(--card); border:1px solid var(--bd); }
-    .app-shell { max-width:1200px; margin:0 auto; padding:18px 14px 60px; }
-    .topbar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; padding:14px; border-radius:14px; background:var(--card); border:1px solid var(--bd); margin-bottom:16px; }
-    .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:12px; }
-    .two { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:14px; margin-bottom:16px; }
-    .card { background:var(--card); border:1px solid var(--bd); border-radius:14px; padding:16px; }
-    .muted { color:var(--mu); font-size:.86rem; }
-    label { display:block; font-size:.78rem; color:var(--mu); margin-bottom:4px; }
-    input,select { width:100%; padding:8px 10px; border-radius:9px; background:var(--card2); color:var(--tx); border:1px solid var(--bd); }
-    button { padding:8px 13px; border-radius:9px; border:none; font-weight:600; cursor:pointer; }
-    .pri { background:linear-gradient(135deg,var(--ac),var(--ac2)); color:#fff; }
-    .sec { background:rgba(148,163,184,.16); color:var(--tx); }
-    .sm { padding:5px 9px; font-size:.78rem; }
-    table { width:100%; border-collapse:collapse; font-size:.86rem; }
-    th,td { padding:9px 7px; border-bottom:1px solid var(--bd); text-align:left; }
-    .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-    .chip { background:var(--card2); border:1px solid var(--bd); border-radius:999px; padding:5px 10px; font-size:.8rem; display:inline-flex; gap:6px; align-items:center; }
-    .toast { position:fixed; right:16px; bottom:16px; z-index:99; padding:10px 14px; border-radius:10px; display:none; font-weight:600; }
-    .toast.show { display:block; } .toast.ok { background:#14532d; color:#dcfce7; } .toast.err { background:#7f1d1d; color:#fee2e2; }
-    .hidden { display:none !important; }
+    /* Ensure aligned numeric columns and smooth transitions */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    body {
+      font-family: 'Inter', 'Noto Sans Myanmar', system-ui, sans-serif;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.65);
+    }
   </style>
-<link rel="stylesheet" href="/sayin-ui.css"></head>
-<body>
-  <div id="toast" class="toast"></div>
-  <div id="authScreen" class="auth-wrap">
-    <div class="auth-card">
-      <h1 style="margin:0 0 4px;">Sayin</h1>
-      <div class="muted" style="margin-bottom:14px;">Sign in or create account</div>
-      <div class="row" style="margin-bottom:14px;">
-        <button type="button" class="pri" id="modeLoginBtn" style="flex:1;">Sign In</button>
-        <button type="button" class="sec" id="modeRegisterBtn" style="flex:1;">Create Account</button>
-      </div>
-      <form id="authForm">
-        <div id="nameFieldWrap" class="hidden" style="margin-bottom:10px;"><label for="authName">Name</label><input id="authName" /></div>
-        <div style="margin-bottom:10px;"><label for="authEmail">Email</label><input type="email" id="authEmail" required /></div>
-        <div style="margin-bottom:10px;"><label for="authPassword">Password</label><input type="password" id="authPassword" required minlength="6" /></div>
-        <div id="confirmFieldWrap" class="hidden" style="margin-bottom:12px;"><label for="authConfirmPassword">Confirm Password</label><input type="password" id="authConfirmPassword" minlength="6" /></div>
-        <button type="submit" class="pri" id="authSubmitBtn" style="width:100%;">Sign In</button>
-      </form>
-      <div style="margin-top:12px;text-align:center;"><button type="button" class="sec sm" id="toggleForgotBtn">Forgot Password?</button></div>
-      <div id="forgotBox" class="hidden" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd);">
-        <div style="margin-bottom:8px;"><label for="fpEmail">Email</label><div class="row"><input type="email" id="fpEmail" /><button type="button" class="sec sm" id="sendCodeBtn">Get Code</button></div><div id="fpCodeHint" class="muted" style="margin-top:4px;"></div></div>
-        <div style="margin-bottom:8px;"><label for="fpCode">Reset Code</label><input id="fpCode" /></div>
-        <div style="margin-bottom:8px;"><label for="fpNewPw">New Password</label><input type="password" id="fpNewPw" minlength="6" /></div>
-        <div style="margin-bottom:10px;"><label for="fpConfirmPw">Confirm New Password</label><input type="password" id="fpConfirmPw" minlength="6" /></div>
-        <button type="button" class="pri" id="doResetBtn" style="width:100%;">Reset Password</button>
-      </div>
-    </div>
-  </div>
-  <div id="appShell" class="app-shell hidden">
-    <header class="topbar">
-      <div>
-        <div class="row"><strong id="wsHeading">My Space</strong><span class="chip" id="curTag">MMK</span></div>
-        <div class="muted">User: <strong id="userEmailLabel"></strong> · Space: <span id="wsIdLabel"></span></div>
-      </div>
-      <div class="row">
-        <div><label for="wsSelect">Workspace</label><div class="row"><select id="wsSelect"></select><button type="button" class="sec sm" id="addWsBtn">+</button></div></div>
-        <div><label for="monthInput">Month</label><input type="month" id="monthInput" /></div>
-        <div style="align-self:flex-end;" class="row"><button type="button" class="sec" id="refreshBtn">Sync</button><button type="button" class="sec" id="logoutBtn">Logout</button></div>
-      </div>
-    </header>
-    <div class="row" style="margin-bottom:14px;">
-      <button type="button" class="pri" data-tab="overview">Dashboard</button>
-      <button type="button" class="sec" data-tab="prefs">Settings &amp; Share</button>
-    </div>
-    <section id="tab-overview">
-      <div class="grid">
-        <div class="card"><div class="muted">Income</div><div id="kIncome" style="font-size:1.3rem;font-weight:700;">0</div></div>
-        <div class="card"><div class="muted">Expense</div><div id="kExpense" style="font-size:1.3rem;font-weight:700;">0</div></div>
-        <div class="card"><div class="muted">Saving</div><div id="kSaving" style="font-size:1.3rem;font-weight:700;">0</div></div>
-        <div class="card"><div class="muted">Net Balance</div><div id="kBalance" style="font-size:1.3rem;font-weight:700;">0</div></div>
-      </div>
-      <div class="two">
-        <div class="card">
-          <h2 style="margin:0 0 10px;">New Transaction</h2>
-          <form id="txForm">
-            <div class="grid">
-              <div><label for="txDate">Date</label><input type="date" id="txDate" name="tx_date" required /></div>
-              <div><label for="txMember">Member</label><select id="txMember" name="member_name" required></select></div>
-              <div><label for="txType">Type</label><select id="txType" name="entry_type" required><option value="Expense">Expense</option><option value="Income">Income</option><option value="Saving">Saving</option></select></div>
+</head>
+<body class="bg-[#F8FAFC] text-[#0F172A] dark:bg-[#0F172A] dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- ==================== TOP NAVIGATION HEADER ==================== -->
+  <header class="sticky top-0 z-30 bg-white/90 dark:bg-[#1E293B]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-700/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-between gap-3 py-3.5">
+
+        <!-- Brand Logo -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white shadow-sm shadow-emerald-600/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+              <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">Sayin</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70">စာရင်း</span>
             </div>
-            <div class="grid">
-              <div><label for="txCat">Category</label><div class="row"><select id="txCat" name="category" required></select><button type="button" class="sec sm" id="quickCatBtn">+</button></div></div>
-              <div><label for="txAmount">Amount (<span class="cur-lbl">MMK</span>)</label><input type="number" id="txAmount" name="amount_mmk" min="0.01" step="any" required /></div>
-              <div><label for="txPay">Payment</label><select id="txPay" name="payment_method" required></select></div>
-            </div>
-            <div class="grid">
-              <div><label for="txNotes">Notes</label><input type="text" id="txNotes" name="notes" /></div>
-              <div><label for="txReceipt">Receipt</label><input type="file" id="txReceipt" name="receipt" accept="image/*" /></div>
-            </div>
-            <button type="submit" class="pri" id="txSubmitBtn">Save</button>
-          </form>
-        </div>
-        <div class="card">
-          <h2 style="margin:0 0 10px;">Category Breakdown</h2>
-          <div style="overflow-x:auto;"><table><thead><tr><th>Category</th><th>Type</th><th>Tx</th><th>Total</th></tr></thead><tbody id="catSumBody"><tr><td colspan="4" class="muted">No data</td></tr></tbody></table></div>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:16px;">
-        <h2 style="margin:0 0 10px;">Member Breakdown</h2>
-        <div style="overflow-x:auto;"><table><thead><tr><th>Member</th><th>Income</th><th>Expense</th><th>Saving</th></tr></thead><tbody id="memSumBody"><tr><td colspan="4" class="muted">No data</td></tr></tbody></table></div>
-      </div>
-      <div class="card">
-        <div class="topbar" style="padding:0 0 10px;margin:0 0 10px;background:none;border:none;border-bottom:1px solid var(--bd);border-radius:0;">
-          <h2 style="margin:0;">Transactions (<span id="monthLbl"></span>)</h2>
-          <div class="row">
-            <select id="fMember" style="width:auto;"><option value="">All Members</option></select>
-            <select id="fType" style="width:auto;"><option value="">All Types</option><option value="Expense">Expense</option><option value="Income">Income</option><option value="Saving">Saving</option></select>
-            <select id="fCat" style="width:auto;"><option value="">All Categories</option></select>
-            <button type="button" class="sec sm" id="fResetBtn">Reset</button>
+            <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Multi-Pool Expense & Analysis</p>
           </div>
         </div>
-        <div id="filterBar" class="muted" style="margin-bottom:8px;">0 items</div>
-        <div style="overflow-x:auto;">
-          <table><thead><tr><th>Date</th><th>Member</th><th>Type</th><th>Category</th><th>Amount</th><th>Method</th><th>Notes</th><th>Slip</th><th>Action</th></tr></thead>
-          <tbody id="txBody"><tr><td colspan="9" class="muted">Loading...</td></tr></tbody></table>
+
+        <!-- Global Controls: Pool Switcher, Period Filter, Theme Toggle, + Add Entry -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 ml-auto">
+
+          <!-- Global Pool Switcher -->
+          <div class="relative">
+            <select id="globalPoolSelect" aria-label="Select Pool"
+              class="appearance-none pl-3 pr-8 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer transition">
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-slate-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </div>
+
+          <!-- Period Filter -->
+          <div class="relative">
+            <select id="globalPeriodSelect" aria-label="Select Period"
+              class="appearance-none pl-3 pr-8 py-2 text-xs sm:text-sm font-medium rounded-xl bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer transition">
+              <option value="this_month">This Month (ယခုလ)</option>
+              <option value="last_month">Last Month (ပြီးခဲ့သည့်လ)</option>
+              <option value="all_time">All Time (အားလုံး)</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-slate-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </div>
+
+          <!-- Light/Dark Mode Toggle -->
+          <button id="themeToggleBtn" type="button" title="Toggle Light / Dark Theme"
+            class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition cursor-pointer">
+            <!-- Sun Icon (shown in dark mode) -->
+            <svg id="iconSun" class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            </svg>
+            <!-- Moon Icon (shown in light mode) -->
+            <svg id="iconMoon" class="w-4 h-4 block dark:hidden text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+            </svg>
+          </button>
+
+          <!-- Primary Add Entry CTA -->
+          <button id="openAddModalBtn" type="button"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-emerald-600/25 transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            <span>Add Entry</span>
+          </button>
         </div>
-        <div id="editBox" class="hidden" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--bd);">
-          <h3 style="margin:0 0 8px;">Edit #<span id="eIdLbl"></span></h3>
-          <form id="editForm">
-            <input type="hidden" id="eId" />
-            <div class="grid">
-              <div><label for="eDate">Date</label><input type="date" id="eDate" required /></div>
-              <div><label for="eMember">Member</label><select id="eMember" required></select></div>
-              <div><label for="eType">Type</label><select id="eType" required><option value="Expense">Expense</option><option value="Income">Income</option><option value="Saving">Saving</option></select></div>
-              <div><label for="eCat">Category</label><select id="eCat" required></select></div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center gap-1 sm:gap-2 -mb-px overflow-x-auto" aria-label="Main Tabs">
+        <button data-tab="dashboard" class="nav-tab active-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 dark:border-emerald-400 whitespace-nowrap transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          <span>Dashboard <span class="hidden sm:inline font-normal opacity-80">(Analysis)</span></span>
+        </button>
+
+        <button data-tab="transactions" class="nav-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 whitespace-nowrap transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          <span>Transactions <span class="hidden sm:inline font-normal opacity-80">(စာရင်းမှတ်တမ်း)</span></span>
+        </button>
+
+        <button data-tab="manage" class="nav-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 whitespace-nowrap transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+          <span>Pools & Categories <span class="hidden sm:inline font-normal opacity-80">(စီမံခန့်ခွဲမှု)</span></span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT AREA ==================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- Sample Data Banner (Dismissible / Clearable if demo data is active) -->
+    <div id="sampleDataBanner" class="hidden mb-6 p-3.5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+        <span class="text-base">💡</span>
+        <span>လက်ရှိတွင် နမူနာစာရင်း (Sample Data) များ ထည့်သွင်းပြသထားပါသည်။ ကိုယ်ပိုင်စာရင်း အသစ်စတင်လိုပါက ရှင်းလင်းနိုင်ပါသည်။</span>
+      </div>
+      <button id="clearSampleDataBtn" type="button" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition cursor-pointer">
+        Clear Sample Data
+      </button>
+    </div>
+
+    <!-- ==================== TAB 1: DASHBOARD (ANALYSIS) ==================== -->
+    <section id="tab-dashboard" class="tab-panel space-y-6">
+
+      <!-- 4 KPI Summary Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Total Net Balance -->
+        <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Net Balance (လက်ကျန်ငွေ)</span>
+            <span class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">💰</span>
+          </div>
+          <div id="kpiBalance" class="space-y-1 tabular-nums"></div>
+          <p id="kpiBalanceSub" class="text-xs text-slate-400 dark:text-slate-500 mt-2">Across selected pool(s)</p>
+        </div>
+
+        <!-- Period Income -->
+        <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Income (ဝင်ငွေ)</span>
+            <span class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/70 flex items-center justify-center text-emerald-600 dark:text-emerald-400">↗</span>
+          </div>
+          <div id="kpiIncome" class="space-y-1 tabular-nums"></div>
+          <p id="kpiIncomeCount" class="text-xs text-slate-400 dark:text-slate-500 mt-2">0 income entries</p>
+        </div>
+
+        <!-- Period Expense -->
+        <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400">Expense (ထွက်ငွေ)</span>
+            <span class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-950/70 flex items-center justify-center text-rose-600 dark:text-rose-400">↘</span>
+          </div>
+          <div id="kpiExpense" class="space-y-1 tabular-nums"></div>
+          <p id="kpiExpenseCount" class="text-xs text-slate-400 dark:text-slate-500 mt-2">0 expense entries</p>
+        </div>
+
+        <!-- Savings Rate / Cashflow Health -->
+        <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Savings Rate (စုဆောင်းနိုင်မှု)</span>
+            <span class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 flex items-center justify-center text-indigo-600 dark:text-indigo-400">📊</span>
+          </div>
+          <div id="kpiSavingsRate" class="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">--%</div>
+          <p id="kpiSavingsHealth" class="text-xs text-slate-500 dark:text-slate-400 mt-2">Cashflow health indicator</p>
+        </div>
+      </div>
+
+      <!-- Income vs Expense Comparison Bar + Daily Spending Trend -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Income vs Expense & Pool Breakdown (5 cols) -->
+        <div class="lg:col-span-5 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900 dark:text-white">Cashflow Comparison</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400">ဝင်ငွေနှင့် ထွက်ငွေ နှိုင်းယှဉ်ချက်</p>
+              </div>
+              <span id="cashflowBadge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Healthy</span>
             </div>
-            <div class="grid">
-              <div><label for="eAmt">Amount</label><input type="number" id="eAmt" min="0.01" step="any" required /></div>
-              <div><label for="ePay">Payment</label><select id="ePay" required></select></div>
-              <div><label for="eNotes">Notes</label><input type="text" id="eNotes" /></div>
+
+            <div id="cashflowComparisonContainer" class="space-y-4">
+              <!-- Populated dynamically per currency -->
             </div>
-            <div class="row"><button type="submit" class="pri">Update</button><button type="button" class="sec" id="eCancelBtn">Cancel</button></div>
+          </div>
+
+          <!-- Pool Summary Mini Cards -->
+          <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-700/80">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Active Pools Overview</span>
+              <button type="button" onclick="switchTab('manage')" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer">Manage Pools →</button>
+            </div>
+            <div id="dashboardPoolList" class="space-y-2.5"></div>
+          </div>
+        </div>
+
+        <!-- Daily Spending Trend Chart (7 cols) -->
+        <div class="lg:col-span-7 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs flex flex-col">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-white">Daily Spending Trend</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">နေ့စဉ် အသုံးစရိတ် ပြောင်းလဲမှုပြ ဂရပ်</p>
+            </div>
+            <div id="trendCurrencySelectorWrap" class="flex items-center gap-2">
+              <span class="text-xs text-slate-400">Currency:</span>
+              <select id="trendCurrencySelect" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none"></select>
+            </div>
+          </div>
+
+          <div id="dailyTrendChartContainer" class="flex-1 min-h-[230px] flex items-end">
+            <!-- SVG Bar Chart injected here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Spending Breakdown + Recent 5 Transactions -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Category Breakdown (6 cols) -->
+        <div class="lg:col-span-6 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-white">Expense by Category</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">ကဏ္ဍအလိုက် သုံးစွဲမှု အချိုးအစား</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <select id="categoryCurrencySelect" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none"></select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center">
+            <!-- Donut Ring Chart -->
+            <div id="categoryDonutContainer" class="sm:col-span-5 flex items-center justify-center"></div>
+            <!-- Horizontal Progress Bars -->
+            <div id="categoryBarsContainer" class="sm:col-span-7 space-y-3"></div>
+          </div>
+        </div>
+
+        <!-- Recent 5 Transactions (6 cols) -->
+        <div class="lg:col-span-6 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-white">Recent Transactions</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">နောက်ဆုံး မှတ်တမ်းတင်ထားသည့် စာရင်း (၅) ခု</p>
+            </div>
+            <button type="button" onclick="switchTab('transactions')" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition cursor-pointer">
+              View All →
+            </button>
+          </div>
+
+          <div id="recentTransactionsList" class="divide-y divide-slate-100 dark:divide-slate-700/70 flex-1"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: TRANSACTIONS (စာရင်းမှတ်တမ်း) ==================== -->
+    <section id="tab-transactions" class="tab-panel hidden space-y-5">
+
+      <!-- Filter & Export Toolbar -->
+      <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <!-- Search & Filters -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 flex-1">
+            <!-- Search Input -->
+            <div class="relative">
+              <input id="txSearchInput" type="text" placeholder="Search note, category..."
+                class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </div>
+
+            <!-- Type Filter -->
+            <select id="txTypeFilter" class="px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="all">All Types (ဝင်ငွေ + ထွက်ငွေ)</option>
+              <option value="expense">Expense Only (ထွက်ငွေ)</option>
+              <option value="income">Income Only (ဝင်ငွေ)</option>
+            </select>
+
+            <!-- Category Filter -->
+            <select id="txCategoryFilter" class="px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="all">All Categories</option>
+            </select>
+
+            <!-- Payment Method Filter -->
+            <select id="txPaymentFilter" class="px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="all">All Payment Methods</option>
+              <option value="KBZPay">KBZPay</option>
+              <option value="WavePay">WavePay</option>
+              <option value="Cash">Cash (ငွေသား)</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Credit/Debit Card">Credit/Debit Card</option>
+            </select>
+          </div>
+
+          <!-- Export CSV Button -->
+          <div class="flex items-center justify-end gap-2">
+            <span id="txFilteredCount" class="text-xs text-slate-500 dark:text-slate-400 mr-1">0 items</span>
+            <button id="exportCsvBtn" type="button"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop Table View -->
+      <div class="hidden md:block bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200/80 dark:border-slate-700/80 bg-slate-50/80 dark:bg-slate-800/60 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <th class="py-3.5 px-4">Date</th>
+                <th class="py-3.5 px-4">Pool</th>
+                <th class="py-3.5 px-4">Category</th>
+                <th class="py-3.5 px-4">Note / Description</th>
+                <th class="py-3.5 px-4">Payment</th>
+                <th class="py-3.5 px-4 text-right">Amount</th>
+                <th class="py-3.5 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="txDesktopTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/70 text-sm"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Mobile Stacked Cards View -->
+      <div id="txMobileCardsList" class="md:hidden space-y-3"></div>
+    </section>
+
+    <!-- ==================== TAB 3: POOLS & CATEGORIES (စီမံခန့်ခွဲမှု) ==================== -->
+    <section id="tab-manage" class="tab-panel hidden space-y-6">
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Manage Pools (7 cols) -->
+        <div class="lg:col-span-7 bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-5">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 dark:text-white">Manage Pools (ငွေစာရင်းအုပ်စုများ)</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">ကိုယ်ပိုင်သုံး၊ မိသားစုသုံး သို့မဟုတ် နိုင်ငံခြားငွေ Pool များ ခွဲခြားစီမံပါ</p>
+          </div>
+
+          <!-- Add New Pool Form -->
+          <form id="addPoolForm" class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+            <div class="sm:col-span-4">
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Pool Name</label>
+              <input id="newPoolName" type="text" required placeholder="e.g. Side Business"
+                class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+            <div class="sm:col-span-3">
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Currency</label>
+              <select id="newPoolCurrency" class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="MMK">MMK (Ks)</option>
+                <option value="USD">USD ($)</option>
+                <option value="THB">THB (฿)</option>
+                <option value="SGD">SGD (S$)</option>
+                <option value="EUR">EUR (€)</option>
+              </select>
+            </div>
+            <div class="sm:col-span-3">
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Initial Balance</label>
+              <input id="newPoolInitial" type="number" step="any" value="0"
+                class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+            <div class="sm:col-span-2">
+              <button type="submit" class="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
+                + Add
+              </button>
+            </div>
           </form>
+
+          <!-- Pools Grid -->
+          <div id="managePoolsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div>
+        </div>
+
+        <!-- Manage Categories & Data Backup (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+
+          <!-- Categories Card -->
+          <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-4">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-white">Custom Categories (ကဏ္ဍများ)</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">ဝင်ငွေနှင့် ထွက်ငွေ အမျိုးအစားများ ထပ်တိုးနိုင်ပါသည်</p>
+            </div>
+
+            <form id="addCategoryForm" class="grid grid-cols-12 gap-2 items-end">
+              <div class="col-span-2">
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Icon</label>
+                <input id="newCatEmoji" type="text" maxlength="4" value="🏷️" required
+                  class="w-full px-2 py-2 text-center text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div class="col-span-5">
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Category Name</label>
+                <input id="newCatName" type="text" placeholder="e.g. Coffee / Tea" required
+                  class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div class="col-span-3">
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Type</label>
+                <select id="newCatType" class="w-full px-2 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                </select>
+              </div>
+              <div class="col-span-2">
+                <button type="submit" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white text-xs font-semibold cursor-pointer">
+                  Add
+                </button>
+              </div>
+            </form>
+
+            <div id="manageCategoriesList" class="flex flex-wrap gap-2 pt-2 max-h-56 overflow-y-auto"></div>
+          </div>
+
+          <!-- Data Backup & Restore Card -->
+          <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-4">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-white">Data Backup & Reset</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">စာရင်းများကို JSON ဖိုင်ဖြင့် သိမ်းဆည်းခြင်း / ပြန်သွင်းခြင်း</p>
+            </div>
+
+            <div class="flex flex-wrap gap-2.5">
+              <button id="exportJsonBtn" type="button" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition cursor-pointer">
+                ⬇ Export JSON Backup
+              </button>
+
+              <label class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition cursor-pointer">
+                ⬆ Import JSON
+                <input id="importJsonInput" type="file" accept=".json" class="hidden" />
+              </label>
+
+              <button id="resetAllDataBtn" type="button" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 text-xs font-semibold transition cursor-pointer">
+                Reset All Data
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
-    <section id="tab-prefs" class="hidden">
-      <div class="two">
-        <div class="card">
-          <h2 style="margin:0 0 10px;">Workspace &amp; Currency</h2>
-          <form id="prefForm">
-            <div class="grid">
-              <div><label for="pName">Name</label><input id="pName" required /></div>
-              <div><label for="pCur">Currency</label><select id="pCur"><option value="MMK">MMK</option><option value="USD">USD</option><option value="THB">THB</option><option value="SGD">SGD</option></select></div>
-            </div>
-            <div class="grid">
-              <div><label for="pMembers">Members (comma)</label><input id="pMembers" /></div>
-              <div><label for="pPays">Payments (comma)</label><input id="pPays" /></div>
-            </div>
-            <button type="submit" class="pri">Save</button>
-          </form>
-        </div>
-        <div class="card">
-          <h2 style="margin:0 0 10px;">Share Workspace</h2>
-          <div class="muted" style="margin-bottom:8px;">Space: <strong class="cur-ws-lbl"></strong></div>
-          <form id="inviteMemberForm">
-            <div class="grid"><div><label for="inviteEmail">User Email</label><input type="email" id="inviteEmail" required /></div></div>
-            <button type="submit" class="pri">Invite</button>
-          </form>
-          <div id="sharedMemberChips" class="chips"></div>
-        </div>
-        <div class="card">
-          <h2 style="margin:0 0 10px;">Categories</h2>
-          <form id="catForm">
-            <div class="grid">
-              <div><label for="cName">Name</label><input id="cName" required /></div>
-              <div><label for="cType">Type</label><select id="cType"><option value="Expense">Expense</option><option value="Income">Income</option><option value="Saving">Saving</option></select></div>
-            </div>
-            <button type="submit" class="pri">Add</button>
-          </form>
-          <div id="catChips" class="chips"></div>
-        </div>
+
+  </main>
+
+  <!-- ==================== ADD / EDIT TRANSACTION MODAL ==================== -->
+  <div id="transactionModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="bg-white dark:bg-[#1E293B] w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
+        <h3 id="modalTitle" class="text-base font-bold text-slate-900 dark:text-white">Add Transaction (စာရင်းသွင်းရန်)</h3>
+        <button id="closeModalBtn" type="button" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
-    </section>
+
+      <form id="transactionForm" class="p-6 space-y-4">
+        <input type="hidden" id="txIdInput" />
+
+        <!-- Segmented Type Toggle: Expense vs Income -->
+        <div class="grid grid-cols-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-800">
+          <button type="button" id="typeBtnExpense" data-type="expense"
+            class="py-2 text-xs sm:text-sm font-bold rounded-lg bg-rose-600 text-white shadow-xs transition cursor-pointer">
+            ↘ Expense (ထွက်ငွေ)
+          </button>
+          <button type="button" id="typeBtnIncome" data-type="income"
+            class="py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-600 dark:text-slate-300 transition cursor-pointer">
+            ↗ Income (ဝင်ငွေ)
+          </button>
+        </div>
+
+        <!-- Pool & Date -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Pool (ငွေစာရင်း)</label>
+            <select id="txPoolInput" required class="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date (ရက်စွဲ)</label>
+            <input id="txDateInput" type="date" required class="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+        </div>
+
+        <!-- Amount -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Amount (ငွေပမာဏ)</label>
+          <div class="relative">
+            <input id="txAmountInput" type="number" step="any" min="0.01" required placeholder="0"
+              class="w-full pl-3.5 pr-16 py-2.5 text-lg font-extrabold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <span id="txCurrencyBadge" class="absolute right-3.5 top-3 text-xs font-bold text-slate-400">MMK</span>
+          </div>
+        </div>
+
+        <!-- Category & Payment Method -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Category (ကဏ္ဍ)</label>
+            <select id="txCategoryInput" required class="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Method</label>
+            <select id="txPaymentInput" class="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="KBZPay">KBZPay</option>
+              <option value="WavePay">WavePay</option>
+              <option value="Cash">Cash (ငွေသား)</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Credit/Debit Card">Credit/Debit Card</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Note -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Note / Description (မှတ်ချက်)</label>
+          <input id="txNoteInput" type="text" placeholder="ဥပမာ - နေ့လယ်စာ၊ လျှပ်စစ်မီတာခ၊ လစာ..."
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="pt-2 flex items-center justify-end gap-2.5">
+          <button type="button" id="cancelModalBtn" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold cursor-pointer">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm shadow-emerald-600/25 cursor-pointer">
+            Save Entry
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
+
+  <!-- ==================== CUSTOM CONFIRMATION DIALOG ==================== -->
+  <div id="confirmDialog" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="bg-white dark:bg-[#1E293B] w-full max-w-sm rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-2xl space-y-4">
+      <h4 id="confirmTitle" class="text-base font-bold text-slate-900 dark:text-white">Confirm Action</h4>
+      <p id="confirmMessage" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button id="confirmCancelBtn" type="button" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer">Cancel</button>
+        <button id="confirmOkBtn" type="button" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ==================== APPLICATION JAVASCRIPT ==================== -->
   <script>
-    const API = "https://expense-portal-api.thetpaing2006.workers.dev";
-    const TOKEN_KEY = "lp_token";
-    const WS_MAP_KEY = "lp_ws_by_user";
-    let authMode = "login", token = localStorage.getItem(TOKEN_KEY) || "", currentUser = null, wsId = "", monthTxs = [];
-    let state = { currency: "MMK", workspace_name: "My Space", members: ["Me"], payment_methods: ["Cash"], categories: [] };
-    const monthInput = document.getElementById("monthInput"), txDateInput = document.getElementById("txDate"), now = new Date();
-    monthInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-    txDateInput.value = `${monthInput.value}-${String(now.getDate()).padStart(2, "0")}`;
+    /**
+     * Sayin (စာရင်း) — Multi-Pool Expense & Financial Analysis SPA
+     * Storage Key: sayin_expense_tracker_v1
+     */
+    const STORAGE_KEY = 'sayin_expense_tracker_v1';
 
-    const toast = (m, err = false) => { const el = document.getElementById("toast"); el.textContent = m; el.className = `toast show ${err ? "err" : "ok"}`; setTimeout(() => { el.className = "toast"; }, 3000); };
-    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-    const fmt = (n) => `${Number(n || 0).toLocaleString()} ${state.currency}`;
+    // Currency formatting configuration
+    const CURRENCY_META = {
+      MMK: { symbol: 'Ks', decimals: 0, position: 'suffix' },
+      USD: { symbol: '$', decimals: 2, position: 'prefix' },
+      THB: { symbol: '฿', decimals: 2, position: 'prefix' },
+      SGD: { symbol: 'S$', decimals: 2, position: 'prefix' },
+      EUR: { symbol: '€', decimals: 2, position: 'prefix' },
+    };
 
-    async function req(path, opts = {}) {
-      const h = new Headers(opts.headers || {}); if (token) h.set("Authorization", `Bearer ${token}`);
-      const r = await fetch(`${API}${path}`, { ...opts, headers: h }); const d = await r.json().catch(() => ({}));
-      if (r.status === 401) { logoutLocal(); throw new Error("Session expired"); }
-      if (!r.ok) throw new Error(d.error || `Error ${r.status}`); return d;
+    const CATEGORY_COLORS = [
+      '#059669', '#0284C7', '#D97706', '#E11D48', '#7C3AED',
+      '#0D9488', '#DB2777', '#EA580C', '#4F46E5', '#65A30D'
+    ];
+
+    // Helper: Get YYYY-MM-DD for relative offsets
+    function getOffsetDate(daysOffset = 0) {
+      const d = new Date();
+      d.setDate(d.getDate() + daysOffset);
+      return d.toISOString().split('T')[0];
     }
-    function logoutLocal() { token = ""; currentUser = null; localStorage.removeItem(TOKEN_KEY); document.getElementById("appShell").classList.add("hidden"); document.getElementById("authScreen").classList.remove("hidden"); }
-    function getUserWorkspaces() {
-      if (!currentUser) return [];
-      try { const all = JSON.parse(localStorage.getItem(WS_MAP_KEY) || "{}"); return Array.from(new Set([`family_${currentUser.id}`, ...(all[currentUser.id] || [])])); }
-      catch { return [`family_${currentUser.id}`]; }
+
+    // Default starter state on first visit
+    function createInitialSeedState() {
+      return {
+        theme: 'light',
+        isSampleData: true,
+        selectedPoolId: 'all',
+        selectedPeriod: 'this_month',
+        pools: [
+          { id: 'pool_personal', name: 'Personal', currency: 'MMK', initialBalance: 850000, color: '#059669' },
+          { id: 'pool_family', name: 'Family', currency: 'MMK', initialBalance: 1500000, color: '#0284C7' },
+          { id: 'pool_fx', name: 'Travel / FX', currency: 'USD', initialBalance: 650, color: '#7C3AED' }
+        ],
+        categories: [
+          { id: 'cat_food', name: 'Food & Dining (အစားအသောက်)', emoji: '🍜', type: 'expense', color: '#E11D48' },
+          { id: 'cat_transport', name: 'Transport & Fuel (သွားလာရေး)', emoji: '🚕', type: 'expense', color: '#D97706' },
+          { id: 'cat_utilities', name: 'Bills & Utilities (မီတာ/အင်တာနက်)', emoji: '⚡', type: 'expense', color: '#0284C7' },
+          { id: 'cat_groceries', name: 'Groceries & Home (အိမ်သုံး)', emoji: '🛒', type: 'expense', color: '#0D9488' },
+          { id: 'cat_health', name: 'Health & Medical (ကျန်းမာရေး)', emoji: '💊', type: 'expense', color: '#7C3AED' },
+          { id: 'cat_shopping', name: 'Shopping (အဝတ်အထည်/အသုံးအဆောင်)', emoji: '🛍️', type: 'expense', color: '#DB2777' },
+          { id: 'cat_salary', name: 'Salary & Bonus (လစာ)', emoji: '💼', type: 'income', color: '#059669' },
+          { id: 'cat_freelance', name: 'Freelance / Business (အပိုဝင်ငွေ)', emoji: '💻', type: 'income', color: '#10B981' }
+        ],
+        transactions: [
+          { id: 'tx_1', poolId: 'pool_personal', type: 'income', amount: 1200000, date: getOffsetDate(-12), categoryId: 'cat_salary', paymentMethod: 'Bank Transfer', note: 'Monthly Salary' },
+          { id: 'tx_2', poolId: 'pool_personal', type: 'expense', amount: 18500, date: getOffsetDate(-6), categoryId: 'cat_food', paymentMethod: 'KBZPay', note: 'နေ့လယ်စာနှင့် ကော်ဖီ' },
+          { id: 'tx_3', poolId: 'pool_personal', type: 'expense', amount: 12000, date: getOffsetDate(-4), categoryId: 'cat_transport', paymentMethod: 'WavePay', note: 'Grab Taxi အသွားအပြန်' },
+          { id: 'tx_4', poolId: 'pool_family', type: 'expense', amount: 85000, date: getOffsetDate(-3), categoryId: 'cat_groceries', paymentMethod: 'KBZPay', note: 'အပတ်စဉ် မီးဖိုချောင်သုံးပစ္စည်း' },
+          { id: 'tx_5', poolId: 'pool_family', type: 'expense', amount: 45000, date: getOffsetDate(-2), categoryId: 'cat_utilities', paymentMethod: 'KBZPay', note: 'Fiber Internet လစဉ်ကြေး' },
+          { id: 'tx_6', poolId: 'pool_personal', type: 'income', amount: 250000, date: getOffsetDate(-1), categoryId: 'cat_freelance', paymentMethod: 'Bank Transfer', note: 'UI Design Freelance' },
+          { id: 'tx_7', poolId: 'pool_personal', type: 'expense', amount: 32000, date: getOffsetDate(0), categoryId: 'cat_health', paymentMethod: 'Cash', note: 'ဆေးဝါးနှင့် ဗီတာမင်' },
+          { id: 'tx_8', poolId: 'pool_fx', type: 'expense', amount: 48.50, date: getOffsetDate(-2), categoryId: 'cat_shopping', paymentMethod: 'Credit/Debit Card', note: 'Cloud Hosting & Domain' }
+        ]
+      };
     }
-    function saveUserWorkspace(id) {
-      if (!currentUser) return null;
-      const c = String(id || "").trim().replace(/[^a-zA-Z0-9_-]/g, "_"); if (!c) return null;
-      const all = JSON.parse(localStorage.getItem(WS_MAP_KEY) || "{}");
-      const list = Array.isArray(all[currentUser.id]) ? all[currentUser.id] : [];
-      if (!list.includes(c)) list.push(c); all[currentUser.id] = list;
-      localStorage.setItem(WS_MAP_KEY, JSON.stringify(all)); localStorage.setItem(`lp_active_ws_${currentUser.id}`, c); return c;
-    }
-    function renderWsDropdown() {
-      const list = getUserWorkspaces(); if (!list.length) return; if (!list.includes(wsId)) wsId = list[0];
-      const sel = document.getElementById("wsSelect"); sel.innerHTML = list.map((w) => `<option value="${esc(w)}">${esc(w)}</option>`).join("");
-      sel.value = wsId; document.getElementById("wsIdLabel").textContent = wsId;
-    }
-    async function refreshWorkspacesList() {
+
+    // Load & Save State
+    let appState = loadState();
+    let currentTab = 'dashboard';
+    let modalTxType = 'expense';
+
+    function loadState() {
       try {
-        const res = await req("/api/workspaces"); const merged = Array.from(new Set([wsId, ...(res.data || []).map((w) => w.workspace_id), ...getUserWorkspaces()])).filter(Boolean);
-        const sel = document.getElementById("wsSelect"); sel.innerHTML = merged.map((w) => `<option value="${esc(w)}">${esc(w)}</option>`).join("");
-        sel.value = merged.includes(wsId) ? wsId : merged[0]; document.getElementById("wsIdLabel").textContent = wsId;
-      } catch { renderWsDropdown(); }
-    }
-    async function loadSharedMembers() {
-      const box = document.getElementById("sharedMemberChips"); document.querySelectorAll(".cur-ws-lbl").forEach((e) => { e.textContent = wsId; });
-      if (!box) return;
-      try { const res = await req(`/api/workspaces/${wsId}/members`); box.innerHTML = (res.data || []).map((m) => `<span class="chip"><strong>${esc(m.display_name)}</strong> <span class="muted">(${esc(m.email)})</span> <span>${esc(m.role)}</span></span>`).join("") || `<span class="muted">No members</span>`; }
-      catch { box.innerHTML = ""; }
-    }
-    function syncCatSelect() { const t = document.getElementById("txType").value, rows = state.categories.filter((c) => c.entry_type === t && c.is_active); document.getElementById("txCat").innerHTML = rows.length ? rows.map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("") : `<option value="">No ${t}</option>`; }
-    function renderCatChips() { document.getElementById("catChips").innerHTML = state.categories.map((c) => `<span class="chip"><strong>${esc(c.name)}</strong><span>${esc(c.entry_type)}</span><button type="button" class="sec sm" onclick="toggleCat(${c.id},${c.is_active ? 0 : 1})">${c.is_active ? "Hide" : "Show"}</button></span>`).join("") || `<span class="muted">No categories</span>`; }
-    window.toggleCat = async (id, is_active) => { try { await req(`/api/workspaces/${wsId}/categories/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ is_active }) }); await loadMeta(); toast("Updated"); } catch (e) { toast(e.message, true); } };
-    function syncUI() {
-      document.getElementById("wsHeading").textContent = state.workspace_name; document.getElementById("curTag").textContent = state.currency;
-      document.querySelectorAll(".cur-lbl").forEach((e) => { e.textContent = state.currency; });
-      document.getElementById("txMember").innerHTML = state.members.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join("");
-      document.getElementById("txPay").innerHTML = state.payment_methods.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
-      syncCatSelect(); renderCatChips(); loadSharedMembers();
-      document.getElementById("pName").value = state.workspace_name; document.getElementById("pCur").value = state.currency;
-      document.getElementById("pMembers").value = state.members.join(", "); document.getElementById("pPays").value = state.payment_methods.join(", ");
-    }
-    function syncFilters() {
-      const fm = document.getElementById("fMember"), fc = document.getElementById("fCat"), pm = fm.value, pc = fc.value;
-      const mems = Array.from(new Set([...state.members, ...monthTxs.map((t) => t.member_name).filter(Boolean)]));
-      fm.innerHTML = `<option value="">All Members</option>` + mems.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join(""); fm.value = mems.includes(pm) ? pm : "";
-      const cats = Array.from(new Set([...state.categories.map((c) => c.name), ...monthTxs.map((t) => t.category).filter(Boolean)])).sort();
-      fc.innerHTML = `<option value="">All Categories</option>` + cats.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join(""); fc.value = cats.includes(pc) ? pc : "";
-    }
-    function renderMembers() {
-      const map = new Map(); for (const m of state.members) map.set(m, { member: m, income: 0, expense: 0, saving: 0 });
-      for (const t of monthTxs) {
-        const n = t.member_name || "Unknown"; if (!map.has(n)) map.set(n, { member: n, income: 0, expense: 0, saving: 0 });
-        const r = map.get(n), a = Number(t.amount_mmk || 0);
-        if (t.entry_type === "Income") r.income += a; else if (t.entry_type === "Expense") r.expense += a; else if (t.entry_type === "Saving") r.saving += a;
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const seed = createInitialSeedState();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
+          return seed;
+        }
+        return JSON.parse(raw);
+      } catch (e) {
+        console.error('Failed to load state:', e);
+        return createInitialSeedState();
       }
-      document.getElementById("memSumBody").innerHTML = Array.from(map.values()).map((r) => `<tr><td><strong>${esc(r.member)}</strong></td><td>${fmt(r.income)}</td><td>${fmt(r.expense)}</td><td>${fmt(r.saving)}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No data</td></tr>`;
-    }
-    async function renderSlipLink(key) {
-      if (!key) return `<span class="muted">-</span>`;
-      try { const r = await fetch(`${API}/api/receipts/${encodeURIComponent(key)}`, { headers: { Authorization: `Bearer ${token}` } }); if (!r.ok) return `<span class="muted">N/A</span>`; return `<a href="${URL.createObjectURL(await r.blob())}" target="_blank" rel="noopener">Slip</a>`; }
-      catch { return `<span class="muted">-</span>`; }
-    }
-    async function renderTxs() {
-      const fm = document.getElementById("fMember").value, ft = document.getElementById("fType").value, fc = document.getElementById("fCat").value;
-      const list = monthTxs.filter((t) => (!fm || t.member_name === fm) && (!ft || t.entry_type === ft) && (!fc || t.category === fc));
-      document.getElementById("filterBar").textContent = `Showing ${list.length} of ${monthTxs.length} · Total: ${fmt(list.reduce((s, t) => s + Number(t.amount_mmk || 0), 0))}`;
-      const body = document.getElementById("txBody");
-      if (!list.length) { body.innerHTML = `<tr><td colspan="9" class="muted">No entries</td></tr>`; return; }
-      body.innerHTML = (await Promise.all(list.map(async (t) => `<tr><td>${esc(t.tx_date)}</td><td>${esc(t.member_name)}</td><td>${esc(t.entry_type)}</td><td>${esc(t.category)}</td><td><strong>${fmt(t.amount_mmk)}</strong></td><td>${esc(t.payment_method)}</td><td>${esc(t.notes || "")}</td><td>${await renderSlipLink(t.receipt_key)}</td><td><button type="button" class="sec sm" onclick="openEdit(${t.id})">Edit</button> <button type="button" class="sec sm" onclick="delTx(${t.id})">Del</button></td></tr>`))).join("");
-    }
-    function fillEdit(type, cat, mem, pay) {
-      document.getElementById("eMember").innerHTML = state.members.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join("");
-      document.getElementById("ePay").innerHTML = state.payment_methods.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
-      document.getElementById("eMember").value = mem; document.getElementById("ePay").value = pay;
-      const names = state.categories.filter((c) => c.entry_type === type && c.is_active).map((c) => c.name);
-      if (cat && !names.includes(cat)) names.unshift(cat);
-      document.getElementById("eCat").innerHTML = names.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join(""); document.getElementById("eCat").value = cat;
-    }
-    window.openEdit = (id) => { const tx = monthTxs.find((x) => Number(x.id) === Number(id)); if (!tx) return; document.getElementById("eId").value = tx.id; document.getElementById("eIdLbl").textContent = tx.id; document.getElementById("eDate").value = tx.tx_date; document.getElementById("eType").value = tx.entry_type; document.getElementById("eAmt").value = tx.amount_mmk; document.getElementById("eNotes").value = tx.notes || ""; fillEdit(tx.entry_type, tx.category, tx.member_name, tx.payment_method); document.getElementById("editBox").classList.remove("hidden"); };
-    window.delTx = async (id) => { if (!confirm(`Delete #${id}?`)) return; try { await req(`/api/workspaces/${wsId}/transactions/${id}`, { method: "DELETE" }); toast("Deleted"); await loadMonth(); } catch (e) { toast(e.message, true); } };
-    async function loadMeta() {
-      const [sRes, cRes] = await Promise.all([req(`/api/workspaces/${wsId}/settings`), req(`/api/workspaces/${wsId}/categories?include_inactive=1`)]);
-      const s = sRes.data || {}; state.currency = s.currency || "MMK"; state.workspace_name = s.workspace_name || wsId;
-      state.members = s.members?.length ? s.members : ["Me"]; state.payment_methods = s.payment_methods?.length ? s.payment_methods : ["Cash"];
-      state.categories = cRes.data || []; syncUI(); syncFilters();
-    }
-    async function loadMonth() {
-      const m = monthInput.value; document.getElementById("monthLbl").textContent = m;
-      const [sumRes, txRes] = await Promise.all([req(`/api/workspaces/${wsId}/summary?month=${encodeURIComponent(m)}`), req(`/api/workspaces/${wsId}/transactions?month=${encodeURIComponent(m)}`)]);
-      const sum = sumRes.summary || {};
-      document.getElementById("kIncome").textContent = fmt(sum.total_income); document.getElementById("kExpense").textContent = fmt(sum.total_expense);
-      document.getElementById("kSaving").textContent = fmt(sum.total_saving); document.getElementById("kBalance").textContent = fmt(sum.net_balance);
-      document.getElementById("catSumBody").innerHTML = (sumRes.categories || []).map((r) => `<tr><td>${esc(r.category)}</td><td>${esc(r.entry_type)}</td><td>${r.tx_count}</td><td><strong>${fmt(r.total_mmk)}</strong></td></tr>`).join("") || `<tr><td colspan="4" class="muted">No data</td></tr>`;
-      monthTxs = txRes.data || []; syncFilters(); renderMembers(); await renderTxs();
-    }
-    async function enterApp(user, defWs) {
-      currentUser = user; document.getElementById("userEmailLabel").textContent = `${user.display_name} (${user.email})`;
-      wsId = localStorage.getItem(`lp_active_ws_${user.id}`) || defWs || `family_${user.id}`;
-      saveUserWorkspace(wsId); renderWsDropdown(); await refreshWorkspacesList();
-      document.getElementById("authScreen").classList.add("hidden"); document.getElementById("appShell").classList.remove("hidden");
-      await loadMeta(); await loadMonth();
     }
 
-    document.getElementById("modeLoginBtn").addEventListener("click", () => { authMode = "login"; document.getElementById("nameFieldWrap").classList.add("hidden"); document.getElementById("confirmFieldWrap").classList.add("hidden"); document.getElementById("authSubmitBtn").textContent = "Sign In"; });
-    document.getElementById("modeRegisterBtn").addEventListener("click", () => { authMode = "register"; document.getElementById("nameFieldWrap").classList.remove("hidden"); document.getElementById("confirmFieldWrap").classList.remove("hidden"); document.getElementById("authSubmitBtn").textContent = "Create Account"; });
-    document.getElementById("authForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    function saveState() {
       try {
-        const pw = document.getElementById("authPassword").value;
-        if (authMode === "register" && pw !== document.getElementById("authConfirmPassword").value) { toast("Passwords do not match", true); return; }
-        const r = await fetch(`${API}${authMode === "register" ? "/api/auth/register" : "/api/auth/login"}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: document.getElementById("authEmail").value.trim(), password: pw, ...(authMode === "register" ? { display_name: document.getElementById("authName").value.trim() } : {}) }) });
-        const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Auth failed");
-        token = d.token; localStorage.setItem(TOKEN_KEY, token); await enterApp(d.user, d.default_workspace_id); toast(`Welcome, ${d.user.display_name}`);
-      } catch (err) { toast(err.message, true); }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        showToast('Storage quota exceeded or blocked.', 'error');
+      }
+    }
+
+    // Format Currency cleanly
+    function formatMoney(amount, currency = 'MMK', showSign = false) {
+      const meta = CURRENCY_META[currency] || { symbol: currency, decimals: 2, position: 'suffix' };
+      const absVal = Math.abs(Number(amount) || 0);
+      const formattedNum = absVal.toLocaleString('en-US', {
+        minimumFractionDigits: meta.decimals,
+        maximumFractionDigits: meta.decimals
+      });
+      const sign = amount < 0 ? '-' : (showSign && amount > 0 ? '+' : '');
+      if (meta.position === 'prefix') {
+        return `${sign}${meta.symbol}${formattedNum}`;
+      }
+      return `${sign}${formattedNum} ${meta.symbol}`;
+    }
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      const bgClass = type === 'error'
+        ? 'bg-rose-600 text-white'
+        : 'bg-slate-900 dark:bg-emerald-600 text-white';
+      el.className = `pointer-events-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-2 transition-all duration-200 ${bgClass}`;
+      el.innerHTML = `<span>${type === 'error' ? '⚠️' : '✓'}</span><span>${message}</span>`;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(6px)';
+        setTimeout(() => el.remove(), 200);
+      }, 2600);
+    }
+
+    // Custom Confirmation Modal (never uses window.confirm)
+    function showConfirm(title, message, onConfirm) {
+      const dialog = document.getElementById('confirmDialog');
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmMessage').textContent = message;
+      dialog.classList.remove('hidden');
+      dialog.classList.add('flex');
+
+      const cleanup = () => {
+        dialog.classList.add('hidden');
+        dialog.classList.remove('flex');
+      };
+
+      document.getElementById('confirmCancelBtn').onclick = cleanup;
+      document.getElementById('confirmOkBtn').onclick = () => {
+        cleanup();
+        onConfirm();
+      };
+    }
+
+    // Theme Management
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      if (theme === 'dark') {
+        html.classList.add('dark');
+        html.classList.remove('light');
+      } else {
+        html.classList.add('light');
+        html.classList.remove('dark');
+      }
+      appState.theme = theme;
+      saveState();
+    }
+
+    // Filter Transactions by Global Pool & Period
+    function getScopedTransactions() {
+      const now = new Date();
+      const curYear = now.getFullYear();
+      const curMonth = now.getMonth();
+
+      const lastMonthDate = new Date(curYear, curMonth - 1, 1);
+      const lastYear = lastMonthDate.getFullYear();
+      const lastMonth = lastMonthDate.getMonth();
+
+      return appState.transactions.filter(tx => {
+        // Pool check
+        if (appState.selectedPoolId !== 'all' && tx.poolId !== appState.selectedPoolId) {
+          return false;
+        }
+        // Period check
+        if (appState.selectedPeriod === 'all_time') return true;
+        const [y, m] = tx.date.split('-').map(Number);
+        if (appState.selectedPeriod === 'this_month') {
+          return y === curYear && (m - 1) === curMonth;
+        }
+        if (appState.selectedPeriod === 'last_month') {
+          return y === lastYear && (m - 1) === lastMonth;
+        }
+        return true;
+      });
+    }
+
+    // Calculate live balance of a pool (Initial Balance + All-time Income - All-time Expense)
+    function getPoolLiveBalance(pool) {
+      let bal = Number(pool.initialBalance) || 0;
+      for (const tx of appState.transactions) {
+        if (tx.poolId === pool.id) {
+          bal += tx.type === 'income' ? Number(tx.amount) : -Number(tx.amount);
+        }
+      }
+      return bal;
+    }
+
+    // ==================== RENDER GLOBAL SELECTORS ====================
+    function renderGlobalSelectors() {
+      const poolSelect = document.getElementById('globalPoolSelect');
+      const currentVal = appState.selectedPoolId;
+
+      let optionsHtml = `<option value="all">🌐 All Pools (Summary)</option>`;
+      appState.pools.forEach(p => {
+        optionsHtml += `<option value="${p.id}">${p.name} (${p.currency})</option>`;
+      });
+      poolSelect.innerHTML = optionsHtml;
+      poolSelect.value = appState.pools.some(p => p.id === currentVal) ? currentVal : 'all';
+      appState.selectedPoolId = poolSelect.value;
+
+      document.getElementById('globalPeriodSelect').value = appState.selectedPeriod;
+
+      // Sample data banner visibility
+      const banner = document.getElementById('sampleDataBanner');
+      if (appState.isSampleData) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    // ==================== RENDER DASHBOARD (TAB 1) ====================
+    function renderDashboard() {
+      const scopedTxs = getScopedTransactions();
+      const activePools = appState.selectedPoolId === 'all'
+        ? appState.pools
+        : appState.pools.filter(p => p.id === appState.selectedPoolId);
+
+      // Group Net Balance by currency (never falsely summing MMK + USD together)
+      const balanceByCurrency = {};
+      activePools.forEach(p => {
+        balanceByCurrency[p.currency] = (balanceByCurrency[p.currency] || 0) + getPoolLiveBalance(p);
+      });
+
+      // Group Period Income & Expense by currency
+      const incomeByCurrency = {};
+      const expenseByCurrency = {};
+      let incomeCount = 0;
+      let expenseCount = 0;
+
+      scopedTxs.forEach(tx => {
+        const pool = appState.pools.find(p => p.id === tx.poolId);
+        const cur = pool ? pool.currency : 'MMK';
+        if (tx.type === 'income') {
+          incomeByCurrency[cur] = (incomeByCurrency[cur] || 0) + Number(tx.amount);
+          incomeCount++;
+        } else {
+          expenseByCurrency[cur] = (expenseByCurrency[cur] || 0) + Number(tx.amount);
+          expenseCount++;
+        }
+      });
+
+      // Render KPI 1: Net Balance
+      const kpiBalanceEl = document.getElementById('kpiBalance');
+      const balEntries = Object.entries(balanceByCurrency);
+      kpiBalanceEl.innerHTML = balEntries.length
+        ? balEntries.map(([cur, val], idx) => `
+            <div class="${idx === 0 ? 'text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white' : 'text-sm font-bold text-slate-600 dark:text-slate-300'}">
+              ${formatMoney(val, cur)}
+            </div>
+          `).join('')
+        : `<div class="text-xl font-bold text-slate-400">0</div>`;
+      document.getElementById('kpiBalanceSub').textContent =
+        appState.selectedPoolId === 'all' ? `${activePools.length} active pools` : `${activePools[0]?.name || ''} live balance`;
+
+      // Render KPI 2: Income
+      const kpiIncomeEl = document.getElementById('kpiIncome');
+      const incEntries = Object.entries(incomeByCurrency);
+      kpiIncomeEl.innerHTML = incEntries.length
+        ? incEntries.map(([cur, val], idx) => `
+            <div class="${idx === 0 ? 'text-xl sm:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400' : 'text-sm font-bold text-emerald-600/80 dark:text-emerald-400/80'}">
+              ${formatMoney(val, cur, true)}
+            </div>
+          `).join('')
+        : `<div class="text-xl font-bold text-slate-400">0</div>`;
+      document.getElementById('kpiIncomeCount').textContent = `${incomeCount} income entr${incomeCount === 1 ? 'y' : 'ies'}`;
+
+      // Render KPI 3: Expense
+      const kpiExpenseEl = document.getElementById('kpiExpense');
+      const expEntries = Object.entries(expenseByCurrency);
+      kpiExpenseEl.innerHTML = expEntries.length
+        ? expEntries.map(([cur, val], idx) => `
+            <div class="${idx === 0 ? 'text-xl sm:text-2xl font-extrabold text-rose-600 dark:text-rose-400' : 'text-sm font-bold text-rose-600/80 dark:text-rose-400/80'}">
+              ${formatMoney(val, cur)}
+            </div>
+          `).join('')
+        : `<div class="text-xl font-bold text-slate-400">0</div>`;
+      document.getElementById('kpiExpenseCount').textContent = `${expenseCount} expense entr${expenseCount === 1 ? 'y' : 'ies'}`;
+
+      // Render KPI 4: Savings Rate (computed on primary currency in view)
+      const allCurrencies = Array.from(new Set([...Object.keys(balanceByCurrency), ...Object.keys(incomeByCurrency), ...Object.keys(expenseByCurrency)]));
+      const primaryCur = allCurrencies[0] || 'MMK';
+      const pInc = incomeByCurrency[primaryCur] || 0;
+      const pExp = expenseByCurrency[primaryCur] || 0;
+
+      const savingsRateEl = document.getElementById('kpiSavingsRate');
+      const savingsHealthEl = document.getElementById('kpiSavingsHealth');
+      const cashflowBadge = document.getElementById('cashflowBadge');
+
+      if (pInc > 0) {
+        const rate = ((pInc - pExp) / pInc) * 100;
+        savingsRateEl.textContent = `${rate.toFixed(1)}%`;
+        if (rate >= 20) {
+          savingsRateEl.className = 'text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums';
+          savingsHealthEl.textContent = `Strong savings (${primaryCur})`;
+          cashflowBadge.textContent = 'Healthy Surplus';
+          cashflowBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300';
+        } else if (rate >= 0) {
+          savingsRateEl.className = 'text-2xl font-extrabold text-amber-600 dark:text-amber-400 tabular-nums';
+          savingsHealthEl.textContent = `Positive margin (${primaryCur})`;
+          cashflowBadge.textContent = 'Balanced';
+          cashflowBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300';
+        } else {
+          savingsRateEl.className = 'text-2xl font-extrabold text-rose-600 dark:text-rose-400 tabular-nums';
+          savingsHealthEl.textContent = `Overspending (${primaryCur})`;
+          cashflowBadge.textContent = 'Deficit Alert';
+          cashflowBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300';
+        }
+      } else {
+        savingsRateEl.textContent = pExp > 0 ? '0.0%' : '--%';
+        savingsRateEl.className = 'text-2xl font-extrabold text-slate-700 dark:text-slate-200 tabular-nums';
+        savingsHealthEl.textContent = pExp > 0 ? `No ${primaryCur} income recorded` : 'Add entries to calculate';
+        cashflowBadge.textContent = 'Active';
+      }
+
+      // Render Cashflow Comparison Bars (per currency)
+      const cfContainer = document.getElementById('cashflowComparisonContainer');
+      if (allCurrencies.length === 0) {
+        cfContainer.innerHTML = `<p class="text-xs text-slate-400 py-4">No transactions in this period.</p>`;
+      } else {
+        cfContainer.innerHTML = allCurrencies.map(cur => {
+          const inc = incomeByCurrency[cur] || 0;
+          const exp = expenseByCurrency[cur] || 0;
+          const maxVal = Math.max(inc, exp, 1);
+          const incPct = Math.round((inc / maxVal) * 100);
+          const expPct = Math.round((exp / maxVal) * 100);
+          return `
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-2.5">
+              <div class="flex items-center justify-between text-xs font-bold">
+                <span class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200/70 dark:border-slate-700">${cur}</span>
+                <span class="tabular-nums ${inc - exp >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                  Net: ${formatMoney(inc - exp, cur, true)}
+                </span>
+              </div>
+              <div class="space-y-1.5">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500 dark:text-slate-400">Income</span>
+                  <span class="font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">${formatMoney(inc, cur)}</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden">
+                  <div class="h-full rounded-full bg-emerald-500 transition-all duration-300" style="width: ${incPct}%"></div>
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500 dark:text-slate-400">Expense</span>
+                  <span class="font-semibold text-rose-600 dark:text-rose-400 tabular-nums">${formatMoney(exp, cur)}</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden">
+                  <div class="h-full rounded-full bg-rose-500 transition-all duration-300" style="width: ${expPct}%"></div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render Active Pools Overview mini list
+      const poolListEl = document.getElementById('dashboardPoolList');
+      poolListEl.innerHTML = appState.pools.map(p => {
+        const bal = getPoolLiveBalance(p);
+        const isSelected = appState.selectedPoolId === p.id;
+        return `
+          <div onclick="selectPoolFromCard('${p.id}')" class="flex items-center justify-between p-2.5 rounded-xl border ${isSelected ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30' : 'border-slate-100 dark:border-slate-700/70 hover:bg-slate-50 dark:hover:bg-slate-800/60'} transition cursor-pointer">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${p.color}"></span>
+              <span class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100">${p.name}</span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">${p.currency}</span>
+            </div>
+            <span class="text-xs sm:text-sm font-bold tabular-nums text-slate-900 dark:text-white">${formatMoney(bal, p.currency)}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Sync Currency Selectors for Charts
+      syncChartCurrencySelectors(allCurrencies);
+      renderDailyTrendChart(scopedTxs);
+      renderCategoryBreakdown(scopedTxs);
+      renderRecentTransactions(scopedTxs);
+    }
+
+    function selectPoolFromCard(poolId) {
+      appState.selectedPoolId = appState.selectedPoolId === poolId ? 'all' : poolId;
+      saveState();
+      renderAll();
+    }
+
+    function syncChartCurrencySelectors(currencies) {
+      const list = currencies.length ? currencies : ['MMK'];
+      ['trendCurrencySelect', 'categoryCurrencySelect'].forEach(id => {
+        const sel = document.getElementById(id);
+        const prev = sel.value;
+        sel.innerHTML = list.map(c => `<option value="${c}">${c}</option>`).join('');
+        sel.value = list.includes(prev) ? prev : list[0];
+      });
+    }
+
+    // Render Daily Spending Trend SVG Bar Chart
+    function renderDailyTrendChart(scopedTxs) {
+      const container = document.getElementById('dailyTrendChartContainer');
+      const targetCur = document.getElementById('trendCurrencySelect').value || 'MMK';
+
+      const expenseTxs = scopedTxs.filter(tx => {
+        const pool = appState.pools.find(p => p.id === tx.poolId);
+        return tx.type === 'expense' && (pool ? pool.currency : 'MMK') === targetCur;
+      });
+
+      // Aggregate by date
+      const dailyMap = {};
+      expenseTxs.forEach(tx => {
+        dailyMap[tx.date] = (dailyMap[tx.date] || 0) + Number(tx.amount);
+      });
+
+      const sortedDates = Object.keys(dailyMap).sort();
+      if (sortedDates.length === 0) {
+        container.innerHTML = `
+          <div class="w-full h-48 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-4">
+            <span class="text-2xl mb-1">📉</span>
+            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">No ${targetCur} expense data for this period.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const maxAmt = Math.max(...Object.values(dailyMap), 1);
+      const barsHtml = sortedDates.slice(-14).map(dateStr => {
+        const val = dailyMap[dateStr];
+        const heightPct = Math.max(Math.round((val / maxAmt) * 100), 6);
+        const shortDate = dateStr.slice(5); // MM-DD
+        return `
+          <div class="flex-1 flex flex-col items-center justify-end h-full group min-w-[26px]">
+            <div class="opacity-0 group-hover:opacity-100 transition-opacity mb-1.5 px-2 py-0.5 rounded bg-slate-900 dark:bg-slate-700 text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none tabular-nums shadow-sm">
+              ${formatMoney(val, targetCur)}
+            </div>
+            <div class="w-full max-w-[32px] bg-rose-500/85 hover:bg-rose-500 dark:bg-rose-500/80 dark:hover:bg-rose-400 rounded-t-lg transition-all duration-300" style="height: ${heightPct}%"></div>
+            <span class="mt-2 text-[10px] font-medium text-slate-400 dark:text-slate-500 tabular-nums">${shortDate}</span>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="w-full h-52 pt-6 px-2 flex items-end justify-between gap-1.5 sm:gap-2.5 border-b border-slate-200 dark:border-slate-700">
+          ${barsHtml}
+        </div>
+      `;
+    }
+
+    // Render Category Spending Breakdown (Donut SVG + Progress Bars)
+    function renderCategoryBreakdown(scopedTxs) {
+      const targetCur = document.getElementById('categoryCurrencySelect').value || 'MMK';
+      const donutEl = document.getElementById('categoryDonutContainer');
+      const barsEl = document.getElementById('categoryBarsContainer');
+
+      const expenseTxs = scopedTxs.filter(tx => {
+        const pool = appState.pools.find(p => p.id === tx.poolId);
+        return tx.type === 'expense' && (pool ? pool.currency : 'MMK') === targetCur;
+      });
+
+      const totalExp = expenseTxs.reduce((sum, tx) => sum + Number(tx.amount), 0);
+
+      if (totalExp <= 0) {
+        donutEl.innerHTML = `
+          <div class="w-36 h-36 rounded-full border-8 border-slate-100 dark:border-slate-800 flex items-center justify-center text-xs text-slate-400">
+            No data
+          </div>
+        `;
+        barsEl.innerHTML = `<p class="text-xs text-slate-400">No ${targetCur} expenses recorded in this period.</p>`;
+        return;
+      }
+
+      // Group by categoryId
+      const catTotals = {};
+      expenseTxs.forEach(tx => {
+        catTotals[tx.categoryId] = (catTotals[tx.categoryId] || 0) + Number(tx.amount);
+      });
+
+      const items = Object.entries(catTotals)
+        .map(([catId, amount], idx) => {
+          const cat = appState.categories.find(c => c.id === catId) || { name: 'Uncategorized', emoji: '📦', color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length] };
+          return {
+            ...cat,
+            amount,
+            pct: (amount / totalExp) * 100
+          };
+        })
+        .sort((a, b) => b.amount - a.amount);
+
+      // Build SVG Donut Ring
+      const radius = 54;
+      const circumference = 2 * Math.PI * radius;
+      let cumulativePct = 0;
+
+      const circles = items.map(item => {
+        const dash = (item.pct / 100) * circumference;
+        const offset = -((cumulativePct / 100) * circumference);
+        cumulativePct += item.pct;
+        return `<circle cx="70" cy="70" r="${radius}" fill="transparent" stroke="${item.color}" stroke-width="18" stroke-dasharray="${dash} ${circumference}" stroke-dashoffset="${offset}" />`;
+      }).join('');
+
+      donutEl.innerHTML = `
+        <div class="relative w-40 h-40 flex items-center justify-center">
+          <svg viewBox="0 0 140 140" class="w-full h-full -rotate-90">
+            ${circles}
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-3">
+            <span class="text-[10px] font-semibold uppercase text-slate-400">Total</span>
+            <span class="text-xs font-extrabold text-slate-900 dark:text-white tabular-nums truncate max-w-[90px]">${formatMoney(totalExp, targetCur)}</span>
+          </div>
+        </div>
+      `;
+
+      // Build Progress Bars
+      barsEl.innerHTML = items.slice(0, 6).map(item => `
+        <div class="space-y-1">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-semibold text-slate-700 dark:text-slate-200 truncate pr-2">${item.emoji} ${item.name}</span>
+            <span class="font-bold text-slate-900 dark:text-white tabular-nums whitespace-nowrap">${formatMoney(item.amount, targetCur)} <span class="text-slate-400 font-normal">(${item.pct.toFixed(0)}%)</span></span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-300" style="width: ${item.pct.toFixed(1)}%; background-color: ${item.color}"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render Recent 5 Transactions on Dashboard
+    function renderRecentTransactions(scopedTxs) {
+      const container = document.getElementById('recentTransactionsList');
+      const sorted = [...scopedTxs].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+
+      if (sorted.length === 0) {
+        container.innerHTML = `
+          <div class="py-10 text-center">
+            <p class="text-xs sm:text-sm text-slate-400">စာရင်းမှတ်တမ်း မရှိသေးပါ။ "+ Add Entry" ကို နှိပ်ပြီး စတင်ထည့်သွင်းပါ။</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = sorted.map(tx => {
+        const pool = appState.pools.find(p => p.id === tx.poolId) || { name: 'Unknown', currency: 'MMK', color: '#64748B' };
+        const cat = appState.categories.find(c => c.id === tx.categoryId) || { name: 'Other', emoji: '📌' };
+        const isInc = tx.type === 'income';
+        return `
+          <div class="py-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-base shrink-0">
+                ${cat.emoji}
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white truncate">${tx.note || cat.name}</p>
+                <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
+                  <span>${tx.date}</span>
+                  <span>•</span>
+                  <span class="font-medium text-slate-500 dark:text-slate-300">${pool.name}</span>
+                  <span>•</span>
+                  <span>${tx.paymentMethod}</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right shrink-0 tabular-nums">
+              <span class="text-xs sm:text-sm font-extrabold ${isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                ${formatMoney(isInc ? tx.amount : -tx.amount, pool.currency, true)}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==================== RENDER TRANSACTIONS TAB (TAB 2) ====================
+    function getFilteredTransactionsForTable() {
+      const baseTxs = getScopedTransactions();
+      const query = document.getElementById('txSearchInput').value.trim().toLowerCase();
+      const typeFilter = document.getElementById('txTypeFilter').value;
+      const catFilter = document.getElementById('txCategoryFilter').value;
+      const payFilter = document.getElementById('txPaymentFilter').value;
+
+      return baseTxs
+        .filter(tx => {
+          if (typeFilter !== 'all' && tx.type !== typeFilter) return false;
+          if (catFilter !== 'all' && tx.categoryId !== catFilter) return false;
+          if (payFilter !== 'all' && tx.paymentMethod !== payFilter) return false;
+          if (query) {
+            const cat = appState.categories.find(c => c.id === tx.categoryId);
+            const pool = appState.pools.find(p => p.id === tx.poolId);
+            const hay = `${tx.note || ''} ${cat?.name || ''} ${pool?.name || ''} ${tx.paymentMethod || ''}`.toLowerCase();
+            if (!hay.includes(query)) return false;
+          }
+          return true;
+        })
+        .sort((a, b) => b.date.localeCompare(a.date));
+    }
+
+    function renderTransactionsTab() {
+      // Populate Category Filter dropdown
+      const catFilterSel = document.getElementById('txCategoryFilter');
+      const prevCat = catFilterSel.value;
+      catFilterSel.innerHTML = `<option value="all">All Categories</option>` +
+        appState.categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+      catFilterSel.value = appState.categories.some(c => c.id === prevCat) ? prevCat : 'all';
+
+      const rows = getFilteredTransactionsForTable();
+      document.getElementById('txFilteredCount').textContent = `${rows.length} item${rows.length === 1 ? '' : 's'}`;
+
+      const tbody = document.getElementById('txDesktopTableBody');
+      const mobileList = document.getElementById('txMobileCardsList');
+
+      if (rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-center text-sm text-slate-400">No matching transactions found.</td></tr>`;
+        mobileList.innerHTML = `<div class="bg-white dark:bg-[#1E293B] rounded-2xl p-8 text-center text-xs text-slate-400 border border-slate-200/80 dark:border-slate-700/80">No matching transactions found.</div>`;
+        return;
+      }
+
+      // Desktop rows
+      tbody.innerHTML = rows.map(tx => {
+        const pool = appState.pools.find(p => p.id === tx.poolId) || { name: 'Unknown', currency: 'MMK', color: '#64748B' };
+        const cat = appState.categories.find(c => c.id === tx.categoryId) || { name: 'Other', emoji: '📌' };
+        const isInc = tx.type === 'income';
+        return `
+          <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
+            <td class="py-3.5 px-4 text-xs font-medium text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">${tx.date}</td>
+            <td class="py-3.5 px-4 whitespace-nowrap">
+              <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                <span class="w-2 h-2 rounded-full" style="background-color: ${pool.color}"></span>
+                ${pool.name}
+              </span>
+            </td>
+            <td class="py-3.5 px-4 text-xs font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">${cat.emoji} ${cat.name}</td>
+            <td class="py-3.5 px-4 text-xs text-slate-600 dark:text-slate-300 max-w-xs truncate">${tx.note || '-'}</td>
+            <td class="py-3.5 px-4 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">${tx.paymentMethod}</td>
+            <td class="py-3.5 px-4 text-right text-sm font-extrabold tabular-nums whitespace-nowrap ${isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+              ${formatMoney(isInc ? tx.amount : -tx.amount, pool.currency, true)}
+            </td>
+            <td class="py-3.5 px-4 text-right whitespace-nowrap">
+              <button type="button" onclick="openEditTransactionModal('${tx.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition cursor-pointer" title="Edit">
+                ✏️
+              </button>
+              <button type="button" onclick="deleteTransaction('${tx.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition cursor-pointer" title="Delete">
+                🗑️
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Mobile stacked cards
+      mobileList.innerHTML = rows.map(tx => {
+        const pool = appState.pools.find(p => p.id === tx.poolId) || { name: 'Unknown', currency: 'MMK', color: '#64748B' };
+        const cat = appState.categories.find(c => c.id === tx.categoryId) || { name: 'Other', emoji: '📌' };
+        const isInc = tx.type === 'income';
+        return `
+          <div class="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-2.5">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-base shrink-0">${cat.emoji}</span>
+                <div class="min-w-0">
+                  <p class="text-sm font-bold text-slate-900 dark:text-white truncate">${tx.note || cat.name}</p>
+                  <p class="text-[11px] text-slate-400">${cat.name}</p>
+                </div>
+              </div>
+              <span class="text-sm font-extrabold tabular-nums shrink-0 ${isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                ${formatMoney(isInc ? tx.amount : -tx.amount, pool.currency, true)}
+              </span>
+            </div>
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-700/70 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+              <div class="flex items-center gap-2">
+                <span>${tx.date}</span>
+                <span>•</span>
+                <span class="font-semibold text-slate-700 dark:text-slate-200">${pool.name}</span>
+                <span>•</span>
+                <span>${tx.paymentMethod}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button type="button" onclick="openEditTransactionModal('${tx.id}')" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">Edit</button>
+                <button type="button" onclick="deleteTransaction('${tx.id}')" class="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-semibold">Del</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Export CSV with UTF-8 BOM (\uFEFF) for Myanmar Unicode compatibility in Excel
+    function exportFilteredCsv() {
+      const rows = getFilteredTransactionsForTable();
+      if (rows.length === 0) {
+        showToast('Export လုပ်ရန် စာရင်း မရှိသေးပါ။', 'error');
+        return;
+      }
+
+      const headers = ['Date', 'Pool', 'Currency', 'Type', 'Category', 'Payment Method', 'Amount', 'Note'];
+      const csvLines = [headers.join(',')];
+
+      rows.forEach(tx => {
+        const pool = appState.pools.find(p => p.id === tx.poolId) || { name: 'Unknown', currency: 'MMK' };
+        const cat = appState.categories.find(c => c.id === tx.categoryId) || { name: 'Other' };
+        const signedAmt = tx.type === 'income' ? Number(tx.amount) : -Number(tx.amount);
+        const line = [
+          tx.date,
+          `"${pool.name.replace(/"/g, '""')}"`,
+          pool.currency,
+          tx.type,
+          `"${cat.name.replace(/"/g, '""')}"`,
+          `"${(tx.paymentMethod || '').replace(/"/g, '""')}"`,
+          signedAmt,
+          `"${(tx.note || '').replace(/"/g, '""')}"`
+        ];
+        csvLines.push(line.join(','));
+      });
+
+      const csvContent = '\uFEFF' + csvLines.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sayin-export-${getOffsetDate(0)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Exported ${rows.length} rows to CSV`);
+    }
+
+    // ==================== RENDER MANAGE TAB (TAB 3) ====================
+    function renderManageTab() {
+      // Render Pools
+      const poolsContainer = document.getElementById('managePoolsList');
+      poolsContainer.innerHTML = appState.pools.map(pool => {
+        const bal = getPoolLiveBalance(pool);
+        const txCount = appState.transactions.filter(t => t.poolId === pool.id).length;
+        return `
+          <div class="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/60 dark:bg-slate-800/50 flex flex-col justify-between gap-3">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${pool.color}"></span>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900 dark:text-white">${pool.name}</h3>
+                  <span class="text-[11px] font-semibold text-slate-400">${pool.currency} • ${txCount} entries</span>
+                </div>
+              </div>
+              ${appState.pools.length > 1 ? `
+                <button type="button" onclick="deletePool('${pool.id}')" class="text-xs text-rose-500 hover:text-rose-600 font-semibold px-2 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/50 cursor-pointer">
+                  Delete
+                </button>
+              ` : ''}
+            </div>
+            <div class="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-baseline justify-between">
+              <span class="text-[11px] text-slate-400">Current Balance</span>
+              <span class="text-base font-extrabold text-slate-900 dark:text-white tabular-nums">${formatMoney(bal, pool.currency)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Render Categories
+      const catContainer = document.getElementById('manageCategoriesList');
+      catContainer.innerHTML = appState.categories.map(cat => `
+        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border ${cat.type === 'income' ? 'bg-emerald-50/70 border-emerald-200/80 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800/60 dark:text-emerald-300' : 'bg-slate-50 border-slate-200/80 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200'}">
+          <span>${cat.emoji}</span>
+          <span>${cat.name}</span>
+          <button type="button" onclick="deleteCategory('${cat.id}')" class="ml-1 text-slate-400 hover:text-rose-500 cursor-pointer" title="Remove">×</button>
+        </div>
+      `).join('');
+    }
+
+    // ==================== ADD / EDIT MODAL LOGIC ====================
+    function setModalType(type) {
+      modalTxType = type;
+      const expBtn = document.getElementById('typeBtnExpense');
+      const incBtn = document.getElementById('typeBtnIncome');
+
+      if (type === 'expense') {
+        expBtn.className = 'py-2 text-xs sm:text-sm font-bold rounded-lg bg-rose-600 text-white shadow-xs transition cursor-pointer';
+        incBtn.className = 'py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-600 dark:text-slate-300 transition cursor-pointer';
+      } else {
+        incBtn.className = 'py-2 text-xs sm:text-sm font-bold rounded-lg bg-emerald-600 text-white shadow-xs transition cursor-pointer';
+        expBtn.className = 'py-2 text-xs sm:text-sm font-bold rounded-lg text-slate-600 dark:text-slate-300 transition cursor-pointer';
+      }
+
+      // Populate Category select filtered by type
+      const catSel = document.getElementById('txCategoryInput');
+      const matchingCats = appState.categories.filter(c => c.type === type);
+      const list = matchingCats.length ? matchingCats : appState.categories;
+      catSel.innerHTML = list.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+    }
+
+    function updateModalCurrencyBadge() {
+      const poolId = document.getElementById('txPoolInput').value;
+      const pool = appState.pools.find(p => p.id === poolId);
+      document.getElementById('txCurrencyBadge').textContent = pool ? pool.currency : 'MMK';
+    }
+
+    function openAddTransactionModal() {
+      document.getElementById('modalTitle').textContent = 'Add Transaction (စာရင်းသွင်းရန်)';
+      document.getElementById('txIdInput').value = '';
+      document.getElementById('txAmountInput').value = '';
+      document.getElementById('txNoteInput').value = '';
+      document.getElementById('txDateInput').value = getOffsetDate(0);
+
+      // Populate Pool select
+      const poolSel = document.getElementById('txPoolInput');
+      poolSel.innerHTML = appState.pools.map(p => `<option value="${p.id}">${p.name} (${p.currency})</option>`).join('');
+      if (appState.selectedPoolId !== 'all' && appState.pools.some(p => p.id === appState.selectedPoolId)) {
+        poolSel.value = appState.selectedPoolId;
+      }
+      updateModalCurrencyBadge();
+      setModalType('expense');
+
+      const modal = document.getElementById('transactionModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => document.getElementById('txAmountInput').focus(), 60);
+    }
+
+    function openEditTransactionModal(txId) {
+      const tx = appState.transactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Transaction (စာရင်းပြင်ဆင်ရန်)';
+      document.getElementById('txIdInput').value = tx.id;
+
+      const poolSel = document.getElementById('txPoolInput');
+      poolSel.innerHTML = appState.pools.map(p => `<option value="${p.id}">${p.name} (${p.currency})</option>`).join('');
+      poolSel.value = tx.poolId;
+      updateModalCurrencyBadge();
+
+      setModalType(tx.type);
+      document.getElementById('txCategoryInput').value = tx.categoryId;
+      document.getElementById('txAmountInput').value = tx.amount;
+      document.getElementById('txDateInput').value = tx.date;
+      document.getElementById('txPaymentInput').value = tx.paymentMethod || 'KBZPay';
+      document.getElementById('txNoteInput').value = tx.note || '';
+
+      const modal = document.getElementById('transactionModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeTransactionModal() {
+      const modal = document.getElementById('transactionModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // ==================== CRUD ACTIONS ====================
+    function deleteTransaction(txId) {
+      showConfirm('Delete Transaction?', 'ဤစာရင်းမှတ်တမ်းကို ဖျက်ပစ်ရန် သေချာပါသလား?', () => {
+        appState.transactions = appState.transactions.filter(t => t.id !== txId);
+        saveState();
+        renderAll();
+        showToast('Transaction deleted');
+      });
+    }
+
+    function deletePool(poolId) {
+      showConfirm('Delete Pool?', 'ဤ Pool နှင့် ၎င်းအောက်ရှိ စာရင်းမှတ်တမ်းများအားလုံးကို ဖျက်ပစ်ပါမည်။ ဆက်လုပ်မလား?', () => {
+        appState.pools = appState.pools.filter(p => p.id !== poolId);
+        appState.transactions = appState.transactions.filter(t => t.poolId !== poolId);
+        if (appState.selectedPoolId === poolId) appState.selectedPoolId = 'all';
+        saveState();
+        renderAll();
+        showToast('Pool deleted');
+      });
+    }
+
+    function deleteCategory(catId) {
+      if (appState.categories.length <= 2) {
+        showToast('အနည်းဆုံး Category ၂ ခု ကျန်ရှိရပါမည်။', 'error');
+        return;
+      }
+      appState.categories = appState.categories.filter(c => c.id !== catId);
+      saveState();
+      renderAll();
+      showToast('Category removed');
+    }
+
+    // ==================== TAB NAVIGATION ====================
+    function switchTab(tabName) {
+      currentTab = tabName;
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        const isMatch = btn.dataset.tab === tabName;
+        if (isMatch) {
+          btn.className = 'nav-tab active-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 dark:border-emerald-400 whitespace-nowrap transition cursor-pointer';
+        } else {
+          btn.className = 'nav-tab flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 whitespace-nowrap transition cursor-pointer';
+        }
+      });
+
+      renderAll();
+    }
+
+    function renderAll() {
+      renderGlobalSelectors();
+      renderDashboard();
+      renderTransactionsTab();
+      renderManageTab();
+    }
+
+    // ==================== EVENT LISTENERS INIT ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      // Apply saved theme
+      applyTheme(appState.theme || 'light');
+
+      // Theme Toggle
+      document.getElementById('themeToggleBtn').addEventListener('click', () => {
+        applyTheme(appState.theme === 'dark' ? 'light' : 'dark');
+      });
+
+      // Tab buttons
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+      });
+
+      // Global Selectors
+      document.getElementById('globalPoolSelect').addEventListener('change', (e) => {
+        appState.selectedPoolId = e.target.value;
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById('globalPeriodSelect').addEventListener('change', (e) => {
+        appState.selectedPeriod = e.target.value;
+        saveState();
+        renderAll();
+      });
+
+      // Chart currency selectors
+      document.getElementById('trendCurrencySelect').addEventListener('change', () => renderDailyTrendChart(getScopedTransactions()));
+      document.getElementById('categoryCurrencySelect').addEventListener('change', () => renderCategoryBreakdown(getScopedTransactions()));
+
+      // Clear Sample Data
+      document.getElementById('clearSampleDataBtn').addEventListener('click', () => {
+        showConfirm('Clear Sample Data?', 'နမူနာစာရင်းများကို ဖျက်ပြီး ကိုယ်ပိုင်စာရင်း အသစ်စတင်မလား?', () => {
+          appState.transactions = [];
+          appState.pools.forEach(p => p.initialBalance = 0);
+          appState.isSampleData = false;
+          saveState();
+          renderAll();
+          showToast('Sample data cleared. Ready for your entries!');
+        });
+      });
+
+      // Modal Controls
+      document.getElementById('openAddModalBtn').addEventListener('click', openAddTransactionModal);
+      document.getElementById('closeModalBtn').addEventListener('click', closeTransactionModal);
+      document.getElementById('cancelModalBtn').addEventListener('click', closeTransactionModal);
+      document.getElementById('typeBtnExpense').addEventListener('click', () => setModalType('expense'));
+      document.getElementById('typeBtnIncome').addEventListener('click', () => setModalType('income'));
+      document.getElementById('txPoolInput').addEventListener('change', updateModalCurrencyBadge);
+
+      // Transaction Form Submit
+      document.getElementById('transactionForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const existingId = document.getElementById('txIdInput').value;
+        const payload = {
+          id: existingId || `tx_${Date.now()}`,
+          poolId: document.getElementById('txPoolInput').value,
+          type: modalTxType,
+          amount: parseFloat(document.getElementById('txAmountInput').value),
+          date: document.getElementById('txDateInput').value,
+          categoryId: document.getElementById('txCategoryInput').value,
+          paymentMethod: document.getElementById('txPaymentInput').value,
+          note: document.getElementById('txNoteInput').value.trim()
+        };
+
+        if (!payload.amount || payload.amount <= 0) {
+          showToast('ငွေပမာဏ မှန်ကန်စွာ ထည့်သွင်းပါ။', 'error');
+          return;
+        }
+
+        if (existingId) {
+          const idx = appState.transactions.findIndex(t => t.id === existingId);
+          if (idx !== -1) appState.transactions[idx] = payload;
+          showToast('Entry updated');
+        } else {
+          appState.transactions.unshift(payload);
+          appState.isSampleData = false;
+          showToast('Entry saved');
+        }
+
+        saveState();
+        closeTransactionModal();
+        renderAll();
+      });
+
+      // Transactions Tab Filters & Export
+      ['txSearchInput', 'txTypeFilter', 'txCategoryFilter', 'txPaymentFilter'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderTransactionsTab);
+        document.getElementById(id).addEventListener('change', renderTransactionsTab);
+      });
+      document.getElementById('exportCsvBtn').addEventListener('click', exportFilteredCsv);
+
+      // Add Pool Form
+      document.getElementById('addPoolForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('newPoolName').value.trim();
+        const currency = document.getElementById('newPoolCurrency').value;
+        const initialBalance = parseFloat(document.getElementById('newPoolInitial').value) || 0;
+        if (!name) return;
+
+        const color = CATEGORY_COLORS[appState.pools.length % CATEGORY_COLORS.length];
+        appState.pools.push({
+          id: `pool_${Date.now()}`,
+          name,
+          currency,
+          initialBalance,
+          color
+        });
+        document.getElementById('newPoolName').value = '';
+        document.getElementById('newPoolInitial').value = '0';
+        saveState();
+        renderAll();
+        showToast(`Pool "${name}" created`);
+      });
+
+      // Add Category Form
+      document.getElementById('addCategoryForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const emoji = document.getElementById('newCatEmoji').value.trim() || '🏷️';
+        const name = document.getElementById('newCatName').value.trim();
+        const type = document.getElementById('newCatType').value;
+        if (!name) return;
+
+        const color = CATEGORY_COLORS[appState.categories.length % CATEGORY_COLORS.length];
+        appState.categories.push({
+          id: `cat_${Date.now()}`,
+          name,
+          emoji,
+          type,
+          color
+        });
+        document.getElementById('newCatName').value = '';
+        saveState();
+        renderAll();
+        showToast(`Category "${name}" added`);
+      });
+
+      // JSON Export / Import / Reset
+      document.getElementById('exportJsonBtn').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sayin-backup-${getOffsetDate(0)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('JSON backup exported');
+      });
+
+      document.getElementById('importJsonInput').addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const parsed = JSON.parse(ev.target.result);
+            if (!Array.isArray(parsed.pools) || !Array.isArray(parsed.transactions)) {
+              throw new Error('Invalid backup structure');
+            }
+            appState = parsed;
+            saveState();
+            renderAll();
+            showToast('Backup restored successfully');
+          } catch (err) {
+            showToast('Invalid JSON backup file', 'error');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      document.getElementById('resetAllDataBtn').addEventListener('click', () => {
+        showConfirm('Reset All Data?', 'စာရင်းအားလုံးကို ဖျက်ပြီး မူလအခြေအနေသို့ ပြန်ပြောင်းမလား?', () => {
+          localStorage.removeItem(STORAGE_KEY);
+          appState = createInitialSeedState();
+          saveState();
+          renderAll();
+          showToast('Reset to initial state');
+        });
+      });
+
+      // Initial render
+      renderAll();
     });
-    document.getElementById("toggleForgotBtn").addEventListener("click", () => { document.getElementById("forgotBox").classList.toggle("hidden"); const em = document.getElementById("authEmail").value.trim(); if (em && !document.getElementById("fpEmail").value) document.getElementById("fpEmail").value = em; });
-    document.getElementById("sendCodeBtn").addEventListener("click", async () => {
-      const email = document.getElementById("fpEmail").value.trim(); if (!email) { toast("Enter email", true); return; }
-      try { const r = await fetch(`${API}/api/auth/forgot-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) }); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Failed"); if (d.reset_code) document.getElementById("fpCode").value = d.reset_code; document.getElementById("fpCodeHint").textContent = d.reset_code ? `Code: ${d.reset_code}` : (d.message || "Sent"); toast("Code requested"); } catch (err) { toast(err.message, true); }
-    });
-    document.getElementById("doResetBtn").addEventListener("click", async () => {
-      const email = document.getElementById("fpEmail").value.trim(), code = document.getElementById("fpCode").value.trim(), new_password = document.getElementById("fpNewPw").value, cpw = document.getElementById("fpConfirmPw").value;
-      if (!email || !code || new_password.length < 6) { toast("Fill all fields", true); return; } if (new_password !== cpw) { toast("Passwords do not match", true); return; }
-      try { const r = await fetch(`${API}/api/auth/reset-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, code, new_password }) }); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Reset failed"); document.getElementById("forgotBox").classList.add("hidden"); toast("Password updated"); } catch (err) { toast(err.message, true); }
-    });
-    document.getElementById("logoutBtn").addEventListener("click", async () => { await req("/api/auth/logout", { method: "POST" }).catch(() => {}); logoutLocal(); });
-    document.getElementById("wsSelect").addEventListener("change", async (e) => { wsId = saveUserWorkspace(e.target.value) || wsId; renderWsDropdown(); await loadMeta(); await loadMonth(); });
-    document.getElementById("addWsBtn").addEventListener("click", async () => { const next = saveUserWorkspace(prompt("New workspace ID:")); if (!next) return; await req("/api/workspaces", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workspace_id: next, workspace_name: next }) }).catch(() => {}); wsId = next; await refreshWorkspacesList(); await loadMeta(); await loadMonth(); });
-    document.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => { document.getElementById("tab-overview").classList.toggle("hidden", b.dataset.tab !== "overview"); document.getElementById("tab-prefs").classList.toggle("hidden", b.dataset.tab !== "prefs"); }));
-    document.getElementById("txType").addEventListener("change", syncCatSelect);
-    document.getElementById("quickCatBtn").addEventListener("click", async () => { const t = document.getElementById("txType").value, n = prompt(`New ${t} category:`); if (!n?.trim()) return; try { await req(`/api/workspaces/${wsId}/categories`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: n.trim(), entry_type: t }) }); await loadMeta(); document.getElementById("txCat").value = n.trim(); toast("Added"); } catch (e) { toast(e.message, true); } });
-    document.getElementById("txForm").addEventListener("submit", async (e) => {
-      e.preventDefault(); const b = document.getElementById("txSubmitBtn"); b.disabled = true;
-      try { const fd = new FormData(e.target); const r = await fetch(`${API}/api/workspaces/${wsId}/transactions`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd }); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Save failed"); e.target.reset(); txDateInput.value = `${monthInput.value}-${String(now.getDate()).padStart(2, "0")}`; const sm = String(fd.get("tx_date") || "").slice(0, 7); if (sm && sm !== monthInput.value) monthInput.value = sm; toast("Saved"); await loadMonth(); } catch (err) { toast(err.message, true); } finally { b.disabled = false; }
-    });
-    document.getElementById("eType").addEventListener("change", () => fillEdit(document.getElementById("eType").value, document.getElementById("eCat").value, document.getElementById("eMember").value, document.getElementById("ePay").value));
-    document.getElementById("eCancelBtn").addEventListener("click", () => document.getElementById("editBox").classList.add("hidden"));
-    document.getElementById("editForm").addEventListener("submit", async (e) => {
-      e.preventDefault(); const id = document.getElementById("eId").value, tx_date = document.getElementById("eDate").value;
-      try { await req(`/api/workspaces/${wsId}/transactions/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tx_date, member_name: document.getElementById("eMember").value, entry_type: document.getElementById("eType").value, category: document.getElementById("eCat").value, amount_mmk: Number(document.getElementById("eAmt").value), payment_method: document.getElementById("ePay").value, notes: document.getElementById("eNotes").value.trim() }) }); document.getElementById("editBox").classList.add("hidden"); const sm = tx_date.slice(0, 7); if (sm && sm !== monthInput.value) monthInput.value = sm; toast("Updated"); await loadMonth(); } catch (err) { toast(err.message, true); }
-    });
-    document.getElementById("prefForm").addEventListener("submit", async (e) => { e.preventDefault(); try { await req(`/api/workspaces/${wsId}/settings`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workspace_name: document.getElementById("pName").value.trim(), currency: document.getElementById("pCur").value, members: document.getElementById("pMembers").value.split(",").map((s) => s.trim()).filter(Boolean), payment_methods: document.getElementById("pPays").value.split(",").map((s) => s.trim()).filter(Boolean) }) }); toast("Saved"); await loadMeta(); await loadMonth(); } catch (err) { toast(err.message, true); } });
-    document.getElementById("inviteMemberForm").addEventListener("submit", async (e) => { e.preventDefault(); const email = document.getElementById("inviteEmail").value.trim(); try { await req(`/api/workspaces/${wsId}/members`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) }); document.getElementById("inviteEmail").value = ""; toast("Invited"); await loadMeta(); await loadSharedMembers(); } catch (err) { toast(err.message, true); } });
-    document.getElementById("catForm").addEventListener("submit", async (e) => { e.preventDefault(); const name = document.getElementById("cName").value.trim(), entry_type = document.getElementById("cType").value; try { await req(`/api/workspaces/${wsId}/categories`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, entry_type }) }); document.getElementById("cName").value = ""; toast("Added"); await loadMeta(); } catch (err) { toast(err.message, true); } });
-    ["fMember", "fType", "fCat"].forEach((id) => document.getElementById(id).addEventListener("change", renderTxs));
-    document.getElementById("fResetBtn").addEventListener("click", () => { document.getElementById("fMember").value = ""; document.getElementById("fType").value = ""; document.getElementById("fCat").value = ""; renderTxs(); });
-    monthInput.addEventListener("change", loadMonth);
-    document.getElementById("refreshBtn").addEventListener("click", async () => { await refreshWorkspacesList(); await loadMeta(); await loadMonth(); toast("Synced"); });
-    (async () => { if (!token) return; try { const me = await req("/api/auth/me"); await enterApp(me.user, `family_${me.user.id}`); } catch { logoutLocal(); } })();
   </script>
-<script src="/sayin-ui.js"></script></body>
+</body>
 </html>
