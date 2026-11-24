@@ -648,13 +648,21 @@
       $('txCategory').innerHTML = list.map((c) => `<option value="${c.name}">${c.name}</option>`).join('');
     }
 
-    function renderSettingsForm(membersList) {
+   function renderSettingsForm(membersList) {
       const s = state.settings || {};
       $('setWsName').value = s.workspace_name || '';
       $('setCurrency').value = s.currency || 'MMK';
       $('setMembers').value = (s.members || []).join(', ');
       $('setPayments').value = (s.payment_methods || []).join(', ');
-      $('memberList').textContent = 'Workspace Members: ' + (membersList.map((m) => `${m.display_name} (${m.email})`).join(', ') || '-');
+
+      const listEl = $('memberList');
+      if (!membersList || !membersList.length) {
+        listEl.textContent = 'Members: -';
+        return;
+      }
+      listEl.innerHTML = '<strong>Active Group Members:</strong> ' + membersList
+        .map((m) => `${m.display_name} (${m.email}) · <em>${m.role}</em>`)
+        .join(', ');
     }
 
     function renderCategories() {
