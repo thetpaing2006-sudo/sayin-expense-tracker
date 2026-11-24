@@ -28,3 +28,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy src/index.ts --name expense-portal-api --compatibility-date 2026-01-01 --d1 family_expense_portal_db --r2 family_expense_receipts
