@@ -856,6 +856,14 @@
 
     $('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const pw = $('regPassword').value;
+      const confirmPw = $('regConfirmPassword').value;
+      if (pw !== confirmPw) {
+        const msg = 'Passwords do not match';
+        setStatus('regStatus', msg, 'err');
+        toast(msg, 'error');
+        return;
+      }
       const btn = $('regSubmitBtn');
       btn.disabled = true;
       btn.textContent = 'Creating account...';
@@ -867,7 +875,7 @@
           body: JSON.stringify({
             display_name: $('regName').value.trim(),
             email: $('regEmail').value.trim(),
-            password: $('regPassword').value
+            password: pw
           })
         });
         state.token = data.token;
