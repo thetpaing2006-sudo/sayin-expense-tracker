@@ -36,11 +36,11 @@
       --bg-glow-1: rgba(16, 185, 129, 0.14);
       --bg-glow-2: rgba(212, 175, 55, 0.16);
       --bg-glow-3: rgba(30, 58, 138, 0.10);
-      --surface: rgba(255, 255, 255, 0.78);
+      --surface: rgba(255, 255, 255, 0.82);
       --surface-solid: #ffffff;
-      --surface-2: rgba(241, 246, 250, 0.82);
-      --border: rgba(15, 41, 74, 0.14);
-      --border-soft: rgba(15, 23, 42, 0.10);
+      --surface-2: rgba(241, 246, 250, 0.88);
+      --border: rgba(15, 41, 74, 0.16);
+      --border-soft: rgba(15, 23, 42, 0.12);
       --text: #0f172a;
       --muted: #475569;
       --primary: #059669;
@@ -55,6 +55,7 @@
     }
 
     * { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Myanmar", sans-serif;
@@ -69,7 +70,7 @@
       transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    .container { max-width: 1280px; margin: 0 auto; padding: 20px 16px 56px; }
+    .container { max-width: 1280px; width: 100%; margin: 0 auto; padding: 20px 16px 56px; }
 
     .topbar {
       display: flex;
@@ -86,22 +87,22 @@
       box-shadow: var(--shadow);
       margin-bottom: 18px;
     }
-    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 240px; }
     .brand-logo-box {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       padding: 6px 12px;
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(15, 41, 74, 0.45));
-      border: 1px solid rgba(212, 175, 55, 0.35);
-      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.14);
+      background: linear-gradient(135deg, #0b192c 0%, #102a43 100%);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      box-shadow: 0 6px 18px rgba(11, 25, 44, 0.25);
       flex-shrink: 0;
     }
     .brand-logo-box img {
       height: 32px;
       width: auto;
-      max-width: 128px;
+      max-width: 132px;
       object-fit: contain;
       display: block;
     }
@@ -110,16 +111,16 @@
       font-weight: 800;
       font-size: 16px;
       letter-spacing: 0.4px;
-      background: linear-gradient(135deg, #10b981, #eab308);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #f8fafc;
     }
     .brand h1 { margin: 0; font-size: 17px; font-weight: 700; }
     .brand p { margin: 0; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
-    .topbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .topbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
 
     input, select {
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
       padding: 10px 12px;
       border-radius: 11px;
       border: 1px solid var(--border-soft);
@@ -129,6 +130,11 @@
       font-size: 14px;
       outline: none;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input[type="month"], input[type="date"] {
+      display: block;
+      min-width: 0;
+      max-width: 100%;
     }
     input:focus, select:focus {
       border-color: var(--primary);
@@ -198,6 +204,7 @@
       padding: 20px;
       box-shadow: var(--shadow);
       margin-bottom: 16px;
+      min-width: 0;
     }
     .card h2, .card h3 { margin: 0 0 10px; font-size: 17px; }
 
@@ -212,6 +219,7 @@
       border-radius: var(--radius);
       padding: 16px;
       box-shadow: var(--shadow);
+      min-width: 0;
     }
     .kpi.inc-border { border-top-color: var(--income); }
     .kpi.exp-border { border-top-color: var(--expense); }
@@ -259,18 +267,20 @@
       width: 100%;
     }
 
-    .inline-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .inline-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; min-width: 0; }
+    .inline-form > * { min-width: 0; }
     .inline-form input[type="email"],
     .inline-form input[type="text"],
     .inline-form input[type="search"],
+    .inline-form input[type="file"],
     .inline-form select {
-      flex: 1 1 180px;
+      flex: 1 1 170px;
       min-width: 0;
     }
 
     .pool-amt-input { width: 120px; min-width: 92px; padding: 6px 8px; }
 
-    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { padding: 10px; border-bottom: 1px solid var(--border-soft); text-align: left; vertical-align: middle; }
     th { color: var(--muted); font-weight: 700; font-size: 12px; white-space: nowrap; }
@@ -305,14 +315,15 @@
     @media (max-width: 640px) {
       .container { padding: 12px 10px 44px; }
       .topbar { padding: 12px; gap: 10px; }
-      .brand-logo-box img { height: 28px; max-width: 110px; }
+      .brand-logo-box img { height: 28px; max-width: 106px; }
       .topbar-actions { width: 100%; }
-      #wsSelectorWrap { flex: 1 1 160px; min-width: 0 !important; }
-      #monthWrap { flex: 1 1 130px; width: auto !important; }
+      #wsSelectorWrap { flex: 1 1 100%; min-width: 0 !important; width: 100%; }
+      #monthWrap { flex: 1 1 150px; min-width: 0 !important; width: auto !important; }
+      #monthWrap input[type="month"] { width: 100%; max-width: 100%; min-width: 0; font-size: 13px; padding: 8px 10px; }
       .topbar-actions > button { flex: 0 1 auto; }
 
       .nav-tabs { gap: 6px; }
-      .nav-tabs button { flex: 1 1 calc(50% - 6px); text-align: center; padding: 8px 10px; }
+      .nav-tabs button { flex: 1 1 calc(50% - 6px); min-width: 0; text-align: center; padding: 8px 10px; }
 
       .card { padding: 14px; border-radius: 13px; }
       .kpi { padding: 12px; }
@@ -894,6 +905,20 @@
           </div>
         </div>
 
+        <!-- One-Click Google Sheet / CSV Migration -->
+        <div class="card">
+          <h2 style="margin: 0 0 6px;">One-Time CSV Migration (မှတ်တမ်းများ Sheet)</h2>
+          <p class="muted" style="margin: 0 0 12px;">
+            Google Sheet ရဲ့ <code>မှတ်တမ်းများ</code> tab ကို CSV download ဆွဲပြီး Target Workspace ရွေးကာ တစ်ကြိမ်တည်း မောင်းသွင်းပါ။
+          </p>
+          <form id="adminCsvImportForm" class="inline-form">
+            <select id="adminImportWs" required style="max-width: 260px;"></select>
+            <input type="file" id="adminImportCsvFile" accept=".csv,text/csv" required />
+            <button type="submit" class="primary small" id="adminImportSubmitBtn">Import CSV to D1</button>
+          </form>
+          <div id="adminImportStatus" class="auth-status"></div>
+        </div>
+
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
             <h2 style="margin: 0;">Created Accounts (Registered Users)</h2>
@@ -1138,6 +1163,79 @@
         list.push(d.toISOString().slice(0, 7));
       }
       return list;
+    }
+
+    // CSV Parser & Sheet Row Normalizer for မှတ်တမ်းများ
+    function parseCsvText(csvText) {
+      const clean = String(csvText || '').replace(/^\uFEFF/, '');
+      const rows = [];
+      let row = [];
+      let field = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < clean.length; i++) {
+        const ch = clean[i];
+        const next = clean[i + 1];
+        if (inQuotes) {
+          if (ch === '"' && next === '"') {
+            field += '"';
+            i++;
+          } else if (ch === '"') {
+            inQuotes = false;
+          } else {
+            field += ch;
+          }
+        } else if (ch === '"') {
+          inQuotes = true;
+        } else if (ch === ',') {
+          row.push(field.trim());
+          field = '';
+        } else if (ch === '\r' && next === '\n') {
+          row.push(field.trim());
+          rows.push(row);
+          row = [];
+          field = '';
+          i++;
+        } else if (ch === '\n' || ch === '\r') {
+          row.push(field.trim());
+          rows.push(row);
+          row = [];
+          field = '';
+        } else {
+          field += ch;
+        }
+      }
+      if (field.length > 0 || row.length > 0) {
+        row.push(field.trim());
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function normalizeSheetDate(rawDate) {
+      const s = String(rawDate || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (m) {
+        const mm = String(m[1]).padStart(2, '0');
+        const dd = String(m[2]).padStart(2, '0');
+        return `${m[3]}-${mm}-${dd}`;
+      }
+      return '';
+    }
+
+    function normalizeSheetType(rawType) {
+      const s = String(rawType || '').toLowerCase();
+      if (s.includes('income') || s.includes('ဝင်ငွေ')) return 'Income';
+      if (s.includes('saving') || s.includes('စုဆောင်း')) return 'Saving';
+      if (s.includes('expense') || s.includes('အသုံးစရိတ်')) return 'Expense';
+      return '';
+    }
+
+    function normalizeSheetAmount(rawAmt) {
+      const cleaned = String(rawAmt || '').replace(/[^0-9.-]/g, '');
+      const num = Number(cleaned);
+      return Number.isFinite(num) && num > 0 ? num : 0;
     }
 
     function setAuthUi(loggedIn) {
@@ -2160,11 +2258,19 @@
         if ($('adminStatWorkspaces')) $('adminStatWorkspaces').textContent = String(ovRes.counts?.workspaces ?? state.adminWorkspaces.length);
         if ($('adminStatTransactions')) $('adminStatTransactions').textContent = String(ovRes.counts?.transactions ?? 0);
 
+        const wsOptionsHtml = state.adminWorkspaces
+          .map((w) => `<option value="${escapeHtml(w.workspace_id)}">${escapeHtml(w.workspace_name)} (${escapeHtml(w.workspace_id)})</option>`)
+          .join('');
+
+        if ($('adminImportWs')) {
+          const prevImp = $('adminImportWs').value;
+          $('adminImportWs').innerHTML = wsOptionsHtml;
+          $('adminImportWs').value = prevImp || state.wsId || '';
+        }
+
         if ($('adminInspectorWs')) {
           const prev = $('adminInspectorWs').value;
-          $('adminInspectorWs').innerHTML = '<option value="">All Workspaces</option>' + state.adminWorkspaces
-            .map((w) => `<option value="${escapeHtml(w.workspace_id)}">${escapeHtml(w.workspace_name)} (${escapeHtml(w.workspace_id)})</option>`)
-            .join('');
+          $('adminInspectorWs').innerHTML = '<option value="">All Workspaces</option>' + wsOptionsHtml;
           if (prev) $('adminInspectorWs').value = prev;
         }
 
@@ -2176,6 +2282,97 @@
         toast(err.message, 'error');
       }
     }
+
+    // One-Click CSV Import from မှတ်တမ်းများ Sheet
+    $('adminCsvImportForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const targetWs = $('adminImportWs')?.value;
+      const file = $('adminImportCsvFile')?.files?.[0];
+      if (!targetWs || !file) {
+        toast('Please select target workspace and CSV file', 'error');
+        return;
+      }
+
+      const btn = $('adminImportSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Importing...';
+      setStatus('adminImportStatus', '');
+
+      try {
+        const text = await file.text();
+        const rows = parseCsvText(text);
+        if (rows.length < 2) throw new Error('CSV file has no data rows');
+
+        const poolRes = await apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/pools?month=${encodeURIComponent(state.month)}`);
+        const targetPools = poolRes.data || [];
+
+        function matchPoolId(catText) {
+          const c = String(catText || '').toLowerCase();
+          if (c.includes('grocer') || c.includes('food') || c.includes('အစားအသောက်') || c.includes('မုန့်') || c.includes('gas')) {
+            return targetPools.find((p) => p.pool_name.toLowerCase().includes('food'))?.id || null;
+          }
+          if (c.includes('transport') || c.includes('သွားလာရေး')) {
+            return targetPools.find((p) => p.pool_name.toLowerCase().includes('transport'))?.id || null;
+          }
+          if (c.includes('bill') || c.includes('housing') || c.includes('အိမ်') || c.includes('household') || c.includes('tax')) {
+            return targetPools.find((p) => p.pool_name.toLowerCase().includes('bill'))?.id || null;
+          }
+          return targetPools.find((p) => p.pool_name.toLowerCase().includes('family'))?.id || null;
+        }
+
+        let importedCount = 0;
+        let skippedCount = 0;
+        const encWs = encodeURIComponent(targetWs);
+
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i];
+          if (!r || r.every((cell) => !cell)) continue;
+
+          const txDate = normalizeSheetDate(r[0]);
+          const memberName = String(r[1] || state.user?.display_name || 'Member').trim();
+          const entryType = normalizeSheetType(r[2]);
+          const category = String(r[3] || 'General').trim();
+          const amountMmk = normalizeSheetAmount(r[4]);
+          const paymentMethod = String(r[5] || 'Cash').trim();
+          const notes = String(r[6] || '').trim();
+
+          if (!txDate || !entryType || amountMmk <= 0) {
+            skippedCount++;
+            continue;
+          }
+
+          const poolId = entryType === 'Expense' ? matchPoolId(category) : null;
+          const fd = new FormData();
+          fd.append('tx_date', txDate);
+          fd.append('member_name', memberName);
+          fd.append('entry_type', entryType);
+          fd.append('category', category);
+          fd.append('amount_mmk', String(amountMmk));
+          fd.append('payment_method', paymentMethod);
+          if (poolId) fd.append('pool_id', String(poolId));
+          if (notes) fd.append('notes', notes);
+
+          await apiFetch(`/api/workspaces/${encWs}/transactions`, {
+            method: 'POST',
+            body: fd
+          });
+          importedCount++;
+        }
+
+        $('adminImportCsvFile').value = '';
+        const msg = `Imported ${importedCount} rows into ${targetWs}` + (skippedCount ? ` (${skippedCount} skipped)` : '');
+        setStatus('adminImportStatus', msg, 'ok');
+        toast(msg, 'success');
+        if (targetWs === state.wsId) await loadWorkspaceDetails();
+        await loadFullAdminConsole();
+      } catch (err) {
+        setStatus('adminImportStatus', err.message, 'err');
+        toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Import CSV to D1';
+      }
+    });
 
     $('adminReloadBtn')?.addEventListener('click', async () => {
       await loadWorkspacesAndData();
