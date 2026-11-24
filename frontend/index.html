@@ -491,7 +491,7 @@
             <div>
               <h2 style="margin: 0;">Portal Admin Console</h2>
               <p class="muted" style="margin: 4px 0 0;">
-                Created accounts၊ Workspaces အားလုံး၊ User data (Transactions) နဲ့ Google Form sync တို့ကို တစ်နေရာတည်း စီမံခန့်ခွဲပါ။
+                Created accounts၊ Workspaces အားလုံး၊ User data (Transactions) နဲ့ Admin access တို့ကို တစ်နေရာတည်း စီမံခန့်ခွဲပါ။
               </p>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -512,10 +512,6 @@
             <div class="kpi">
               <div class="label">Total Transactions (All Time)</div>
               <div class="val sav" id="adminStatTransactions">0</div>
-            </div>
-            <div class="kpi">
-              <div class="label">Form Mappings</div>
-              <div class="val" id="adminStatMappings">0</div>
             </div>
           </div>
         </div>
@@ -623,69 +619,6 @@
             </table>
           </div>
         </div>
-
-        <!-- Google Form Mapping & Webhook Config -->
-        <div class="grid-2">
-          <div class="card">
-            <h2>Google Form → Workspace Mapping</h2>
-            <p class="muted" style="margin-bottom: 12px;">
-              Google Form ထဲက option (သို့မဟုတ် submitter email) ကို ဘယ် Workspace ID ဆီ ပို့မလဲ သတ်မှတ်ပါ။
-            </p>
-
-            <form id="formMappingRuleForm" style="margin-bottom: 14px;">
-              <div style="margin-bottom: 10px;">
-                <label for="mapFormKey">Form Option / Email Key</label>
-                <input type="text" id="mapFormKey" required placeholder="e.g. Family Pool သို့မဟုတ် member@example.com" />
-              </div>
-              <div style="margin-bottom: 12px;">
-                <label for="mapTargetWs">Target Workspace</label>
-                <select id="mapTargetWs" required></select>
-              </div>
-              <button type="submit" class="primary">Add / Update Mapping</button>
-            </form>
-
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Form Key</th>
-                    <th>Workspace ID</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="formMappingBody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>Form Sync & Webhook Config</h2>
-            <p class="muted" style="margin-bottom: 12px;">
-              Apps Script `onFormSubmit` ကနေ Worker ingest endpoint ဆီ ပို့ရာမှာ သုံးမယ့် endpoint နဲ့ default workspace ကို စစ်ဆေးပါ။
-            </p>
-
-            <div style="margin-bottom: 10px;">
-              <label for="adminIngestUrl">Worker Ingest Endpoint</label>
-              <input type="text" id="adminIngestUrl" readonly />
-            </div>
-
-            <div style="margin-bottom: 10px;">
-              <label for="adminDefaultWs">Fallback / Default Workspace</label>
-              <select id="adminDefaultWs"></select>
-            </div>
-
-            <div style="margin-bottom: 14px;">
-              <label for="adminWebhookNote">Apps Script Secret Reminder</label>
-              <input type="text" id="adminWebhookNote" readonly value="Set FORM_WEBHOOK_SECRET in Worker & Apps Script" />
-            </div>
-
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button type="button" class="primary" id="saveAdminConfigBtn">Save Sync Config</button>
-              <button type="button" id="copyMappingJsonBtn">Copy Mapping JSON</button>
-            </div>
-            <div id="adminSyncStatus" class="auth-status"></div>
-          </div>
-        </div>
       </section>
     </main>
   </div>
@@ -700,11 +633,6 @@
       token: 'sayin_auth_token',
       wsId: 'sayin_active_ws_id',
       theme: 'sayin_theme'
-    };
-
-    const ADMIN_STORAGE = {
-      mappings: 'sayin_form_ws_mappings',
-      defaultWs: 'sayin_form_default_ws'
     };
 
     const state = {
@@ -1076,18 +1004,6 @@
     };
 
     // Full Portal Admin Console Functions
-    function loadAdminMappings() {
-      try {
-        return JSON.parse(localStorage.getItem(ADMIN_STORAGE.mappings) || '{}');
-      } catch {
-        return {};
-      }
-    }
-
-    function saveAdminMappings(mapObj) {
-      localStorage.setItem(ADMIN_STORAGE.mappings, JSON.stringify(mapObj));
-    }
-
     window.switchToWorkspaceFromAdmin = async function(wsId, targetTab = 'workspace') {
       if (!wsId) return;
       state.wsId = wsId;
@@ -1280,38 +1196,6 @@
         : '<tr><td colspan="9" class="muted">No transactions found.</td></tr>';
     }
 
-    function renderFormMappingSection() {
-      const allWs = state.adminWorkspaces.length ? state.adminWorkspaces : state.workspaces;
-      const wsOptionsHtml = allWs
-        .map((w) => `<option value="${escapeHtml(w.workspace_id)}">${escapeHtml(w.workspace_name)} (${escapeHtml(w.workspace_id)})</option>`)
-        .join('');
-
-      if ($('mapTargetWs')) $('mapTargetWs').innerHTML = wsOptionsHtml;
-      if ($('adminDefaultWs')) {
-        $('adminDefaultWs').innerHTML = wsOptionsHtml;
-        $('adminDefaultWs').value = localStorage.getItem(ADMIN_STORAGE.defaultWs) || state.wsId || '';
-      }
-      if ($('adminIngestUrl')) {
-        $('adminIngestUrl').value = getApiUrl('/api/integrations/google-form');
-      }
-
-      const mappings = loadAdminMappings();
-      const entries = Object.entries(mappings);
-      if ($('adminStatMappings')) $('adminStatMappings').textContent = String(entries.length);
-
-      if ($('formMappingBody')) {
-        $('formMappingBody').innerHTML = entries.length
-          ? entries.map(([k, v]) => `
-            <tr>
-              <td>${escapeHtml(k)}</td>
-              <td><code>${escapeHtml(v)}</code></td>
-              <td><button type="button" class="small danger" onclick="removeFormMapping('${escapeHtml(k).replace(/'/g, "\\'")}')">Remove</button></td>
-            </tr>
-          `).join('')
-          : '<tr><td colspan="3" class="muted">No form mappings configured yet.</td></tr>';
-      }
-    }
-
     async function loadAdminInspectorTransactions() {
       if (!isAnyAdmin()) return;
       const wsVal = encodeURIComponent($('adminInspectorWs')?.value || '');
@@ -1349,20 +1233,11 @@
         renderAdminUsersTable();
         renderAdminAccessTable();
         renderAdminWorkspacesTable();
-        renderFormMappingSection();
         await loadAdminInspectorTransactions();
       } catch (err) {
         toast(err.message, 'error');
       }
     }
-
-    window.removeFormMapping = function(key) {
-      const mapObj = loadAdminMappings();
-      delete mapObj[key];
-      saveAdminMappings(mapObj);
-      renderFormMappingSection();
-      toast('Mapping removed', 'success');
-    };
 
     $('adminReloadBtn')?.addEventListener('click', async () => {
       await loadWorkspacesAndData();
@@ -1414,41 +1289,6 @@
         await loadFullAdminConsole();
       } catch (err) {
         toast(err.message, 'error');
-      }
-    });
-
-    $('formMappingRuleForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const key = ($('mapFormKey').value || '').trim();
-      const ws = $('mapTargetWs').value;
-      if (!key || !ws) return;
-
-      const mapObj = loadAdminMappings();
-      mapObj[key] = ws;
-      saveAdminMappings(mapObj);
-      $('mapFormKey').value = '';
-      renderFormMappingSection();
-      setStatus('adminSyncStatus', `Mapped "${key}" → ${ws}`, 'ok');
-      toast('Form mapping saved', 'success');
-    });
-
-    $('saveAdminConfigBtn')?.addEventListener('click', () => {
-      const defWs = $('adminDefaultWs').value;
-      if (defWs) localStorage.setItem(ADMIN_STORAGE.defaultWs, defWs);
-      setStatus('adminSyncStatus', 'Form sync configuration saved.', 'ok');
-      toast('Sync config saved', 'success');
-    });
-
-    $('copyMappingJsonBtn')?.addEventListener('click', async () => {
-      const payload = {
-        default_workspace_id: localStorage.getItem(ADMIN_STORAGE.defaultWs) || state.wsId || '',
-        workspace_map: loadAdminMappings()
-      };
-      try {
-        await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-        toast('Mapping JSON copied for Apps Script', 'success');
-      } catch {
-        toast('Could not copy automatically', 'error');
       }
     });
 
