@@ -64,15 +64,15 @@
       box-shadow: var(--shadow);
       margin-bottom: 18px;
     }
-    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
     .brand-badge {
-      width: 40px; height: 40px; border-radius: 11px;
+      width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
       background: linear-gradient(135deg, #f59e0b, var(--primary), var(--income));
       color: #fff; font-weight: 800; font-size: 18px;
       display: grid; place-items: center;
     }
     .brand h1 { margin: 0; font-size: 19px; font-weight: 700; }
-    .brand p { margin: 0; font-size: 12px; color: var(--muted); }
+    .brand p { margin: 0; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
     .topbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 
     input, select {
@@ -97,6 +97,7 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      white-space: nowrap;
       transition: transform 0.12s ease, opacity 0.15s ease;
     }
     button:hover:not(:disabled) { opacity: 0.92; }
@@ -141,7 +142,7 @@
     .kpi.exp-border { border-left-color: var(--expense); }
     .kpi.sav-border { border-left-color: var(--saving); }
     .kpi .label { font-size: 12px; color: var(--muted); }
-    .kpi .val { font-size: 22px; font-weight: 800; margin-top: 4px; }
+    .kpi .val { font-size: 22px; font-weight: 800; margin-top: 4px; overflow-wrap: anywhere; }
     .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
     .val.inc { color: var(--income); }
     .val.exp { color: var(--expense); }
@@ -149,7 +150,6 @@
     .val.warn { color: var(--warn); }
 
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
     .pool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
 
@@ -169,7 +169,7 @@
     .pool-metrics strong.rem-over { color: var(--expense); font-size: 14px; }
 
     .bar-row { margin-bottom: 12px; }
-    .bar-meta { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
+    .bar-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; margin-bottom: 5px; }
     .bar-track { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 999px; background: var(--primary); transition: width 0.25s ease; }
     .bar-fill.inc { background: var(--income); }
@@ -183,17 +183,28 @@
       width: 100%;
     }
 
-    .table-wrap { overflow-x: auto; }
+    .inline-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .inline-form input[type="email"],
+    .inline-form input[type="text"],
+    .inline-form input[type="search"],
+    .inline-form select {
+      flex: 1 1 180px;
+      min-width: 0;
+    }
+
+    .pool-amt-input { width: 120px; min-width: 92px; padding: 6px 8px; }
+
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
-    th { color: var(--muted); font-weight: 700; font-size: 12px; }
-    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    th { color: var(--muted); font-weight: 700; font-size: 12px; white-space: nowrap; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
     .pill.Income { background: rgba(16, 185, 129, 0.16); color: var(--income); }
     .pill.Expense { background: rgba(244, 63, 94, 0.16); color: var(--expense); }
     .pill.Saving { background: rgba(168, 85, 247, 0.16); color: var(--saving); }
     .pill.Pool { background: rgba(56, 189, 248, 0.15); color: var(--primary); }
 
-    .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .row-actions { display: flex; gap: 6px; flex-wrap: nowrap; }
     .muted { color: var(--muted); font-size: 12px; }
     .auth-status { margin-top: 10px; font-size: 12px; min-height: 18px; }
     .auth-status.err { color: var(--expense); }
@@ -213,6 +224,32 @@
     #toast.success { border-color: var(--income); color: var(--income); }
 
     .print-header { display: none; }
+
+    /* Mobile UI Adjustments */
+    @media (max-width: 640px) {
+      .container { padding: 12px 10px 44px; }
+      .topbar { padding: 12px; gap: 10px; }
+      .topbar-actions { width: 100%; }
+      #wsSelectorWrap { flex: 1 1 160px; min-width: 0 !important; }
+      #monthWrap { flex: 1 1 130px; width: auto !important; }
+      .topbar-actions > button { flex: 0 1 auto; }
+
+      .nav-tabs { gap: 6px; }
+      .nav-tabs button { flex: 1 1 calc(50% - 6px); text-align: center; padding: 8px 10px; }
+
+      .card { padding: 14px; border-radius: 12px; }
+      .kpi { padding: 12px; }
+      .kpi .val { font-size: 19px; }
+
+      .grid-2, .grid-4, .pool-grid { grid-template-columns: 1fr; }
+      .chart-canvas-wrap { height: 220px; }
+
+      .inline-form button[type="submit"] { width: 100%; }
+      .pool-amt-input { width: 105px; min-width: 84px; }
+
+      th, td { padding: 8px 7px; font-size: 12px; }
+      #toast { left: 12px; right: 12px; bottom: 12px; max-width: none; }
+    }
 
     /* Print / PDF Styling */
     @media print {
@@ -261,10 +298,10 @@
       </div>
 
       <div class="topbar-actions">
-        <div id="wsSelectorWrap" class="hidden" style="min-width: 190px;">
+        <div id="wsSelectorWrap" class="hidden">
           <select id="workspaceSelect" title="Workspace"></select>
         </div>
-        <div id="monthWrap" class="hidden" style="width: 145px;">
+        <div id="monthWrap" class="hidden">
           <input type="month" id="monthFilter" />
         </div>
         <button type="button" id="themeToggleBtn">Light / Dark</button>
@@ -330,7 +367,7 @@
 
           <form id="forgotForm" style="margin-bottom: 14px;">
             <label for="forgotEmail">Account Email</label>
-            <div style="display: flex; gap: 8px;">
+            <div class="inline-form">
               <input type="email" id="forgotEmail" required placeholder="you@example.com" />
               <button type="submit" class="primary small" id="sendCodeBtn">Send Code</button>
             </div>
@@ -406,7 +443,7 @@
                 လစဉ် ဝင်ငွေ၊ Budget Pool ခွဲဝေမှုနှင့် လက်ကျန်အခြေအနေ။
               </p>
             </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <div class="inline-form">
               <span class="pill Income" id="dashHealthBadge">Healthy</span>
               <button type="button" class="small" id="dashRefreshBtn">Refresh Report</button>
               <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
@@ -571,7 +608,7 @@
               </div>
             </div>
 
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <div class="inline-form">
               <button type="submit" class="primary" id="txSubmitBtn">Save Transaction</button>
               <button type="button" id="txCancelEditBtn" class="hidden">Cancel Edit</button>
             </div>
@@ -581,9 +618,9 @@
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
             <h2 style="margin: 0;">Transactions</h2>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <input type="search" id="txSearch" placeholder="Search pool, category, member, note..." style="width: 230px;" />
-              <select id="txTypeFilter" style="width: 140px;">
+            <div class="inline-form" style="flex: 1 1 320px;">
+              <input type="search" id="txSearch" placeholder="Search pool, category, member, note..." />
+              <select id="txTypeFilter" style="max-width: 160px;">
                 <option value="">All Types</option>
                 <option value="Income">Income</option>
                 <option value="Expense">Expense</option>
@@ -690,7 +727,7 @@
             <p class="muted" style="margin-bottom: 10px;">
               အတူတူ စာရင်းထည့်မယ့် မိသားစုဝင်ရဲ့ registered email ကို ထည့်ပြီး တူညီတဲ့ workspace ထဲ ဖိတ်ခေါ်ပါ။
             </p>
-            <form id="inviteMemberForm" style="display: flex; gap: 8px;">
+            <form id="inviteMemberForm" class="inline-form">
               <input type="email" id="inviteEmail" required placeholder="family.member@example.com" />
               <button type="submit" class="primary small">Invite</button>
             </form>
@@ -723,9 +760,9 @@
 
         <div class="card">
           <h2>Categories</h2>
-          <form id="addCategoryForm" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
-            <input type="text" id="newCatName" required placeholder="New category name" style="max-width: 240px;" />
-            <select id="newCatType" style="max-width: 160px;">
+          <form id="addCategoryForm" class="inline-form" style="margin-bottom: 14px;">
+            <input type="text" id="newCatName" required placeholder="New category name" />
+            <select id="newCatType" style="max-width: 170px;">
               <option value="Expense">Expense</option>
               <option value="Income">Income</option>
               <option value="Saving">Saving</option>
@@ -746,7 +783,7 @@
                 Created accounts၊ Workspaces အားလုံး၊ User data (Transactions) နဲ့ Admin access တို့ကို တစ်နေရာတည်း စီမံခန့်ခွဲပါ။
               </p>
             </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <div class="inline-form">
               <button type="button" class="small primary" id="adminReloadBtn">Refresh All Admin Data</button>
               <button type="button" class="small" id="adminJumpWorkspaceBtn">Workspace & Pools</button>
             </div>
@@ -771,7 +808,7 @@
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
             <h2 style="margin: 0;">Created Accounts (Registered Users)</h2>
-            <input type="search" id="adminUserSearch" placeholder="Search user name or email..." style="width: 240px;" />
+            <input type="search" id="adminUserSearch" placeholder="Search user name or email..." style="max-width: 260px;" />
           </div>
           <div class="table-wrap">
             <table>
@@ -797,8 +834,8 @@
             Global Admin (<code>thetpaing2006@gmail.com</code>) မှ Portal Admin access ထပ်ပေးနိုင်သည့် email များကို D1 database တွင် စီမံပါ။
           </p>
 
-          <form id="addAdminEmailForm" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
-            <input type="email" id="newAdminEmail" required placeholder="new.admin@example.com" style="max-width: 320px;" />
+          <form id="addAdminEmailForm" class="inline-form" style="margin-bottom: 14px;">
+            <input type="email" id="newAdminEmail" required placeholder="new.admin@example.com" />
             <button type="submit" class="primary">Add Admin</button>
           </form>
 
@@ -840,10 +877,10 @@
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
             <h2 style="margin: 0;">User Data Inspector (All Transactions)</h2>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <select id="adminInspectorWs" style="width: 210px;"></select>
-              <input type="month" id="adminInspectorMonth" style="width: 145px;" />
-              <input type="search" id="adminTxSearch" placeholder="Search pool, member, category, note..." style="width: 210px;" />
+            <div class="inline-form" style="flex: 1 1 360px;">
+              <select id="adminInspectorWs"></select>
+              <input type="month" id="adminInspectorMonth" style="max-width: 160px;" />
+              <input type="search" id="adminTxSearch" placeholder="Search pool, member, category, note..." />
               <button type="button" class="small primary" id="adminLoadTxBtn">Filter</button>
               <button type="button" class="small" id="adminExportTxCsvBtn">Export CSV</button>
             </div>
@@ -1234,17 +1271,17 @@
                 </td>
                 <td>
                   <input type="number" step="any" min="0" id="poolDefInput_${p.id}"
+                         class="pool-amt-input"
                          value="${escapeHtml(p.default_amount)}"
                          oninput="syncPoolDefaultInput(${p.id})"
-                         title="လတိုင်း သုံးမည့် ပုံသေပမာဏ"
-                         style="width:125px; padding:6px 8px;" />
+                         title="လတိုင်း သုံးမည့် ပုံသေပမာဏ" />
                 </td>
                 <td>
-                  <div style="display:flex; align-items:center; gap:6px;">
+                  <div class="row-actions">
                     <input type="number" step="any" min="0" id="poolMonthInput_${p.id}"
+                           class="pool-amt-input"
                            value="${escapeHtml(p.allocated_amount)}"
-                           title="${escapeHtml(state.month)} တစ်လတည်းအတွက် ပမာဏ"
-                           style="width:125px; padding:6px 8px;" />
+                           title="${escapeHtml(state.month)} တစ်လတည်းအတွက် ပမာဏ" />
                     ${isCustom ? `<button type="button" class="small" onclick="resetPoolMonthBudget(${p.id})" title="Default အတိုင်း ပြန်ထားရန်">Reset</button>` : ''}
                   </div>
                 </td>
@@ -1333,6 +1370,10 @@
         : 'rgba(148, 163, 184, 0.14)';
     }
 
+    function getDoughnutLegendPosition() {
+      return window.innerWidth < 640 ? 'bottom' : 'right';
+    }
+
     function destroyChart(key) {
       if (charts[key]) {
         charts[key].destroy();
@@ -1344,6 +1385,7 @@
       if (typeof Chart === 'undefined') return;
       const textCol = getChartTextColor();
       const gridCol = getChartGridColor();
+      const legendPos = getDoughnutLegendPosition();
 
       // 1. 6-Month Income, Expense & Saving Trend Chart
       destroyChart('sixMonthTrend');
@@ -1389,7 +1431,7 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { labels: { color: textCol } }
+              legend: { labels: { color: textCol, boxWidth: 12 } }
             },
             scales: {
               x: { ticks: { color: textCol }, grid: { display: false } },
@@ -1427,7 +1469,7 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { labels: { color: textCol } }
+              legend: { labels: { color: textCol, boxWidth: 12 } }
             },
             scales: {
               x: { ticks: { color: textCol }, grid: { display: false } },
@@ -1462,7 +1504,7 @@
             maintainAspectRatio: false,
             cutout: '62%',
             plugins: {
-              legend: { position: 'right', labels: { color: textCol, boxWidth: 12 } }
+              legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } }
             }
           }
         });
@@ -1493,7 +1535,7 @@
             maintainAspectRatio: false,
             cutout: '62%',
             plugins: {
-              legend: { position: 'right', labels: { color: textCol, boxWidth: 12 } }
+              legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } }
             }
           }
         });
@@ -1670,9 +1712,10 @@
         </div>
       `).join('');
 
-      const maxCat = Math.max(...cats.map((c) => Number(c.total_mmk || 0)), 1);
-      $('categorySummaryBars').innerHTML = cats.length
-        ? cats.slice(0, 8).map((c) => `
+      const catsList = state.categorySummary || [];
+      const maxCat = Math.max(...catsList.map((c) => Number(c.total_mmk || 0)), 1);
+      $('categorySummaryBars').innerHTML = catsList.length
+        ? catsList.slice(0, 8).map((c) => `
           <div class="bar-row">
             <div class="bar-meta"><span>${escapeHtml(c.category)} (${escapeHtml(c.entry_type)})</span><span>${fmtNum(c.total_mmk)} ${cur}</span></div>
             <div class="bar-track"><div class="bar-fill ${c.entry_type === 'Income' ? 'inc' : c.entry_type === 'Saving' ? 'sav' : 'exp'}" style="width:${Math.min(100, (Number(c.total_mmk || 0) / maxCat) * 100)}%"></div></div>
@@ -1682,6 +1725,12 @@
 
       renderMemberReport(cur);
     }
+
+    window.addEventListener('resize', () => {
+      if (state.summary && !$('tab-dashboard')?.classList.contains('hidden')) {
+        renderPowerBiCharts(state.pools || [], state.categorySummary || [], state.summary || {}, state.settings?.currency || 'MMK');
+      }
+    });
 
     $('dashRefreshBtn')?.addEventListener('click', async () => {
       try {
