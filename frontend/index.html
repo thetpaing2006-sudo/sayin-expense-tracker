@@ -491,27 +491,27 @@
             <div>
               <h2 style="margin: 0;">Portal Admin Console</h2>
               <p class="muted" style="margin: 4px 0 0;">
-                Workspaces, Categories, Transactions, Google Form sync နဲ့ Admin access တို့ကို တစ်နေရာတည်း စီမံခန့်ခွဲပါ။
+                Created accounts၊ Workspaces အားလုံး၊ User data (Transactions) နဲ့ Google Form sync တို့ကို တစ်နေရာတည်း စီမံခန့်ခွဲပါ။
               </p>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button type="button" class="small" id="adminReloadBtn">Reload Portal Data</button>
-              <button type="button" class="small" id="adminJumpWorkspaceBtn">Open Workspace & Categories</button>
+              <button type="button" class="small primary" id="adminReloadBtn">Refresh All Admin Data</button>
+              <button type="button" class="small" id="adminJumpWorkspaceBtn">Workspace & Categories</button>
             </div>
           </div>
 
           <div class="kpi-grid" style="margin-bottom: 0;">
             <div class="kpi">
-              <div class="label">Workspaces</div>
+              <div class="label">Created Accounts (Users)</div>
+              <div class="val inc" id="adminStatUsers">0</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Total Workspaces</div>
               <div class="val" id="adminStatWorkspaces">0</div>
             </div>
             <div class="kpi">
-              <div class="label">Categories</div>
-              <div class="val" id="adminStatCategories">0</div>
-            </div>
-            <div class="kpi">
-              <div class="label">Transactions (Month)</div>
-              <div class="val" id="adminStatTransactions">0</div>
+              <div class="label">Total Transactions (All Time)</div>
+              <div class="val sav" id="adminStatTransactions">0</div>
             </div>
             <div class="kpi">
               <div class="label">Form Mappings</div>
@@ -520,16 +520,71 @@
           </div>
         </div>
 
+        <!-- Created Accounts (Registered Users) -->
         <div class="card">
-          <h2>All Workspaces Overview</h2>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+            <h2 style="margin: 0;">Created Accounts (Registered Users)</h2>
+            <input type="search" id="adminUserSearch" placeholder="Search user name or email..." style="width: 240px;" />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Display Name</th>
+                  <th>Email</th>
+                  <th>Workspaces</th>
+                  <th>Joined</th>
+                  <th>Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Global Admin & Admin Access -->
+        <div class="card">
+          <h2>Global Admin & Portal Admin Access</h2>
+          <p class="muted" style="margin-bottom: 12px;">
+            Global Admin (<code>thetpaing2006@gmail.com</code>) မှ Portal Admin access ထပ်ပေးနိုင်သည့် email များကို D1 database တွင် စီမံပါ။
+          </p>
+
+          <form id="addAdminEmailForm" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
+            <input type="email" id="newAdminEmail" required placeholder="new.admin@example.com" style="max-width: 320px;" />
+            <button type="submit" class="primary">Add Admin</button>
+          </form>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Admin Email</th>
+                  <th>Level</th>
+                  <th>Added By</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="adminListBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- All Portal Workspaces -->
+        <div class="card">
+          <h2>All Portal Workspaces & Pools</h2>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Workspace Name</th>
                   <th>Workspace ID</th>
+                  <th>Owner</th>
+                  <th>Members</th>
+                  <th>Transactions</th>
                   <th>Currency</th>
-                  <th>Action</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="adminWorkspaceTableBody"></tbody>
@@ -537,6 +592,39 @@
           </div>
         </div>
 
+        <!-- Portal Data Inspector (User Transactions) -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+            <h2 style="margin: 0;">User Data Inspector (All Transactions)</h2>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <select id="adminInspectorWs" style="width: 210px;"></select>
+              <input type="month" id="adminInspectorMonth" style="width: 145px;" />
+              <input type="search" id="adminTxSearch" placeholder="Search member, category, note..." style="width: 210px;" />
+              <button type="button" class="small primary" id="adminLoadTxBtn">Filter</button>
+              <button type="button" class="small" id="adminExportTxCsvBtn">Export CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Workspace</th>
+                  <th>Member / Creator</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Payment</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminTxTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Google Form Mapping & Webhook Config -->
         <div class="grid-2">
           <div class="card">
             <h2>Google Form → Workspace Mapping</h2>
@@ -598,52 +686,6 @@
             <div id="adminSyncStatus" class="auth-status"></div>
           </div>
         </div>
-
-        <div class="card">
-          <h2>Global Admin & Admin Access</h2>
-          <p class="muted" style="margin-bottom: 12px;">
-            Global Admin (<code>thetpaing2006@gmail.com</code>) မှ Portal Admin access ထပ်ပေးနိုင်သည့် email များကို စီမံပါ။
-          </p>
-
-          <form id="addAdminEmailForm" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
-            <input type="email" id="newAdminEmail" required placeholder="new.admin@example.com" style="max-width: 320px;" />
-            <button type="submit" class="primary">Add Admin</button>
-          </form>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Admin Email</th>
-                  <th>Level</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="adminListBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-            <h2 style="margin: 0;">Recent Form Sync Activity</h2>
-            <button type="button" class="small" id="clearSyncLogBtn">Clear Log</button>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Form Key</th>
-                  <th>Workspace</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="syncLogBody"></tbody>
-            </table>
-          </div>
-        </div>
       </section>
     </main>
   </div>
@@ -653,7 +695,6 @@
   <script>
     const DEFAULT_API_BASE = 'https://expense-portal-api.thetpaing2006.workers.dev';
     const GLOBAL_ADMIN_EMAIL = 'thetpaing2006@gmail.com';
-    const EXTRA_ADMINS_KEY = 'sayin_extra_admin_emails';
 
     const STORAGE_KEYS = {
       token: 'sayin_auth_token',
@@ -663,14 +704,14 @@
 
     const ADMIN_STORAGE = {
       mappings: 'sayin_form_ws_mappings',
-      defaultWs: 'sayin_form_default_ws',
-      syncLogs: 'sayin_form_sync_logs'
+      defaultWs: 'sayin_form_default_ws'
     };
 
     const state = {
       apiBase: DEFAULT_API_BASE,
       token: localStorage.getItem(STORAGE_KEYS.token) || '',
       user: null,
+      isAdmin: false,
       workspaces: [],
       wsId: localStorage.getItem(STORAGE_KEYS.wsId) || '',
       month: new Date().toISOString().slice(0, 7),
@@ -678,7 +719,11 @@
       categories: [],
       transactions: [],
       summary: null,
-      categorySummary: []
+      categorySummary: [],
+      adminUsers: [],
+      adminAdmins: [],
+      adminWorkspaces: [],
+      adminTransactions: []
     };
 
     const $ = (id) => document.getElementById(id);
@@ -696,30 +741,12 @@
         .replace(/'/g, '&#39;');
     }
 
-    function loadExtraAdmins() {
-      try {
-        const arr = JSON.parse(localStorage.getItem(EXTRA_ADMINS_KEY) || '[]');
-        if (!Array.isArray(arr)) return [];
-        return [...new Set(arr.map(normalizeEmail).filter((e) => e && e !== GLOBAL_ADMIN_EMAIL))];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveExtraAdmins(list) {
-      const clean = [...new Set((list || []).map(normalizeEmail).filter((e) => e && e !== GLOBAL_ADMIN_EMAIL))];
-      localStorage.setItem(EXTRA_ADMINS_KEY, JSON.stringify(clean));
-    }
-
     function isGlobalAdmin() {
       return normalizeEmail(state.user?.email) === GLOBAL_ADMIN_EMAIL;
     }
 
     function isAnyAdmin() {
-      const email = normalizeEmail(state.user?.email);
-      if (!email) return false;
-      if (email === GLOBAL_ADMIN_EMAIL) return true;
-      return loadExtraAdmins().includes(email);
+      return isGlobalAdmin() || Boolean(state.isAdmin);
     }
 
     function updateAdminTabVisibility() {
@@ -805,11 +832,33 @@
       }
       state.token = '';
       state.user = null;
+      state.isAdmin = false;
       localStorage.removeItem(STORAGE_KEYS.token);
       setAuthUi(false);
     }
 
+    async function checkAdminPrivilege() {
+      if (!state.user) {
+        state.isAdmin = false;
+        updateAdminTabVisibility();
+        return;
+      }
+      if (isGlobalAdmin()) {
+        state.isAdmin = true;
+        updateAdminTabVisibility();
+        return;
+      }
+      try {
+        await apiFetch('/api/admin/overview');
+        state.isAdmin = true;
+      } catch {
+        state.isAdmin = false;
+      }
+      updateAdminTabVisibility();
+    }
+
     async function loadWorkspacesAndData() {
+      await checkAdminPrivilege();
       const wsRes = await apiFetch('/api/workspaces');
       state.workspaces = wsRes.data || [];
       if (!state.workspaces.length) return;
@@ -850,9 +899,6 @@
       renderCategories();
       renderDashboard();
       renderTransactions();
-      if (!$('tab-admin')?.classList.contains('hidden')) {
-        renderAdminPanel();
-      }
     }
 
     function renderFormOptions() {
@@ -1029,7 +1075,7 @@
       }
     };
 
-    // Full Portal Admin Helpers
+    // Full Portal Admin Console Functions
     function loadAdminMappings() {
       try {
         return JSON.parse(localStorage.getItem(ADMIN_STORAGE.mappings) || '{}');
@@ -1042,50 +1088,100 @@
       localStorage.setItem(ADMIN_STORAGE.mappings, JSON.stringify(mapObj));
     }
 
-    function loadSyncLogs() {
-      try {
-        return JSON.parse(localStorage.getItem(ADMIN_STORAGE.syncLogs) || '[]');
-      } catch {
-        return [];
-      }
-    }
-
-    window.switchToWorkspaceFromAdmin = async function(wsId) {
+    window.switchToWorkspaceFromAdmin = async function(wsId, targetTab = 'workspace') {
       if (!wsId) return;
       state.wsId = wsId;
       localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
       $('workspaceSelect').value = state.wsId;
       resetTxForm();
       await loadWorkspaceDetails();
-      document.querySelector('.nav-tabs button[data-tab="workspace"]')?.click();
+      document.querySelector(`.nav-tabs button[data-tab="${targetTab}"]`)?.click();
       toast(`Switched to ${wsId}`, 'success');
     };
 
-    function renderAdminOverview() {
-      const mappings = loadAdminMappings();
-      if ($('adminStatWorkspaces')) $('adminStatWorkspaces').textContent = String((state.workspaces || []).length);
-      if ($('adminStatCategories')) $('adminStatCategories').textContent = String((state.categories || []).length);
-      if ($('adminStatTransactions')) $('adminStatTransactions').textContent = String((state.transactions || []).length);
-      if ($('adminStatMappings')) $('adminStatMappings').textContent = String(Object.keys(mappings).length);
-
-      const wsBody = $('adminWorkspaceTableBody');
-      if (wsBody) {
-        wsBody.innerHTML = (state.workspaces || []).length
-          ? state.workspaces.map((w) => {
-              const activeBadge = w.workspace_id === state.wsId ? ' <span class="pill Income">Active</span>' : '';
-              return `
-                <tr>
-                  <td><strong>${escapeHtml(w.workspace_name)}</strong>${activeBadge}</td>
-                  <td><code>${escapeHtml(w.workspace_id)}</code></td>
-                  <td>${escapeHtml(w.currency || 'MMK')}</td>
-                  <td>
-                    <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${escapeHtml(w.workspace_id).replace(/'/g, "\\'")}')">Manage</button>
-                  </td>
-                </tr>
-              `;
-            }).join('')
-          : '<tr><td colspan="4" class="muted">No workspaces found.</td></tr>';
+    window.grantAdminFromUserRow = async function(email) {
+      if (!isGlobalAdmin()) {
+        toast('Only Global Admin can grant admin role.', 'error');
+        return;
       }
+      try {
+        await apiFetch('/api/admin/users/admins', {
+          method: 'POST',
+          body: JSON.stringify({ email })
+        });
+        toast(`Admin granted to ${email}`, 'success');
+        await loadFullAdminConsole();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
+    window.removeExtraAdmin = async function(email) {
+      if (!isGlobalAdmin()) {
+        toast('Only Global Admin can remove admins.', 'error');
+        return;
+      }
+      if (!confirm(`Remove admin access for ${email}?`)) return;
+      try {
+        await apiFetch(`/api/admin/users/admins/${encodeURIComponent(email)}`, { method: 'DELETE' });
+        toast('Admin access removed', 'success');
+        await loadFullAdminConsole();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
+    window.adminDeleteTransaction = async function(wsId, txId) {
+      if (!confirm(`Delete transaction #${txId} from ${wsId}?`)) return;
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(wsId)}/transactions/${txId}`, { method: 'DELETE' });
+        toast(`Deleted transaction #${txId}`, 'success');
+        await loadAdminInspectorTransactions();
+        if (wsId === state.wsId) await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
+    function renderAdminUsersTable() {
+      const tbody = $('adminUsersTableBody');
+      if (!tbody) return;
+      const q = ($('adminUserSearch')?.value || '').trim().toLowerCase();
+      const canManage = isGlobalAdmin();
+
+      const filtered = (state.adminUsers || []).filter((u) => {
+        if (!q) return true;
+        return `${u.display_name || ''} ${u.email || ''}`.toLowerCase().includes(q);
+      });
+
+      tbody.innerHTML = filtered.length
+        ? filtered.map((u) => {
+            const levelBadge = u.admin_level === 'global_admin'
+              ? '<span class="pill Income">Global Admin</span>'
+              : u.admin_level === 'admin'
+                ? '<span class="pill Saving">Admin</span>'
+                : '<span class="pill Expense">User</span>';
+
+            let actionHtml = '<span class="muted">-</span>';
+            if (canManage && u.admin_level === 'user') {
+              actionHtml = `<button type="button" class="small" onclick="grantAdminFromUserRow('${escapeHtml(u.email).replace(/'/g, "\\'")}')">Make Admin</button>`;
+            } else if (canManage && u.admin_level === 'admin') {
+              actionHtml = `<button type="button" class="small danger" onclick="removeExtraAdmin('${escapeHtml(u.email).replace(/'/g, "\\'")}')">Revoke Admin</button>`;
+            }
+
+            return `
+              <tr>
+                <td>${escapeHtml(u.id)}</td>
+                <td><strong>${escapeHtml(u.display_name)}</strong></td>
+                <td><code>${escapeHtml(u.email)}</code></td>
+                <td>${escapeHtml(u.workspace_count ?? 0)}</td>
+                <td class="muted">${escapeHtml(u.created_at || '-')}</td>
+                <td>${levelBadge}</td>
+                <td>${actionHtml}</td>
+              </tr>
+            `;
+          }).join('')
+        : '<tr><td colspan="7" class="muted">No users found.</td></tr>';
     }
 
     function renderAdminAccessTable() {
@@ -1100,16 +1196,18 @@
         });
       }
 
-      const extraList = loadExtraAdmins();
       const rows = [
         `<tr>
           <td><code>${escapeHtml(GLOBAL_ADMIN_EMAIL)}</code></td>
           <td><span class="pill Income">Global Admin</span></td>
+          <td class="muted">System Default</td>
           <td class="muted">Permanent</td>
         </tr>`
       ];
 
-      extraList.forEach((email) => {
+      (state.adminAdmins || []).forEach((adm) => {
+        const email = normalizeEmail(adm.email);
+        if (!email || email === GLOBAL_ADMIN_EMAIL) return;
         const removeBtn = canManage
           ? `<button type="button" class="small danger" onclick="removeExtraAdmin('${escapeHtml(email).replace(/'/g, "\\'")}')">Remove</button>`
           : '<span class="muted">Global Admin only</span>';
@@ -1118,6 +1216,7 @@
           <tr>
             <td><code>${escapeHtml(email)}</code></td>
             <td><span class="pill Saving">Admin</span></td>
+            <td class="muted">${escapeHtml(adm.added_by || '-')}</td>
             <td>${removeBtn}</td>
           </tr>
         `);
@@ -1126,10 +1225,64 @@
       tbody.innerHTML = rows.join('');
     }
 
-    function renderAdminPanel() {
-      renderAdminOverview();
+    function renderAdminWorkspacesTable() {
+      const tbody = $('adminWorkspaceTableBody');
+      if (!tbody) return;
+      const list = state.adminWorkspaces || [];
 
-      const wsOptionsHtml = (state.workspaces || [])
+      tbody.innerHTML = list.length
+        ? list.map((w) => `
+          <tr>
+            <td><strong>${escapeHtml(w.workspace_name)}</strong></td>
+            <td><code>${escapeHtml(w.workspace_id)}</code></td>
+            <td>${escapeHtml(w.owner_name || '-')} <span class="muted">(${escapeHtml(w.owner_email || '-')})</span></td>
+            <td>${escapeHtml(w.member_count ?? 0)}</td>
+            <td>${escapeHtml(w.tx_count ?? 0)}</td>
+            <td>${escapeHtml(w.currency || 'MMK')}</td>
+            <td>
+              <div class="row-actions">
+                <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${escapeHtml(w.workspace_id).replace(/'/g, "\\'")}', 'dashboard')">View</button>
+                <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${escapeHtml(w.workspace_id).replace(/'/g, "\\'")}', 'workspace')">Settings</button>
+              </div>
+            </td>
+          </tr>
+        `).join('')
+        : '<tr><td colspan="7" class="muted">No workspaces found.</td></tr>';
+    }
+
+    function renderAdminInspectorTable() {
+      const tbody = $('adminTxTableBody');
+      if (!tbody) return;
+      const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
+
+      const rows = (state.adminTransactions || []).filter((r) => {
+        if (!q) return true;
+        const hay = `${r.workspace_id || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase();
+        return hay.includes(q);
+      });
+
+      tbody.innerHTML = rows.length
+        ? rows.map((r) => `
+          <tr>
+            <td>${escapeHtml(r.tx_date)}</td>
+            <td><code>${escapeHtml(r.workspace_id)}</code></td>
+            <td>${escapeHtml(r.member_name)} <span class="muted">(${escapeHtml(r.creator_email || '-')})</span></td>
+            <td><span class="pill ${escapeHtml(r.entry_type)}">${escapeHtml(r.entry_type)}</span></td>
+            <td>${escapeHtml(r.category)}</td>
+            <td><strong>${fmtNum(r.amount_mmk)}</strong></td>
+            <td>${escapeHtml(r.payment_method || '-')}</td>
+            <td>${escapeHtml(r.notes || '-')}</td>
+            <td>
+              <button type="button" class="small danger" onclick="adminDeleteTransaction('${escapeHtml(r.workspace_id).replace(/'/g, "\\'")}', ${r.id})">Delete</button>
+            </td>
+          </tr>
+        `).join('')
+        : '<tr><td colspan="9" class="muted">No transactions found.</td></tr>';
+    }
+
+    function renderFormMappingSection() {
+      const allWs = state.adminWorkspaces.length ? state.adminWorkspaces : state.workspaces;
+      const wsOptionsHtml = allWs
         .map((w) => `<option value="${escapeHtml(w.workspace_id)}">${escapeHtml(w.workspace_name)} (${escapeHtml(w.workspace_id)})</option>`)
         .join('');
 
@@ -1144,6 +1297,8 @@
 
       const mappings = loadAdminMappings();
       const entries = Object.entries(mappings);
+      if ($('adminStatMappings')) $('adminStatMappings').textContent = String(entries.length);
+
       if ($('formMappingBody')) {
         $('formMappingBody').innerHTML = entries.length
           ? entries.map(([k, v]) => `
@@ -1155,57 +1310,111 @@
           `).join('')
           : '<tr><td colspan="3" class="muted">No form mappings configured yet.</td></tr>';
       }
+    }
 
-      const logs = loadSyncLogs();
-      if ($('syncLogBody')) {
-        $('syncLogBody').innerHTML = logs.length
-          ? logs.map((item) => `
-            <tr>
-              <td>${escapeHtml(item.time || '-')}</td>
-              <td>${escapeHtml(item.formKey || '-')}</td>
-              <td>${escapeHtml(item.workspaceId || '-')}</td>
-              <td>${escapeHtml(item.amount || '-')}</td>
-              <td>${escapeHtml(item.status || 'Recorded')}</td>
-            </tr>
-          `).join('')
-          : '<tr><td colspan="5" class="muted">No sync activity recorded yet.</td></tr>';
+    async function loadAdminInspectorTransactions() {
+      if (!isAnyAdmin()) return;
+      const wsVal = encodeURIComponent($('adminInspectorWs')?.value || '');
+      const mVal = encodeURIComponent($('adminInspectorMonth')?.value || '');
+      const txRes = await apiFetch(`/api/admin/transactions?workspace_id=${wsVal}&month=${mVal}`);
+      state.adminTransactions = txRes.data || [];
+      renderAdminInspectorTable();
+    }
+
+    async function loadFullAdminConsole() {
+      if (!isAnyAdmin()) return;
+      try {
+        const [ovRes, usersRes, wsAllRes] = await Promise.all([
+          apiFetch('/api/admin/overview'),
+          apiFetch('/api/admin/users'),
+          apiFetch('/api/admin/workspaces')
+        ]);
+
+        state.adminAdmins = ovRes.admins || [];
+        state.adminUsers = usersRes.data || [];
+        state.adminWorkspaces = wsAllRes.data || [];
+
+        if ($('adminStatUsers')) $('adminStatUsers').textContent = String(ovRes.counts?.users ?? state.adminUsers.length);
+        if ($('adminStatWorkspaces')) $('adminStatWorkspaces').textContent = String(ovRes.counts?.workspaces ?? state.adminWorkspaces.length);
+        if ($('adminStatTransactions')) $('adminStatTransactions').textContent = String(ovRes.counts?.transactions ?? 0);
+
+        if ($('adminInspectorWs')) {
+          const prev = $('adminInspectorWs').value;
+          $('adminInspectorWs').innerHTML = '<option value="">All Workspaces</option>' + state.adminWorkspaces
+            .map((w) => `<option value="${escapeHtml(w.workspace_id)}">${escapeHtml(w.workspace_name)} (${escapeHtml(w.workspace_id)})</option>`)
+            .join('');
+          if (prev) $('adminInspectorWs').value = prev;
+        }
+
+        renderAdminUsersTable();
+        renderAdminAccessTable();
+        renderAdminWorkspacesTable();
+        renderFormMappingSection();
+        await loadAdminInspectorTransactions();
+      } catch (err) {
+        toast(err.message, 'error');
       }
-
-      renderAdminAccessTable();
     }
 
     window.removeFormMapping = function(key) {
       const mapObj = loadAdminMappings();
       delete mapObj[key];
       saveAdminMappings(mapObj);
-      renderAdminPanel();
+      renderFormMappingSection();
       toast('Mapping removed', 'success');
     };
 
-    window.removeExtraAdmin = function(email) {
-      if (!isGlobalAdmin()) {
-        toast('Only Global Admin can remove admins.', 'error');
-        return;
-      }
-      const target = normalizeEmail(email);
-      const next = loadExtraAdmins().filter((e) => e !== target);
-      saveExtraAdmins(next);
-      renderAdminAccessTable();
-      toast('Admin removed', 'success');
-    };
-
     $('adminReloadBtn')?.addEventListener('click', async () => {
-      try {
-        await loadWorkspacesAndData();
-        renderAdminPanel();
-        toast('Portal data refreshed', 'success');
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      await loadWorkspacesAndData();
+      await loadFullAdminConsole();
+      toast('Admin portal data refreshed', 'success');
     });
 
     $('adminJumpWorkspaceBtn')?.addEventListener('click', () => {
       document.querySelector('.nav-tabs button[data-tab="workspace"]')?.click();
+    });
+
+    $('adminUserSearch')?.addEventListener('input', renderAdminUsersTable);
+    $('adminTxSearch')?.addEventListener('input', renderAdminInspectorTable);
+    $('adminLoadTxBtn')?.addEventListener('click', loadAdminInspectorTransactions);
+
+    $('adminExportTxCsvBtn')?.addEventListener('click', () => {
+      const rows = state.adminTransactions || [];
+      const headers = ['Date', 'Workspace', 'Member', 'CreatorEmail', 'Type', 'Category', 'Amount', 'Payment', 'Notes'];
+      const lines = [headers.join(',')].concat(
+        rows.map((r) => [
+          r.tx_date, r.workspace_id, r.member_name, r.creator_email || '',
+          r.entry_type, r.category, r.amount_mmk, r.payment_method || '', r.notes || ''
+        ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      );
+      const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `sayin-admin-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    $('addAdminEmailForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!isGlobalAdmin()) {
+        toast('Only Global Admin can add admins.', 'error');
+        return;
+      }
+      const email = normalizeEmail($('newAdminEmail')?.value);
+      if (!email) return;
+
+      try {
+        await apiFetch('/api/admin/users/admins', {
+          method: 'POST',
+          body: JSON.stringify({ email })
+        });
+        $('newAdminEmail').value = '';
+        toast('Admin added', 'success');
+        await loadFullAdminConsole();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
     });
 
     $('formMappingRuleForm')?.addEventListener('submit', (e) => {
@@ -1218,7 +1427,7 @@
       mapObj[key] = ws;
       saveAdminMappings(mapObj);
       $('mapFormKey').value = '';
-      renderAdminPanel();
+      renderFormMappingSection();
       setStatus('adminSyncStatus', `Mapped "${key}" → ${ws}`, 'ok');
       toast('Form mapping saved', 'success');
     });
@@ -1241,36 +1450,6 @@
       } catch {
         toast('Could not copy automatically', 'error');
       }
-    });
-
-    $('clearSyncLogBtn')?.addEventListener('click', () => {
-      localStorage.removeItem(ADMIN_STORAGE.syncLogs);
-      renderAdminPanel();
-      toast('Sync log cleared', 'success');
-    });
-
-    $('addAdminEmailForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (!isGlobalAdmin()) {
-        toast('Only Global Admin can add admins.', 'error');
-        return;
-      }
-      const email = normalizeEmail($('newAdminEmail')?.value);
-      if (!email) return;
-
-      if (email === GLOBAL_ADMIN_EMAIL) {
-        toast('Already Global Admin', 'info');
-        return;
-      }
-
-      const next = loadExtraAdmins();
-      if (!next.includes(email)) {
-        next.push(email);
-        saveExtraAdmins(next);
-      }
-      $('newAdminEmail').value = '';
-      renderAdminAccessTable();
-      toast('Admin added', 'success');
     });
 
     // Theme
@@ -1450,7 +1629,7 @@
     $('logoutBtn').addEventListener('click', () => handleLogout(true));
 
     document.querySelectorAll('.nav-tabs button').forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const target = btn.dataset.tab;
         if (target === 'admin' && !isAnyAdmin()) {
           toast('Admin access required', 'error');
@@ -1458,7 +1637,9 @@
         }
         document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b === btn));
         ['dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => $('tab-' + t).classList.toggle('hidden', t !== target));
-        if (target === 'admin') renderAdminPanel();
+        if (target === 'admin') {
+          await loadFullAdminConsole();
+        }
       });
     });
 
