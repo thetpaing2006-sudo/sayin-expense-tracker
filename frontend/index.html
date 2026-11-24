@@ -500,7 +500,7 @@
             <div>
               <h2 style="margin: 0;">Monthly Budget Pools (<span id="poolManageMonthLabel">-</span>)</h2>
               <p class="muted" style="margin: 4px 0 0;">
-                ကုန်ကျစရိတ် ထုတ်သုံးမည့် Pool များကို ဖန်တီးပါ။ လစဉ် Default amount ထားနိုင်သလို ရွေးထားတဲ့လအတွက်လည်း ပြင်ဆင်နိုင်ပါတယ်။
+                ကုန်ကျစရိတ် ထုတ်သုံးမည့် Pool များကို ဖန်တီးပါ။ Monthly Default ပြင်ရင် This Month ပါ လိုက်ပြောင်းပြီး၊ This Month ကို သီးသန့်ပြင်ရင် Custom ဖြစ်သွားပါမယ်။
               </p>
             </div>
           </div>
@@ -1037,7 +1037,7 @@
         : '<span class="muted">No categories</span>';
     }
 
- function renderPoolManager() {
+    function renderPoolManager() {
       const cur = state.settings?.currency || 'MMK';
       if ($('poolManageMonthLabel')) $('poolManageMonthLabel').textContent = state.month;
 
@@ -1285,6 +1285,15 @@
 
       renderMemberReport(cur);
     }
+
+    $('dashRefreshBtn')?.addEventListener('click', async () => {
+      try {
+        await loadWorkspaceDetails();
+        toast('Dashboard report updated', 'success');
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
 
     function getFilteredTransactions() {
       const q = ($('txSearch').value || '').trim().toLowerCase();
