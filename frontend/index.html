@@ -1071,13 +1071,19 @@
     $('inviteMemberForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/members`, {
+       const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/invites`, {
           method: 'POST',
-          body: JSON.stringify({ email: $('inviteEmail').value.trim() })
+          body: JSON.stringify({
+            email: $('inviteEmail').value.trim(),
+            app_url: window.location.origin
+          })
         });
         $('inviteEmail').value = '';
-        toast('Member added', 'success');
-        await loadWorkspaceDetails();
+        if (res.sent) {
+          toast('Invite email sent!', 'success');
+        } else {
+          toast('Invite created! Share link: ' + res.invite_link, 'success');
+        }
       } catch (err) {
         toast(err.message, 'error');
       }
