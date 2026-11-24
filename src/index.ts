@@ -85,6 +85,23 @@ async function seedWorkspaceForUser(db: D1Database, userId: number, wsId: string
   }
 }
 
+async function addMemberNameToSettings(db: D1Database, wsId: string, memberName: string) {
+  const sRow = await db
+    .prepare('SELECT members_json FROM workspace_settings WHERE workspace_id = ?')
+    .bind(wsId)
+    .first<{ members_json: string }>()
+  if (sRow?.members_json) {
+    const arr: string[] = JSON.parse(sRow.members_json)
+    if (!arr.includes(memberName)) {
+      arr.push(memberName)
+      await db
+        .prepare("UPDATE workspace_settings SET members_json = ?, updated_at = datetime('now') WHERE workspace_id = ?")
+        .bind(JSON.stringify(arr), wsId)
+        .run()
+    }
+  }
+}
+
 async function getUserFromRequest(c: any): Promise<AuthUser | null> {
   const authHeader = c.req.header('Authorization') || ''
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : ''
@@ -141,6 +158,7 @@ app.post('/api/auth/register', async (c) => {
   const email = String(body.email || '').trim().toLowerCase()
   const displayName = String(body.display_name || '').trim() || email.split('@')[0] || 'User'
   const password = String(body.password || '')
+  const inviteToken = String(body.invite_token || '').trim()
 
   if (!email || !email.includes('@') || password.length < 6) {
     return c.json({ error: 'Valid email and password (min 6 chars) are required' }, 400)
@@ -162,13 +180,55 @@ app.post('/api/auth/register', async (c) => {
   const wsId = `family_${userId}`
   await seedWorkspaceForUser(c.env.family_expense_portal_db, userId, wsId, `${displayName}'s Family Space`, [displayName])
 
+  // Auto-join any pending invited workspaces matching invite_token or invited_email
+  const pendingInvites = inviteToken
+    ? await c.env.family_expense_portal_db
+        .prepare(
+          `SELECT id, workspace_id FROM workspace_invites
+           WHERE status = 'pending' AND (token = ? OR invited_email = ?)`
+        )
+        .bind(inviteToken, email)
+        .all<{ id: number; workspace_id: string }>()
+    : await c.env.family_expense_portal_db
+        .prepare(
+          `SELECT id, workspace_id FROM workspace_invites
+           WHERE status = 'pending' AND invited_email = ?`
+        )
+        .bind(email)
+        .all<{ id: number; workspace_id: string }>()
+
+  let joinedWorkspaceId: string | null = null
+  for (const inv of pendingInvites.results || []) {
+    await c.env.family_expense_portal_db
+      .prepare("INSERT OR IGNORE INTO workspace_members (workspace_id, user_id, role) VALUES (?, ?, 'member')")
+      .bind(inv.workspace_id, userId)
+      .run()
+
+    await addMemberNameToSettings(c.env.family_expense_portal_db, inv.workspace_id, displayName)
+
+    await c.env.family_expense_portal_db
+      .prepare("UPDATE workspace_invites SET status = 'accepted' WHERE id = ?")
+      .bind(inv.id)
+      .run()
+
+    if (!joinedWorkspaceId) joinedWorkspaceId = inv.workspace_id
+  }
+
   const token = crypto.randomUUID() + '-' + crypto.randomUUID()
   await c.env.family_expense_portal_db
     .prepare("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, datetime('now', '+30 days'))")
     .bind(token, userId)
     .run()
 
-  return c.json({ token, user: { id: userId, email, display_name: displayName }, default_workspace_id: wsId }, 201)
+  return c.json(
+    {
+      token,
+      user: { id: userId, email, display_name: displayName },
+      default_workspace_id: joinedWorkspaceId || wsId,
+      joined_workspace_id: joinedWorkspaceId,
+    },
+    201
+  )
 })
 
 app.post('/api/auth/login', async (c) => {
@@ -220,25 +280,25 @@ app.post('/api/auth/forgot-password', async (c) => {
     .run()
 
   if (c.env.APPS_SCRIPT_MAIL_URL) {
-  const relayRes = await fetch(c.env.APPS_SCRIPT_MAIL_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      secret: "SAYIN_MAIL_RELAY_2026_SECRET",
-      to: email,
-      code: resetCode,
-      subject: "Sayin Password Reset Code",
-      html: `<p>Your Sayin password reset code is: <strong style="font-size:18px;">${resetCode}</strong></p><p>This code expires in 15 minutes.</p>`,
-    }),
-  })
-  const relayData = await relayRes.json().catch(() => ({ ok: false }))
-  if (!relayRes.ok || !relayData.ok) {
-    return c.json({ error: `Email relay failed: ${relayData.error || relayRes.status}` }, 502)
+    const relayRes = await fetch(c.env.APPS_SCRIPT_MAIL_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret: 'SAYIN_MAIL_RELAY_2026_SECRET',
+        to: email,
+        code: resetCode,
+        subject: 'Sayin Password Reset Code',
+        html: `<p>Your Sayin password reset code is: <strong style="font-size:18px;">${resetCode}</strong></p><p>This code expires in 15 minutes.</p>`,
+      }),
+    })
+    const relayData = await relayRes.json().catch(() => ({ ok: false }))
+    if (!relayRes.ok || !relayData.ok) {
+      return c.json({ error: `Email relay failed: ${relayData.error || relayRes.status}` }, 502)
+    }
+    return c.json({ success: true, message: 'Reset code sent to your email (valid 15 minutes)' })
   }
-  return c.json({ success: true, message: "Reset code sent to your email (valid 15 minutes)" })
-}
 
-if (c.env.RESEND_API_KEY) {
+  if (c.env.RESEND_API_KEY) {
     const fromAddr = c.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
     const mailRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -396,23 +456,85 @@ app.post('/api/workspaces/:wsId/members', async (c) => {
     .bind(wsId, targetUser.id)
     .run()
 
-  // Also include display_name in workspace members list if not already present
-  const sRow = await c.env.family_expense_portal_db
-    .prepare('SELECT members_json FROM workspace_settings WHERE workspace_id = ?')
-    .bind(wsId)
-    .first<{ members_json: string }>()
-  if (sRow?.members_json) {
-    const arr: string[] = JSON.parse(sRow.members_json)
-    if (!arr.includes(targetUser.display_name)) {
-      arr.push(targetUser.display_name)
-      await c.env.family_expense_portal_db
-        .prepare("UPDATE workspace_settings SET members_json = ?, updated_at = datetime('now') WHERE workspace_id = ?")
-        .bind(JSON.stringify(arr), wsId)
-        .run()
-    }
-  }
+  await addMemberNameToSettings(c.env.family_expense_portal_db, wsId, targetUser.display_name)
 
   return c.json({ success: true, member: targetUser }, 201)
+})
+
+app.post('/api/workspaces/:wsId/invites', async (c) => {
+  const user = c.get('user')
+  const wsId = c.req.param('wsId')
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) {
+    return c.json({ error: 'Forbidden' }, 403)
+  }
+
+  const body = await c.req.json().catch(() => ({}))
+  const email = String(body.email || '').trim().toLowerCase()
+  const appUrl = String(body.app_url || 'https://family-expense-portal-ui.pages.dev').replace(/\/+$/, '')
+  if (!email || !email.includes('@')) {
+    return c.json({ error: 'Valid email is required' }, 400)
+  }
+
+  const wsRow = await c.env.family_expense_portal_db
+    .prepare('SELECT workspace_name FROM workspace_settings WHERE workspace_id = ?')
+    .bind(wsId)
+    .first<{ workspace_name: string }>()
+  const wsName = wsRow?.workspace_name || wsId
+
+  const existingUser = await c.env.family_expense_portal_db
+    .prepare('SELECT id, email, display_name FROM users WHERE email = ?')
+    .bind(email)
+    .first<{ id: number; email: string; display_name: string }>()
+
+  if (existingUser) {
+    await c.env.family_expense_portal_db
+      .prepare("INSERT OR IGNORE INTO workspace_members (workspace_id, user_id, role) VALUES (?, ?, 'member')")
+      .bind(wsId, existingUser.id)
+      .run()
+    await addMemberNameToSettings(c.env.family_expense_portal_db, wsId, existingUser.display_name)
+  }
+
+  const inviteToken = crypto.randomUUID()
+  const registerLink = `${appUrl}/?invite=${encodeURIComponent(inviteToken)}&email=${encodeURIComponent(email)}`
+
+  await c.env.family_expense_portal_db
+    .prepare(
+      `INSERT INTO workspace_invites (workspace_id, invited_email, inviter_user_id, token, status)
+       VALUES (?, ?, ?, ?, 'pending')`
+    )
+    .bind(wsId, email, user.id, inviteToken)
+    .run()
+
+  const subject = `${user.display_name} invited you to ${wsName} on Sayin`
+  const textBody = `${user.display_name} (${user.email}) has invited you to join "${wsName}" on Sayin.\nRegister & join here: ${registerLink}`
+  const htmlBody = `
+    <div style="font-family:sans-serif;line-height:1.6;">
+      <p><strong>${user.display_name}</strong> (<code>${user.email}</code>) has invited you to join <strong>${wsName}</strong> on <strong>Sayin</strong>.</p>
+      <p>Click the link below to open Sayin, register your account, and join the shared workspace:</p>
+      <p><a href="${registerLink}">${registerLink}</a></p>
+    </div>
+  `
+
+  if (c.env.APPS_SCRIPT_MAIL_URL) {
+    const relayRes = await fetch(c.env.APPS_SCRIPT_MAIL_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret: 'SAYIN_MAIL_RELAY_2026_SECRET',
+        to: email,
+        subject,
+        html: htmlBody,
+        text: textBody,
+      }),
+    })
+    const relayData = await relayRes.json().catch(() => ({ ok: false }))
+    if (!relayRes.ok || !relayData.ok) {
+      return c.json({ error: `Invite email failed: ${relayData.error || relayRes.status}` }, 502)
+    }
+    return c.json({ success: true, sent: true, invite_link: registerLink }, 201)
+  }
+
+  return c.json({ success: true, sent: false, invite_link: registerLink }, 201)
 })
 
 async function getSettingsForSharedWs(db: D1Database, wsId: string, user: AuthUser) {
