@@ -1,0 +1,12 @@
+name = "expense-portal-api"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+[[d1_databases]]
+binding = "family_expense_portal_db"
+database_name = "family-expense-portal-db"
+database_id = "ဒီနေရာမှာ_D1_DATABASE_ID_ထည့်ပါ"
+
+[[r2_buckets]]
+binding = "family_expense_receipts"
+bucket_name = "family-expense-receipts"
