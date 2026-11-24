@@ -1113,10 +1113,10 @@ app.post('/api/workspaces/:wsId/transactions', async (c) => {
     const result = await c.env.family_expense_portal_db
       .prepare(
         `INSERT INTO transactions
-         (workspace_id, user_id, tx_date, tx_month, member_name, entry_type, category, amount_mmk, payment_method, notes, receipt_key, pool_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         (workspace_id, user_id, tx_date, member_name, entry_type, category, amount_mmk, payment_method, notes, receipt_key, pool_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
-      .bind(wsId, user.id, txDate, txMonth, memberName, entryType, category, amountMmk, paymentMethod, notes, receiptKey, poolId)
+      .bind(wsId, user.id, txDate, memberName, entryType, category, amountMmk, paymentMethod, notes, receiptKey, poolId)
       .run()
 
     return c.json({ success: true, id: result.meta.last_row_id, receipt_key: receiptKey, pool_id: poolId }, 201)
