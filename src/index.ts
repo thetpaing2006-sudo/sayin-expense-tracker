@@ -1063,46 +1063,66 @@ app.get('/api/workspaces/:wsId/transactions', async (c) => {
 })
 
 app.post('/api/workspaces/:wsId/transactions', async (c) => {
-  const user = c.get('user')
-  const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
+  try {
+    const user = c.get('user')
+    const wsId = c.req.param('wsId')
+    if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) {
+      return c.json({ error: 'Forbidden' }, 403)
+    }
 
-  await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
-  const body = await c.req.parseBody()
-  const txDate = String(body.tx_date || '')
-  const txMonth = txDate.slice(0, 7)
-  const memberName = String(body.member_name || '')
-  const entryType = String(body.entry_type || 'Expense')
-  const category = String(body.category || '')
-  const amountMmk = Number(body.amount_mmk || 0)
-  const paymentMethod = String(body.payment_method || 'Cash')
-  const notes = body.notes ? String(body.notes) : null
-  const poolId = body.pool_id && String(body.pool_id).trim() !== '' ? Number(body.pool_id) : null
+    await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
+    const body = await c.req.parseBody()
+    const txDate = String(body.tx_date || '').trim()
+    const txMonth = txDate.slice(0, 7)
+    const memberName = String(body.member_name || '').trim()
+    const entryType = String(body.entry_type || 'Expense').trim()
+    const category = String(body.category || '').trim()
+    const amountMmk = Number(body.amount_mmk || 0)
+    const paymentMethod = String(body.payment_method || 'Cash').trim()
+    const notes = body.notes ? String(body.notes).trim() : null
 
-  if (!txDate || !memberName || !category || amountMmk <= 0) {
-    return c.json({ error: 'Invalid input fields' }, 400)
+    let poolId: number | null = null
+    if (body.pool_id && String(body.pool_id).trim() !== '') {
+      const candidatePoolId = Number(body.pool_id)
+      if (Number.isFinite(candidatePoolId) && candidatePoolId > 0) {
+        const poolRow = await c.env.family_expense_portal_db
+          .prepare('SELECT id FROM budget_pools WHERE id = ? AND workspace_id = ?')
+          .bind(candidatePoolId, wsId)
+          .first<{ id: number }>()
+        if (poolRow) {
+          poolId = Number(poolRow.id)
+        }
+      }
+    }
+
+    if (!txDate || !/^\d{4}-\d{2}-\d{2}$/.test(txDate) || !memberName || !category || !(amountMmk > 0)) {
+      return c.json({ error: 'Invalid input fields' }, 400)
+    }
+
+    let receiptKey: string | null = null
+    const file = body.receipt
+    if (file && typeof file === 'object' && 'arrayBuffer' in file && Number((file as File).size || 0) > 0) {
+      const f = file as File
+      const ext = (f.name || 'jpg').split('.').pop() || 'jpg'
+      receiptKey = `ws_${wsId}/${txMonth}/${crypto.randomUUID()}.${ext}`
+      await c.env.family_expense_receipts.put(receiptKey, await f.arrayBuffer(), {
+        httpMetadata: { contentType: f.type || 'image/jpeg' },
+      })
+    }
+
+    const result = await c.env.family_expense_portal_db
+      .prepare(
+        `INSERT INTO transactions
+         (workspace_id, user_id, tx_date, tx_month, member_name, entry_type, category, amount_mmk, payment_method, notes, receipt_key, pool_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+      .bind(wsId, user.id, txDate, txMonth, memberName, entryType, category, amountMmk, paymentMethod, notes, receiptKey, poolId)
+      .run()
+
+    return c.json({ success: true, id: result.meta.last_row_id, receipt_key: receiptKey, pool_id: poolId }, 201)
+  } catch (err: any) {
+    return c.json({ error: err?.message || 'Failed to save transaction' }, 500)
   }
-
-  let receiptKey: string | null = null
-  const file = body.receipt
-  if (file && file instanceof File && file.size > 0) {
-    const ext = file.name.split('.').pop() || 'jpg'
-    receiptKey = `ws_${wsId}/${txMonth}/${crypto.randomUUID()}.${ext}`
-    await c.env.family_expense_receipts.put(receiptKey, await file.arrayBuffer(), {
-      httpMetadata: { contentType: file.type || 'image/jpeg' },
-    })
-  }
-
-  const result = await c.env.family_expense_portal_db
-    .prepare(
-      `INSERT INTO transactions
-       (workspace_id, user_id, tx_date, tx_month, member_name, entry_type, category, amount_mmk, payment_method, notes, receipt_key, pool_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    )
-    .bind(wsId, user.id, txDate, txMonth, memberName, entryType, category, amountMmk, paymentMethod, notes, receiptKey, poolId)
-    .run()
-
-  return c.json({ success: true, id: result.meta.last_row_id, receipt_key: receiptKey, pool_id: poolId }, 201)
 })
 
 app.patch('/api/workspaces/:wsId/transactions/:id', async (c) => {
