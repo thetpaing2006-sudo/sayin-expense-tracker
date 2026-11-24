@@ -2656,7 +2656,7 @@
     $('adminImportCsvFile')?.addEventListener('change', buildCsvPreview);
     $('adminImportWs')?.addEventListener('change', buildCsvPreview);
 
-    $('adminCsvImportForm')?.addEventListener('submit', async (e) => {
+   $('adminCsvImportForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const targetWs = $('adminImportWs')?.value;
       if (!targetWs) return;
@@ -2677,32 +2677,44 @@
 
       try {
         let importedCount = 0;
+        let failedCount = 0;
+        let lastErr = '';
         const encWs = encodeURIComponent(targetWs);
 
         for (const item of readyList) {
-          const fd = new FormData();
-          fd.append('tx_date', item.tx_date);
-          fd.append('member_name', item.member_name);
-          fd.append('entry_type', item.entry_type);
-          fd.append('category', item.category);
-          fd.append('amount_mmk', String(item.amount_mmk));
-          fd.append('payment_method', item.payment_method);
-          if (item.pool_id) fd.append('pool_id', String(item.pool_id));
-          if (item.notes) fd.append('notes', item.notes);
+          try {
+            const fd = new FormData();
+            fd.append('tx_date', item.tx_date);
+            fd.append('member_name', item.member_name);
+            fd.append('entry_type', item.entry_type);
+            fd.append('category', item.category);
+            fd.append('amount_mmk', String(item.amount_mmk));
+            fd.append('payment_method', item.payment_method);
+            if (item.pool_id) fd.append('pool_id', String(item.pool_id));
+            if (item.notes) fd.append('notes', item.notes);
 
-          await apiFetch(`/api/workspaces/${encWs}/transactions`, {
-            method: 'POST',
-            body: fd
-          });
-          importedCount++;
+            await apiFetch(`/api/workspaces/${encWs}/transactions`, {
+              method: 'POST',
+              body: fd
+            });
+            importedCount++;
+          } catch (rowErr) {
+            failedCount++;
+            lastErr = rowErr?.message || 'Row failed';
+          }
         }
 
-        $('adminImportCsvFile').value = '';
-        state.preparedCsvRows = [];
-        $('adminImportPreview')?.classList.add('hidden');
-        const msg = `Imported ${importedCount} new rows into ${targetWs}`;
-        setStatus('adminImportStatus', msg, 'ok');
-        toast(msg, 'success');
+        if (importedCount > 0) {
+          $('adminImportCsvFile').value = '';
+          state.preparedCsvRows = [];
+          $('adminImportPreview')?.classList.add('hidden');
+        }
+
+        const msg = failedCount > 0
+          ? `Imported ${importedCount} rows, ${failedCount} failed (${lastErr})`
+          : `Imported ${importedCount} new rows into ${targetWs}`;
+        setStatus('adminImportStatus', msg, failedCount > 0 ? 'err' : 'ok');
+        toast(msg, failedCount > 0 ? 'error' : 'success');
         if (targetWs === state.wsId) await loadWorkspaceDetails();
         await loadFullAdminConsole();
       } catch (err) {
