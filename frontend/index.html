@@ -430,15 +430,17 @@
               <button type="submit" class="primary">Create Workspace</button>
             </form>
 
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 18px 0;" />
+           <hr style="border: 0; border-top: 1px solid var(--border); margin: 18px 0;" />
 
-            <h3>Invite Member by Email</h3>
+            <h3>Family / Shared Group (Invite by Email)</h3>
+            <p class="muted" style="margin-bottom: 10px;">
+              အတူတူ စာရင်းထည့်မယ့် မိသားစုဝင်ရဲ့ registered email ကို ထည့်ပြီး တူညီတဲ့ workspace ထဲ ဖိတ်ခေါ်ပါ။
+            </p>
             <form id="inviteMemberForm" style="display: flex; gap: 8px;">
-              <input type="email" id="inviteEmail" required placeholder="member@example.com" />
-              <button type="submit" class="primary small">Add</button>
+              <input type="email" id="inviteEmail" required placeholder="family.member@example.com" />
+              <button type="submit" class="primary small">Invite</button>
             </form>
-            <div id="memberList" class="muted" style="margin-top: 10px;"></div>
-          </div>
+            <div id="memberList" class="muted" style="margin-top: 12px;"></div>
 
           <div class="card">
             <h2>Workspace Settings</h2>
