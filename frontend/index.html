@@ -232,7 +232,7 @@
         </form>
 
         <!-- Register Form -->
-       <form id="registerForm" class="hidden">
+        <form id="registerForm" class="hidden">
           <div style="margin-bottom: 12px;">
             <label for="regName">Display Name</label>
             <input type="text" id="regName" required placeholder="Your Name" autocomplete="name" />
@@ -273,9 +273,13 @@
               <label for="resetCode">6-Digit Reset Code</label>
               <input type="text" id="resetCode" required placeholder="123456" />
             </div>
-            <div style="margin-bottom: 14px;">
+            <div style="margin-bottom: 10px;">
               <label for="resetNewPassword">New Password (min 6 chars)</label>
-              <input type="password" id="resetNewPassword" minlength="6" required placeholder="New password" />
+              <input type="password" id="resetNewPassword" minlength="6" required placeholder="New password" autocomplete="new-password" />
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label for="resetConfirmPassword">Confirm New Password</label>
+              <input type="password" id="resetConfirmPassword" minlength="6" required placeholder="Re-enter new password" autocomplete="new-password" />
             </div>
             <button type="submit" class="primary" id="resetSubmitBtn" style="width: 100%;">Update Password</button>
           </form>
@@ -430,7 +434,7 @@
               <button type="submit" class="primary">Create Workspace</button>
             </form>
 
-           <hr style="border: 0; border-top: 1px solid var(--border); margin: 18px 0;" />
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 18px 0;" />
 
             <h3>Family / Shared Group (Invite by Email)</h3>
             <p class="muted" style="margin-bottom: 10px;">
@@ -441,6 +445,7 @@
               <button type="submit" class="primary small">Invite</button>
             </form>
             <div id="memberList" class="muted" style="margin-top: 12px;"></div>
+          </div>
 
           <div class="card">
             <h2>Workspace Settings</h2>
@@ -486,7 +491,6 @@
   <div id="toast"></div>
 
   <script>
-    // Replace with your deployed Cloudflare Worker URL (no trailing slash)
     const DEFAULT_API_BASE = 'https://expense-portal-api.thetpaing2006.workers.dev';
 
     const STORAGE_KEYS = {
@@ -648,7 +652,7 @@
       $('txCategory').innerHTML = list.map((c) => `<option value="${c.name}">${c.name}</option>`).join('');
     }
 
-   function renderSettingsForm(membersList) {
+    function renderSettingsForm(membersList) {
       const s = state.settings || {};
       $('setWsName').value = s.workspace_name || '';
       $('setCurrency').value = s.currency || 'MMK';
@@ -802,13 +806,11 @@
       }
     };
 
-    // Theme
     $('themeToggleBtn').addEventListener('click', () => {
       const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       applyTheme(next);
     });
 
-    // Auth Tabs (Login / Register) + Forgot Password flow from Login
     function showAuthMode(mode) {
       const isLogin = mode === 'login';
       const isReg = mode === 'register';
@@ -930,6 +932,23 @@
 
     $('resetForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const newPw = $('resetNewPassword').value;
+      const confirmPw = $('resetConfirmPassword').value;
+
+      if (newPw.length < 6) {
+        const msg = 'Password must be at least 6 characters';
+        setStatus('forgotStatus', msg, 'err');
+        toast(msg, 'error');
+        return;
+      }
+
+      if (newPw !== confirmPw) {
+        const msg = 'New passwords do not match';
+        setStatus('forgotStatus', msg, 'err');
+        toast(msg, 'error');
+        return;
+      }
+
       const btn = $('resetSubmitBtn');
       btn.disabled = true;
       btn.textContent = 'Updating...';
@@ -941,9 +960,12 @@
           body: JSON.stringify({
             email: $('forgotEmail').value.trim(),
             code: $('resetCode').value.trim(),
-            new_password: $('resetNewPassword').value
+            new_password: newPw
           })
         });
+        $('resetCode').value = '';
+        $('resetNewPassword').value = '';
+        $('resetConfirmPassword').value = '';
         toast(res.message || 'Password updated', 'success');
         showAuthMode('login');
         setStatus('loginStatus', 'Password updated. Please sign in.', 'ok');
@@ -1071,7 +1093,7 @@
     $('inviteMemberForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-       const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/invites`, {
+        const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/invites`, {
           method: 'POST',
           body: JSON.stringify({
             email: $('inviteEmail').value.trim(),
