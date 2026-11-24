@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sayin — စာရင်း & Budget Pool Portal</title>
+  <title>Sayin — Power BI Style Expense & Budget Pool Portal</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --bg: #0b1120;
@@ -48,7 +49,7 @@
       transition: background 0.2s ease, color 0.2s ease;
     }
 
-    .container { max-width: 1240px; margin: 0 auto; padding: 20px 16px 56px; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 20px 16px 56px; }
 
     .topbar {
       display: flex;
@@ -66,7 +67,7 @@
     .brand { display: flex; align-items: center; gap: 12px; }
     .brand-badge {
       width: 40px; height: 40px; border-radius: 11px;
-      background: linear-gradient(135deg, var(--primary), var(--income));
+      background: linear-gradient(135deg, #f59e0b, var(--primary), var(--income));
       color: #fff; font-weight: 800; font-size: 18px;
       display: grid; place-items: center;
     }
@@ -126,22 +127,29 @@
     }
     .card h2, .card h3 { margin: 0 0 10px; font-size: 17px; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px; }
+    /* Power BI KPI Cards */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 16px; }
     .kpi {
       background: var(--surface);
       border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
       border-radius: var(--radius);
       padding: 16px;
       box-shadow: var(--shadow);
     }
+    .kpi.inc-border { border-left-color: var(--income); }
+    .kpi.exp-border { border-left-color: var(--expense); }
+    .kpi.sav-border { border-left-color: var(--saving); }
     .kpi .label { font-size: 12px; color: var(--muted); }
-    .kpi .val { font-size: 21px; font-weight: 800; margin-top: 4px; }
+    .kpi .val { font-size: 22px; font-weight: 800; margin-top: 4px; }
+    .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
     .val.inc { color: var(--income); }
     .val.exp { color: var(--expense); }
     .val.sav { color: var(--saving); }
     .val.warn { color: var(--warn); }
 
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
     .pool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
 
@@ -169,12 +177,11 @@
     .bar-fill.sav { background: var(--saving); }
     .bar-fill.warn { background: var(--warn); }
 
-    /* Graph / Chart Styles */
-    .chart-box { width: 100%; min-height: 220px; display: flex; align-items: center; justify-content: center; }
-    .donut-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; width: 100%; }
-    .donut-legend { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
-    .legend-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .legend-left { display: flex; align-items: center; gap: 8px; }
+    .chart-canvas-wrap {
+      position: relative;
+      height: 260px;
+      width: 100%;
+    }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -204,6 +211,42 @@
     #toast.show { opacity: 1; transform: translateY(0); }
     #toast.error { border-color: var(--expense); color: var(--expense); }
     #toast.success { border-color: var(--income); color: var(--income); }
+
+    .print-header { display: none; }
+
+    /* Print / PDF Styling */
+    @media print {
+      body { background: #ffffff !important; color: #0f172a !important; }
+      .container { max-width: 100% !important; padding: 0 !important; }
+      .topbar, .nav-tabs, button, #toast, #authSection, #tab-transactions, #tab-workspace, #tab-admin {
+        display: none !important;
+      }
+      #appSection, #tab-dashboard {
+        display: block !important;
+      }
+      .print-header {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #0f172a;
+        padding-bottom: 10px;
+        margin-bottom: 16px;
+      }
+      .card, .kpi, .pool-card {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .muted, .label, .sub, .m-lbl, th {
+        color: #475569 !important;
+      }
+      .chart-canvas-wrap {
+        height: 220px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -213,7 +256,7 @@
         <div class="brand-badge">S</div>
         <div>
           <h1>Sayin စာရင်း</h1>
-          <p id="userSubtitle">Shared Expense & Budget Pool Workspace</p>
+          <p id="userSubtitle">Power BI Style Expense & Budget Pool Analytics</p>
         </div>
       </div>
 
@@ -322,24 +365,36 @@
         <button type="button" data-tab="admin" class="hidden">Admin</button>
       </nav>
 
-      <!-- Dashboard Tab -->
+      <!-- Power BI Style Dashboard Tab -->
       <section id="tab-dashboard">
+        <div class="print-header">
+          <div>
+            <h2 style="margin: 0;" id="printTitle">Sayin Financial & Budget Pool Report</h2>
+            <div class="muted" id="printSubtitle">Workspace · Month</div>
+          </div>
+          <div class="muted" id="printGeneratedAt"></div>
+        </div>
+
         <div class="kpi-grid">
-          <div class="kpi">
+          <div class="kpi inc-border">
             <div class="label">Total Income (Month)</div>
             <div class="val inc" id="kpiIncome">0</div>
+            <div class="sub" id="kpiIncomeSub">Monthly inflow</div>
           </div>
           <div class="kpi">
             <div class="label">Total Pool Budget</div>
             <div class="val" id="kpiPoolAllocated">0</div>
+            <div class="sub" id="kpiPoolAllocSub">Allocated envelopes</div>
           </div>
-          <div class="kpi">
+          <div class="kpi exp-border">
             <div class="label">Total Expense</div>
             <div class="val exp" id="kpiExpense">0</div>
+            <div class="sub" id="kpiExpenseSub">Monthly outflow</div>
           </div>
-          <div class="kpi">
+          <div class="kpi inc-border">
             <div class="label">Remaining Pool Balance</div>
             <div class="val inc" id="kpiPoolRemaining">0</div>
+            <div class="sub" id="kpiPoolRemSub">Available in pools</div>
           </div>
         </div>
 
@@ -355,29 +410,73 @@
               <span class="pill Income" id="dashHealthBadge">Healthy</span>
               <button type="button" class="small" id="dashRefreshBtn">Refresh Report</button>
               <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
+              <button type="button" class="small primary" id="dashPrintBtn">Print / PDF Report</button>
             </div>
           </div>
         </div>
 
-        <!-- Bar Chart & Donut/Pie Chart -->
+        <!-- 6-Month Trend Chart -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+            <div>
+              <h3 style="margin: 0;">6-Month Income, Expense & Saving Trend</h3>
+              <span class="muted" id="sixMonthRangeLabel">Last 6 Months Comparison</span>
+            </div>
+            <span class="muted">Income · Expense · Saving</span>
+          </div>
+          <div class="chart-canvas-wrap" style="height: 270px;">
+            <canvas id="sixMonthTrendCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Power BI Visuals Row 1: Pool Bar Chart + Pool Mix Doughnut Chart -->
         <div class="grid-2">
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
               <h3 style="margin: 0;">Pool Budget vs Spent (Bar Chart)</h3>
-              <span class="muted">Budget (Blue) vs Spent (Rose)</span>
+              <span class="muted">Budget vs Actual Spent</span>
             </div>
-            <div id="poolBarChart" class="chart-box"></div>
+            <div class="chart-canvas-wrap">
+              <canvas id="poolBarCanvas"></canvas>
+            </div>
           </div>
 
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
-              <h3 style="margin: 0;">Spending Mix by Category (Donut Chart)</h3>
-              <span class="muted">Selected Month</span>
+              <h3 style="margin: 0;">Budget Pool Allocation Mix (Doughnut)</h3>
+              <span class="muted">Pool Share %</span>
             </div>
-            <div id="categoryDonutChart" class="chart-box"></div>
+            <div class="chart-canvas-wrap">
+              <canvas id="poolMixDonutCanvas"></canvas>
+            </div>
           </div>
         </div>
 
+        <!-- Power BI Visuals Row 2: Category Expense Doughnut + Cashflow Chart -->
+        <div class="grid-2">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <h3 style="margin: 0;">Expense Mix by Category (Doughnut)</h3>
+              <span class="muted">Category Share %</span>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="categoryDonutCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <h3 style="margin: 0;">Cashflow & Saving Overview</h3>
+              <span class="muted">Selected Month</span>
+            </div>
+            <div class="chart-canvas-wrap" style="height: 195px;">
+              <canvas id="cashflowBarCanvas"></canvas>
+            </div>
+            <div id="cashflowBars" style="margin-top: 10px;"></div>
+          </div>
+        </div>
+
+        <!-- Budget Pool Cards -->
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
             <h2 style="margin: 0;">Budget Pools Balance & Utilization</h2>
@@ -386,35 +485,32 @@
           <div id="dashboardPoolCards" class="pool-grid"></div>
         </div>
 
+        <!-- Category Summary + Member Activity Matrix -->
         <div class="grid-2">
-          <div class="card">
-            <h3>Cashflow & Saving Breakdown</h3>
-            <div id="cashflowBars"></div>
-          </div>
           <div class="card">
             <h3>Category Breakdown (Selected Month)</h3>
             <div id="categorySummaryBars"></div>
           </div>
-        </div>
 
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
-            <h3 style="margin: 0;">Member Activity Report (Selected Month)</h3>
-            <span class="muted">Expense, Income & Saving by Member</span>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Member</th>
-                  <th>Income</th>
-                  <th>Expense</th>
-                  <th>Saving</th>
-                  <th>Transactions</th>
-                </tr>
-              </thead>
-              <tbody id="dashMemberReportBody"></tbody>
-            </table>
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+              <h3 style="margin: 0;">Member Activity Report (Selected Month)</h3>
+              <span class="muted">By Member</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Income</th>
+                    <th>Expense</th>
+                    <th>Saving</th>
+                    <th>Tx</th>
+                  </tr>
+                </thead>
+                <tbody id="dashMemberReportBody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -657,7 +753,7 @@
           </div>
 
           <div class="kpi-grid" style="margin-bottom: 0;">
-            <div class="kpi">
+            <div class="kpi inc-border">
               <div class="label">Created Accounts (Users)</div>
               <div class="val inc" id="adminStatUsers">0</div>
             </div>
@@ -665,7 +761,7 @@
               <div class="label">Total Workspaces</div>
               <div class="val" id="adminStatWorkspaces">0</div>
             </div>
-            <div class="kpi">
+            <div class="kpi sav-border">
               <div class="label">Total Transactions (All Time)</div>
               <div class="val sav" id="adminStatTransactions">0</div>
             </div>
@@ -802,10 +898,19 @@
       transactions: [],
       summary: null,
       categorySummary: [],
+      sixMonthTrend: [],
       adminUsers: [],
       adminAdmins: [],
       adminWorkspaces: [],
       adminTransactions: []
+    };
+
+    const charts = {
+      sixMonthTrend: null,
+      poolBar: null,
+      poolMixDonut: null,
+      categoryDonut: null,
+      cashflowBar: null
     };
 
     const $ = (id) => document.getElementById(id);
@@ -861,6 +966,7 @@
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem(STORAGE_KEYS.theme, theme);
+      if (state.summary) renderDashboard();
     }
 
     function getApiUrl(path) {
@@ -896,6 +1002,18 @@
       return Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
     }
 
+    function getLastSixMonths(anchorMonth) {
+      const parts = String(anchorMonth || new Date().toISOString().slice(0, 7)).split('-');
+      const baseYear = Number(parts[0]) || new Date().getFullYear();
+      const baseMonth = (Number(parts[1]) || (new Date().getMonth() + 1)) - 1;
+      const list = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(Date.UTC(baseYear, baseMonth - i, 1));
+        list.push(d.toISOString().slice(0, 7));
+      }
+      return list;
+    }
+
     function setAuthUi(loggedIn) {
       $('authSection').classList.toggle('hidden', loggedIn);
       $('appSection').classList.toggle('hidden', !loggedIn);
@@ -904,7 +1022,7 @@
       $('logoutBtn').classList.toggle('hidden', !loggedIn);
       $('userSubtitle').textContent = loggedIn && state.user
         ? `${state.user.display_name} (${state.user.email})`
-        : 'Shared Expense & Budget Pool Workspace';
+        : 'Power BI Style Expense & Budget Pool Analytics';
       updateAdminTabVisibility();
     }
 
@@ -961,14 +1079,22 @@
       if (!state.wsId) return;
       const ws = encodeURIComponent(state.wsId);
       const m = encodeURIComponent(state.month);
+      const sixMonths = getLastSixMonths(state.month);
+      const prevFiveMonths = sixMonths.slice(0, 5);
 
-      const [setRes, catRes, txRes, sumRes, memRes, poolRes] = await Promise.all([
+      const [setRes, catRes, txRes, sumRes, memRes, poolRes, ...prevSumResults] = await Promise.all([
         apiFetch(`/api/workspaces/${ws}/settings`),
         apiFetch(`/api/workspaces/${ws}/categories`),
         apiFetch(`/api/workspaces/${ws}/transactions?month=${m}`),
         apiFetch(`/api/workspaces/${ws}/summary?month=${m}`),
         apiFetch(`/api/workspaces/${ws}/members`),
-        apiFetch(`/api/workspaces/${ws}/pools?month=${m}`)
+        apiFetch(`/api/workspaces/${ws}/pools?month=${m}`),
+        ...prevFiveMonths.map((pm) =>
+          apiFetch(`/api/workspaces/${ws}/summary?month=${encodeURIComponent(pm)}`).catch(() => ({
+            month: pm,
+            summary: { total_income: 0, total_expense: 0, total_saving: 0 }
+          }))
+        )
       ]);
 
       state.settings = setRes.data;
@@ -985,6 +1111,24 @@
       };
       state.categorySummary = sumRes.categories || [];
       state.pools = poolRes.data || sumRes.pools || [];
+
+      const trendMap = new Map();
+      prevFiveMonths.forEach((pm, idx) => {
+        const s = prevSumResults[idx]?.summary || {};
+        trendMap.set(pm, {
+          month: pm,
+          income: Number(s.total_income || 0),
+          expense: Number(s.total_expense || 0),
+          saving: Number(s.total_saving || 0)
+        });
+      });
+      trendMap.set(state.month, {
+        month: state.month,
+        income: Number(state.summary.total_income || 0),
+        expense: Number(state.summary.total_expense || 0),
+        saving: Number(state.summary.total_saving || 0)
+      });
+      state.sixMonthTrend = sixMonths.map((ym) => trendMap.get(ym) || { month: ym, income: 0, expense: 0, saving: 0 });
 
       renderFormOptions();
       renderSettingsForm(memRes.data || []);
@@ -1178,136 +1322,213 @@
       }
     };
 
-    // Bar Chart (Pool Budget vs Spent)
-    function renderPoolBarChart(pools, cur) {
-      const el = $('poolBarChart');
-      if (!el) return;
-      if (!pools || !pools.length) {
-        el.innerHTML = '<div class="muted">No budget pools for bar chart.</div>';
-        return;
-      }
-
-      const maxVal = Math.max(
-        ...pools.map((p) => Math.max(Number(p.available_budget || 0), Number(p.spent_amount || 0))),
-        1
-      );
-
-      const barGroupW = 54;
-      const gapW = 24;
-      const leftPad = 14;
-      const topPad = 20;
-      const chartH = 145;
-      const svgW = Math.max(320, leftPad * 2 + pools.length * (barGroupW + gapW));
-      const svgH = chartH + topPad + 36;
-
-      const barsSvg = pools.map((p, idx) => {
-        const x0 = leftPad + idx * (barGroupW + gapW);
-        const alloc = Number(p.available_budget || 0);
-        const spent = Number(p.spent_amount || 0);
-        const allocH = Math.round((alloc / maxVal) * chartH);
-        const spentH = Math.round((spent / maxVal) * chartH);
-        const allocY = topPad + (chartH - allocH);
-        const spentY = topPad + (chartH - spentH);
-        const label = String(p.pool_name || '').replace(/\s*Pool$/i, '').slice(0, 11);
-
-        return `
-          <g>
-            <rect x="${x0}" y="${allocY}" width="22" height="${allocH}" rx="4" fill="#38bdf8" opacity="0.85">
-              <title>${escapeHtml(p.pool_name)} Budget: ${fmtNum(alloc)} ${escapeHtml(cur)}</title>
-            </rect>
-            <rect x="${x0 + 26}" y="${spentY}" width="22" height="${spentH}" rx="4" fill="#f43f5e">
-              <title>${escapeHtml(p.pool_name)} Spent: ${fmtNum(spent)} ${escapeHtml(cur)}</title>
-            </rect>
-            <text x="${x0 + 24}" y="${topPad + chartH + 16}" text-anchor="middle" fill="currentColor" font-size="11" opacity="0.8">${escapeHtml(label)}</text>
-          </g>
-        `;
-      }).join('');
-
-      el.innerHTML = `
-        <div class="table-wrap" style="width:100%;">
-          <svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="${svgH}" role="img" aria-label="Pool Budget vs Spent Bar Chart">
-            <line x1="${leftPad}" y1="${topPad + chartH}" x2="${svgW - leftPad}" y2="${topPad + chartH}" stroke="rgba(148,163,184,0.3)" stroke-width="1" />
-            ${barsSvg}
-          </svg>
-        </div>
-      `;
+    // Power BI Charts (Chart.js)
+    function getChartTextColor() {
+      return document.documentElement.getAttribute('data-theme') === 'light' ? '#334155' : '#cbd5e1';
     }
 
-    // Donut / Pie Chart (Spending Mix by Category)
-    function renderCategoryDonutChart(cats, cur) {
-      const el = $('categoryDonutChart');
-      if (!el) return;
+    function getChartGridColor() {
+      return document.documentElement.getAttribute('data-theme') === 'light'
+        ? 'rgba(15, 23, 42, 0.08)'
+        : 'rgba(148, 163, 184, 0.14)';
+    }
 
-      const expenseCats = (cats || [])
-        .filter((c) => c.entry_type === 'Expense' && Number(c.total_mmk || 0) > 0)
-        .sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
+    function destroyChart(key) {
+      if (charts[key]) {
+        charts[key].destroy();
+        charts[key] = null;
+      }
+    }
 
-      const sourceList = expenseCats.length
-        ? expenseCats
-        : (cats || []).filter((c) => Number(c.total_mmk || 0) > 0);
+    function renderPowerBiCharts(pools, cats, sum, cur) {
+      if (typeof Chart === 'undefined') return;
+      const textCol = getChartTextColor();
+      const gridCol = getChartGridColor();
 
-      if (!sourceList.length) {
-        el.innerHTML = '<div class="muted">No spending data for donut chart this month.</div>';
-        return;
+      // 1. 6-Month Income, Expense & Saving Trend Chart
+      destroyChart('sixMonthTrend');
+      const trendCtx = $('sixMonthTrendCanvas')?.getContext('2d');
+      if (trendCtx) {
+        const trendData = state.sixMonthTrend || [];
+        if ($('sixMonthRangeLabel') && trendData.length) {
+          $('sixMonthRangeLabel').textContent = `${trendData[0].month} to ${trendData[trendData.length - 1].month} (${cur})`;
+        }
+        charts.sixMonthTrend = new Chart(trendCtx, {
+          type: 'bar',
+          data: {
+            labels: trendData.map((d) => d.month),
+            datasets: [
+              {
+                type: 'line',
+                label: `Income (${cur})`,
+                data: trendData.map((d) => d.income),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.18)',
+                borderWidth: 2.5,
+                tension: 0.3,
+                fill: false,
+                pointRadius: 4
+              },
+              {
+                type: 'bar',
+                label: `Expense (${cur})`,
+                data: trendData.map((d) => d.expense),
+                backgroundColor: 'rgba(244, 63, 94, 0.82)',
+                borderRadius: 6
+              },
+              {
+                type: 'bar',
+                label: `Saving (${cur})`,
+                data: trendData.map((d) => d.saving),
+                backgroundColor: 'rgba(168, 85, 247, 0.8)',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: textCol } }
+            },
+            scales: {
+              x: { ticks: { color: textCol }, grid: { display: false } },
+              y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true }
+            }
+          }
+        });
       }
 
-      const palette = ['#38bdf8', '#10b981', '#f43f5e', '#f59e0b', '#a855f7', '#06b6d4', '#ec4899'];
-      const topItems = sourceList.slice(0, 6);
-      const otherSum = sourceList.slice(6).reduce((acc, c) => acc + Number(c.total_mmk || 0), 0);
-      const slices = topItems.map((c, i) => ({
-        name: c.category,
-        val: Number(c.total_mmk || 0),
-        color: palette[i % palette.length]
-      }));
-      if (otherSum > 0) {
-        slices.push({ name: 'Other', val: otherSum, color: '#64748b' });
+      // 2. Pool Budget vs Spent Bar Chart
+      destroyChart('poolBar');
+      const poolCtx = $('poolBarCanvas')?.getContext('2d');
+      if (poolCtx) {
+        const poolList = pools || [];
+        charts.poolBar = new Chart(poolCtx, {
+          type: 'bar',
+          data: {
+            labels: poolList.map((p) => String(p.pool_name || '').replace(/\s*Pool$/i, '')),
+            datasets: [
+              {
+                label: `Budget (${cur})`,
+                data: poolList.map((p) => Number(p.available_budget || 0)),
+                backgroundColor: 'rgba(56, 189, 248, 0.8)',
+                borderRadius: 6
+              },
+              {
+                label: `Spent (${cur})`,
+                data: poolList.map((p) => Number(p.spent_amount || 0)),
+                backgroundColor: 'rgba(244, 63, 94, 0.85)',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: textCol } }
+            },
+            scales: {
+              x: { ticks: { color: textCol }, grid: { display: false } },
+              y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true }
+            }
+          }
+        });
       }
 
-      const total = slices.reduce((acc, s) => acc + s.val, 0) || 1;
-      const r = 56;
-      const circ = 2 * Math.PI * r;
-      let offset = 0;
+      // 3. Budget Pool Allocation Mix Doughnut Chart
+      destroyChart('poolMixDonut');
+      const poolMixCtx = $('poolMixDonutCanvas')?.getContext('2d');
+      if (poolMixCtx) {
+        const activePools = (pools || []).filter((p) => Number(p.available_budget || 0) > 0);
+        const defaultColors = ['#10b981', '#38bdf8', '#f59e0b', '#a855f7', '#f43f5e', '#06b6d4'];
+        charts.poolMixDonut = new Chart(poolMixCtx, {
+          type: 'doughnut',
+          data: {
+            labels: activePools.length
+              ? activePools.map((p) => `${p.pool_name} (Bal: ${fmtNum(p.remaining_balance)})`)
+              : ['No Pool Budget'],
+            datasets: [{
+              data: activePools.length ? activePools.map((p) => Number(p.available_budget || 0)) : [1],
+              backgroundColor: activePools.length
+                ? activePools.map((p, idx) => p.color_tag || defaultColors[idx % defaultColors.length])
+                : ['rgba(148,163,184,0.25)'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '62%',
+            plugins: {
+              legend: { position: 'right', labels: { color: textCol, boxWidth: 12 } }
+            }
+          }
+        });
+      }
 
-      const circlesSvg = slices.map((s) => {
-        const frac = s.val / total;
-        const dash = frac * circ;
-        const seg = `
-          <circle cx="75" cy="75" r="${r}" fill="none"
-                  stroke="${s.color}" stroke-width="22"
-                  stroke-dasharray="${dash} ${circ - dash}"
-                  stroke-dashoffset="${-offset}"
-                  transform="rotate(-90 75 75)">
-            <title>${escapeHtml(s.name)}: ${fmtNum(s.val)} ${escapeHtml(cur)} (${Math.round(frac * 100)}%)</title>
-          </circle>
-        `;
-        offset += dash;
-        return seg;
-      }).join('');
+      // 4. Expense Mix by Category Doughnut Chart
+      destroyChart('categoryDonut');
+      const donutCtx = $('categoryDonutCanvas')?.getContext('2d');
+      if (donutCtx) {
+        const expCats = (cats || [])
+          .filter((c) => c.entry_type === 'Expense' && Number(c.total_mmk || 0) > 0)
+          .sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0))
+          .slice(0, 7);
 
-      const legendHtml = slices.map((s) => {
-        const pct = Math.round((s.val / total) * 100);
-        return `
-          <div class="legend-item">
-            <div class="legend-left">
-              <span class="pool-dot" style="background:${s.color}"></span>
-              <span>${escapeHtml(s.name)} (${pct}%)</span>
-            </div>
-            <strong>${fmtNum(s.val)} ${escapeHtml(cur)}</strong>
-          </div>
-        `;
-      }).join('');
+        const palette = ['#38bdf8', '#10b981', '#f43f5e', '#f59e0b', '#a855f7', '#06b6d4', '#ec4899'];
+        charts.categoryDonut = new Chart(donutCtx, {
+          type: 'doughnut',
+          data: {
+            labels: expCats.length ? expCats.map((c) => c.category) : ['No Expense'],
+            datasets: [{
+              data: expCats.length ? expCats.map((c) => Number(c.total_mmk || 0)) : [1],
+              backgroundColor: expCats.length ? palette.slice(0, expCats.length) : ['rgba(148,163,184,0.25)'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '62%',
+            plugins: {
+              legend: { position: 'right', labels: { color: textCol, boxWidth: 12 } }
+            }
+          }
+        });
+      }
 
-      el.innerHTML = `
-        <div class="donut-wrap">
-          <svg viewBox="0 0 150 150" width="150" height="150" role="img" aria-label="Spending Donut Chart">
-            <circle cx="75" cy="75" r="${r}" fill="none" stroke="rgba(148,163,184,0.16)" stroke-width="22" />
-            ${circlesSvg}
-            <text x="75" y="72" text-anchor="middle" fill="currentColor" font-size="10" opacity="0.7">TOTAL</text>
-            <text x="75" y="87" text-anchor="middle" fill="currentColor" font-size="11" font-weight="700">${fmtNum(total)}</text>
-          </svg>
-          <div class="donut-legend">${legendHtml}</div>
-        </div>
-      `;
+      // 5. Cashflow & Saving Bar Chart
+      destroyChart('cashflowBar');
+      const cfCtx = $('cashflowBarCanvas')?.getContext('2d');
+      if (cfCtx) {
+        charts.cashflowBar = new Chart(cfCtx, {
+          type: 'bar',
+          data: {
+            labels: ['Income', 'Expense', 'Saving'],
+            datasets: [{
+              label: `Amount (${cur})`,
+              data: [
+                Number(sum.total_income || 0),
+                Number(sum.total_expense || 0),
+                Number(sum.total_saving || 0)
+              ],
+              backgroundColor: ['#10b981', '#f43f5e', '#a855f7'],
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: textCol }, grid: { display: false } },
+              y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true }
+            }
+          }
+        });
+      }
     }
 
     function renderMemberReport(cur) {
@@ -1346,6 +1567,7 @@
       const cur = state.settings?.currency || 'MMK';
       const sum = state.summary || {};
       const pools = state.pools || [];
+      const cats = state.categorySummary || [];
 
       const totalIncome = Number(sum.total_income || 0);
       const totalAllocated = Number(sum.total_pool_allocated || 0);
@@ -1354,11 +1576,27 @@
       const totalRemaining = Number(sum.total_pool_remaining || 0);
       const unalloc = Number(sum.unallocated_income ?? (totalIncome - totalAllocated));
 
+      if ($('printTitle')) {
+        $('printTitle').textContent = `${state.settings?.workspace_name || state.wsId} — Financial & Budget Pool Report`;
+      }
+      if ($('printSubtitle')) {
+        $('printSubtitle').textContent = `Period: ${state.month} · Currency: ${cur}`;
+      }
+      if ($('printGeneratedAt')) {
+        $('printGeneratedAt').textContent = `Generated: ${new Date().toLocaleString()}`;
+      }
+
       $('kpiIncome').textContent = `${fmtNum(totalIncome)} ${cur}`;
       $('kpiPoolAllocated').textContent = `${fmtNum(totalAllocated)} ${cur}`;
       $('kpiExpense').textContent = `${fmtNum(totalExpense)} ${cur}`;
       $('kpiPoolRemaining').textContent = `${fmtNum(totalRemaining)} ${cur}`;
       $('kpiPoolRemaining').className = `val ${totalRemaining < 0 ? 'exp' : totalRemaining === 0 ? 'warn' : 'inc'}`;
+
+      if ($('kpiPoolAllocSub')) {
+        $('kpiPoolAllocSub').textContent = unalloc >= 0
+          ? `Unallocated: ${fmtNum(unalloc)} ${cur}`
+          : `Over income by ${fmtNum(Math.abs(unalloc))} ${cur}`;
+      }
 
       const overPools = pools.filter((p) => p.status === 'over_budget');
       const warnPools = pools.filter((p) => p.status === 'warning');
@@ -1393,8 +1631,7 @@
         $('dashPoolCountLabel').textContent = `${pools.length} Active Pools`;
       }
 
-      renderPoolBarChart(pools, cur);
-      renderCategoryDonutChart(state.categorySummary || [], cur);
+      renderPowerBiCharts(pools, cats, sum, cur);
 
       const poolCardsEl = $('dashboardPoolCards');
       poolCardsEl.innerHTML = pools.length
@@ -1433,7 +1670,6 @@
         </div>
       `).join('');
 
-      const cats = state.categorySummary || [];
       const maxCat = Math.max(...cats.map((c) => Number(c.total_mmk || 0)), 1);
       $('categorySummaryBars').innerHTML = cats.length
         ? cats.slice(0, 8).map((c) => `
@@ -1454,6 +1690,13 @@
       } catch (err) {
         toast(err.message, 'error');
       }
+    });
+
+    $('dashPrintBtn')?.addEventListener('click', () => {
+      if ($('printGeneratedAt')) {
+        $('printGeneratedAt').textContent = `Generated: ${new Date().toLocaleString()}`;
+      }
+      window.print();
     });
 
     function getFilteredTransactions() {
@@ -2038,7 +2281,9 @@
         }
         document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b === btn));
         ['dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => $('tab-' + t).classList.toggle('hidden', t !== target));
-        if (target === 'admin') {
+        if (target === 'dashboard') {
+          renderDashboard();
+        } else if (target === 'admin') {
           await loadFullAdminConsole();
         }
       });
