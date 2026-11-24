@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sayin</title>
+  <style>
+    :root { --bg:#0b1020; --card:#11182e; --card2:#17213e; --bd:rgba(148,163,184,.18); --tx:#f1f5f9; --mu:#94a3b8; --ac:#6366f1; --ac2:#06b6d4; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; color:var(--tx); background:var(--bg); }
+    .auth-wrap { min-height:100vh; display:grid; place-items:center; padding:16px; }
+    .auth-card { width:100%; max-width:430px; padding:24px; border-radius:16px; background:var(--card); border:1px solid var(--bd); }
+    .app-shell { max-width:1200px; margin:0 auto; padding:18px 14px 60px; }
+    .topbar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; padding:14px; border-radius:14px; background:var(--card); border:1px solid var(--bd); margin-bottom:16px; }
+    .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:12px; }
+    .two { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:14px; margin-bottom:16px; }
+    .card { background:var(--card); border:1px solid var(--bd); border-radius:14px; padding:16px; }
+    .muted { color:var(--mu); font-size:.86rem; }
+    label { display:block; font-size:.78rem; color:var(--mu); margin-bottom:4px; }
+    input,select { width:100%; padding:8px 10px; border-radius:9px; background:var(--card2); color:var(--tx); border:1px solid var(--bd); }
+    button { padding:8px 13px; border-radius:9px; border:none; font-weight:600; cursor:pointer; }
+    .pri { background:linear-gradient(135deg,var(--ac),var(--ac2)); color:#fff; }
+    .sec { background:rgba(148,163,184,.16); color:var(--tx); }
+    .sm { padding:5px 9px; font-size:.78rem; }
+    table { width:100%; border-collapse:collapse; font-size:.86rem; }
+    th,td { padding:9px 7px; border-bottom:1px solid var(--bd); text-align:left; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .chip { background:var(--card2); border:1px solid var(--bd); border-radius:999px; padding:5px 10px; font-size:.8rem; display:inline-flex; gap:6px; align-items:center; }
+    .toast { position:fixed; right:16px; bottom:16px; z-index:99; padding:10px 14px; border-radius:10px; display:none; font-weight:600; }
+    .toast.show { display:block; } .toast.ok { background:#14532d; color:#dcfce7; } .toast.err { background:#7f1d1d; color:#fee2e2; }
+    .hidden { display:none !important; }
+  </style>
+<link rel="stylesheet" href="/sayin-ui.css"></head>
+<body>
+  <div id="toast" class="toast"></div>
+  <div id="authScreen" class="auth-wrap">
+    <div class="auth-card">
+      <h1 style="margin:0 0 4px;">Sayin</h1>
+      <div class="muted" style="margin-bottom:14px;">Sign in or create account</div>
+      <div class="row" style="margin-bottom:14px;">
+        <button type="button" class="pri" id="modeLoginBtn" style="flex:1;">Sign In</button>
+        <button type="button" class="sec" id="modeRegisterBtn" style="flex:1;">Create Account</button>
+      </div>
+      <form id="authForm">
+        <div id="nameFieldWrap" class="hidden" style="margin-bottom:10px;"><label for="authName">Name</label><input id="authName" /></div>
+        <div style="margin-bottom:10px;"><label for="authEmail">Email</label><input type="email" id="authEmail" required /></div>
+        <div style="margin-bottom:10px;"><label for="authPassword">Password</label><input type="password" id="authPassword" required minlength="6" /></div>
+        <div id="confirmFieldWrap" class="hidden" style="margin-bottom:12px;"><label for="authConfirmPassword">Confirm Password</label><input type="password" id="authConfirmPassword" minlength="6" /></div>
+        <button type="submit" class="pri" id="authSubmitBtn" style="width:100%;">Sign In</button>
+      </form>
+      <div style="margin-top:12px;text-align:center;"><button type="button" class="sec sm" id="toggleForgotBtn">Forgot Password?</button></div>
+      <div id="forgotBox" class="hidden" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd);">
+        <div style="margin-bottom:8px;"><label for="fpEmail">Email</label><div class="row"><input type="email" id="fpEmail" /><button type="button" class="sec sm" id="sendCodeBtn">Get Code</button></div><div id="fpCodeHint" class="muted" style="margin-top:4px;"></div></div>
+        <div style="margin-bottom:8px;"><label for="fpCode">Reset Code</label><input id="fpCode" /></div>
+        <div style="margin-bottom:8px;"><label for="fpNewPw">New Password</label><input type="password" id="fpNewPw" minlength="6" /></div>
+        <div style="margin-bottom:10px;"><label for="fpConfirmPw">Confirm New Password</label><input type="password" id="fpConfirmPw" minlength="6" /></div>
+        <button type="button" class="pri" id="doResetBtn" style="width:100%;">Reset Password</button>
+      </div>
+    </div>
+  </div>
+  <div id="appShell" class="app-shell hidden">
+    <header class="topbar">
+      <div>
+        <div class="row"><strong id="wsHeading">My Space</strong><span class="chip" id="curTag">MMK</span></div>
+        <div class="muted">User: <strong id="userEmailLabel"></strong> · Space: <span id="wsIdLabel"></span></div>
+      </div>
+      <div class="row">
+        <div><label for="wsSelect">Workspace</label><div class="row"><select id="wsSelect"></select><button type="button" class="sec sm" id="addWsBtn">+</button></div></div>
+        <div><label for="monthInput">Month</label><input type="month" id="monthInput" /></div>
+        <div style="align-self:flex-end;" class="row"><button type="button" class="sec" id="refreshBtn">Sync</button><button type="button" class="sec" id="logoutBtn">Logout</button></div>
+      </div>
+    </header>
+    <div class="row" style="margin-bottom:14px;">
+      <button type="button" class="pri" data-tab="overview">Dashboard</button>
+      <button type="button" class="sec" data-tab="prefs">Settings &amp; Share</button>
+    </div>
+    <section id="tab-overview">
+      <div class="grid">
+        <div class="card"><div class="muted">Income</div><div id="kIncome" style="font-size:1.3rem;font-weight:700;">0</div></div>
+        <div class="card"><div class="muted">Expense</div><div id="kExpense" style="font-size:1.3rem;font-weight:700;">0</div></div>
+        <div class="card"><div class="muted">Saving</div><div id="kSaving" style="font-size:1.3rem;font-weight:700;">0</div></div>
+        <div class="card"><div class="muted">Net Balance</div><div id="kBalance" style="font-size:1.3rem;font-weight:700;">0</div></div>
+      </div>
+      <div class="two">
+        <div class="card">
+          <h2 style="margin:0 0 10px;">New Transaction</h2>
+          <form id="txForm">
+            <div class="grid">
+              <div><label for="txDate">Date</label><input type="date" id="txDate" name="tx_date" required /></div>
+              <div><label for="txMember">Member</label><select id="txMember" name="member_name" required></select></div>
+              <div><label for="txType">Type</label><select id="txType" name="entry_type" required><option value="Expense">Expense</option><option value="Income">Income</option><option value="Saving">Saving</option></select></div>
+            </div>
+            <div class="grid">
+              <div><label for="txCat">Category</label><div class="row"><select id="txCat" name="category" required></select><button type="button" class="sec sm" id="quickCatBtn">+</button></div></div>
+              <div><label for="txAmount">Amount (<span class="cur-lbl">MMK</span>)</label><input type="number" id="txAmount" name="amount_mmk" min="0.01" step="any" required /></div>
+              <div><label for="txPay">Payment</label><select id="txPay" name="payment_method" required></select></div>
+            </div>
+            <div class="grid">
+              <div><label for="txNotes">Notes</label><input type="text" id="txNotes" name="notes" /></div>
+              <div><label for="txReceipt">Receipt</label><input type="file" id="txReceipt" name="receipt" accept="image/*" /></div>
+            </div>
+            <button type="submit" class="pri" id="txSubmitBtn">Save</button>
+          </form>
+        </div>
+        <div class="card">
+          <h2 style="margin:0 0 10px;">Category Breakdown</h2>
+          <div style="overflow-x:auto;"><table><thead><tr><th>Category</th><th>Type</th><th>Tx</th><th>Total</th></tr></thead><tbody id="catSumBody"><tr><td colspan="4" class="muted">No data</td></tr></tbody></table></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <h2 style="margin:0 0 10px;">Member Breakdown</h2>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Member</th><th>Income</th><th>Expense</th><th>Saving</th></tr></thead><tbody id="memSumBody"><tr><td colspan="4" class="muted">No data</td></tr></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="topbar" style="padding:0 0 10px;margin:0 0 10px;background:none;border:none;border-bottom:1px solid var(--bd);border-radius:0;">
+          <h2 style="margin:0;">Transactions (<span id="monthLbl"></span>)</h2>
+          <div class="row">
+            <select id="fMember" style="width:auto;"><option value="">All Members</option></select>
+            <select id="fType" style="width:auto;"><option value="">All Types</option><option value="Expense">Expense</option><option value="Income">Income</option><option value="Saving">Saving</option></select>
+            <select id="fCat" style="width:auto;"><option value="">All Categories</option></select>
+            <button type="button" class="sec sm" id="fResetBtn">Reset</button>
+          </div>
+        </div>
+        <div id="filterBar" class="muted" style="margin-bottom:8px;">0 items</div>
+        <div style="overflow-x:auto;">
+          <table><thead><tr><th>Date</th><th>Member</th><th>Type</th><th>Category</th><th>Amount</th><th>Method</th><th>Notes</th><th>Slip</th><th>Action</th></tr></thead>
+          <tbody id="txBody"><tr><td colspan="9" class="muted">Loading...</td></tr></tbody></table>
+        </div>
+        <div id="editBox" class="hidden" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--bd);">
+          <h3 style="margin:0 0 8px;">Edit #<span id="eIdLbl"></span></h3>
+          <form id="editForm">
+            <input type="hidden" id="eId" />
+            <div class="grid">
+              <div><label for="eDate">Date</label><input type="date" id="eDate" required /></div>
+              <div><label for="eMember">Member</label><select id="eMember" required></select></div>
+              <div><label for="eType">Type</label><select id="eType" required><option value="Expense">Expense</option><option value="Income">Income</option><option value="Saving">Saving</option></select></div>
+              <div><label for="eCat">Category</label><select id="eCat" required></select></div>
+            </div>
+            <div class="grid">
+              <div><label for="eAmt">Amount</label><input type="number" id="eAmt" min="0.01" step="any" required /></div>
+              <div><label for="ePay">Payment</label><select id="ePay" required></select></div>
+              <div><label for="eNotes">Notes</label><input type="text" id="eNotes" /></div>
+            </div>
+            <div class="row"><button type="submit" class="pri">Update</button><button type="button" class="sec" id="eCancelBtn">Cancel</button></div>
+          </form>
+        </div>
+      </div>
+    </section>
+    <section id="tab-prefs" class="hidden">
+      <div class="two">
+        <div class="card">
+          <h2 style="margin:0 0 10px;">Workspace &amp; Currency</h2>
+          <form id="prefForm">
+            <div class="grid">
+              <div><label for="pName">Name</label><input id="pName" required /></div>
+              <div><label for="pCur">Currency</label><select id="pCur"><option value="MMK">MMK</option><option value="USD">USD</option><option value="THB">THB</option><option value="SGD">SGD</option></select></div>
+            </div>
+            <div class="grid">
+              <div><label for="pMembers">Members (comma)</label><input id="pMembers" /></div>
+              <div><label for="pPays">Payments (comma)</label><input id="pPays" /></div>
+            </div>
+            <button type="submit" class="pri">Save</button>
+          </form>
+        </div>
+        <div class="card">
+          <h2 style="margin:0 0 10px;">Share Workspace</h2>
+          <div class="muted" style="margin-bottom:8px;">Space: <strong class="cur-ws-lbl"></strong></div>
+          <form id="inviteMemberForm">
+            <div class="grid"><div><label for="inviteEmail">User Email</label><input type="email" id="inviteEmail" required /></div></div>
+            <button type="submit" class="pri">Invite</button>
+          </form>
+          <div id="sharedMemberChips" class="chips"></div>
+        </div>
+        <div class="card">
+          <h2 style="margin:0 0 10px;">Categories</h2>
+          <form id="catForm">
+            <div class="grid">
+              <div><label for="cName">Name</label><input id="cName" required /></div>
+              <div><label for="cType">Type</label><select id="cType"><option value="Expense">Expense</option><option value="Income">Income</option><option value="Saving">Saving</option></select></div>
+            </div>
+            <button type="submit" class="pri">Add</button>
+          </form>
+          <div id="catChips" class="chips"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+    const API = "https://expense-portal-api.thetpaing2006.workers.dev";
+    const TOKEN_KEY = "lp_token";
+    const WS_MAP_KEY = "lp_ws_by_user";
+    let authMode = "login", token = localStorage.getItem(TOKEN_KEY) || "", currentUser = null, wsId = "", monthTxs = [];
+    let state = { currency: "MMK", workspace_name: "My Space", members: ["Me"], payment_methods: ["Cash"], categories: [] };
+    const monthInput = document.getElementById("monthInput"), txDateInput = document.getElementById("txDate"), now = new Date();
+    monthInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    txDateInput.value = `${monthInput.value}-${String(now.getDate()).padStart(2, "0")}`;
+
+    const toast = (m, err = false) => { const el = document.getElementById("toast"); el.textContent = m; el.className = `toast show ${err ? "err" : "ok"}`; setTimeout(() => { el.className = "toast"; }, 3000); };
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const fmt = (n) => `${Number(n || 0).toLocaleString()} ${state.currency}`;
+
+    async function req(path, opts = {}) {
+      const h = new Headers(opts.headers || {}); if (token) h.set("Authorization", `Bearer ${token}`);
+      const r = await fetch(`${API}${path}`, { ...opts, headers: h }); const d = await r.json().catch(() => ({}));
+      if (r.status === 401) { logoutLocal(); throw new Error("Session expired"); }
+      if (!r.ok) throw new Error(d.error || `Error ${r.status}`); return d;
+    }
+    function logoutLocal() { token = ""; currentUser = null; localStorage.removeItem(TOKEN_KEY); document.getElementById("appShell").classList.add("hidden"); document.getElementById("authScreen").classList.remove("hidden"); }
+    function getUserWorkspaces() {
+      if (!currentUser) return [];
+      try { const all = JSON.parse(localStorage.getItem(WS_MAP_KEY) || "{}"); return Array.from(new Set([`family_${currentUser.id}`, ...(all[currentUser.id] || [])])); }
+      catch { return [`family_${currentUser.id}`]; }
+    }
+    function saveUserWorkspace(id) {
+      if (!currentUser) return null;
+      const c = String(id || "").trim().replace(/[^a-zA-Z0-9_-]/g, "_"); if (!c) return null;
+      const all = JSON.parse(localStorage.getItem(WS_MAP_KEY) || "{}");
+      const list = Array.isArray(all[currentUser.id]) ? all[currentUser.id] : [];
+      if (!list.includes(c)) list.push(c); all[currentUser.id] = list;
+      localStorage.setItem(WS_MAP_KEY, JSON.stringify(all)); localStorage.setItem(`lp_active_ws_${currentUser.id}`, c); return c;
+    }
+    function renderWsDropdown() {
+      const list = getUserWorkspaces(); if (!list.length) return; if (!list.includes(wsId)) wsId = list[0];
+      const sel = document.getElementById("wsSelect"); sel.innerHTML = list.map((w) => `<option value="${esc(w)}">${esc(w)}</option>`).join("");
+      sel.value = wsId; document.getElementById("wsIdLabel").textContent = wsId;
+    }
+    async function refreshWorkspacesList() {
+      try {
+        const res = await req("/api/workspaces"); const merged = Array.from(new Set([wsId, ...(res.data || []).map((w) => w.workspace_id), ...getUserWorkspaces()])).filter(Boolean);
+        const sel = document.getElementById("wsSelect"); sel.innerHTML = merged.map((w) => `<option value="${esc(w)}">${esc(w)}</option>`).join("");
+        sel.value = merged.includes(wsId) ? wsId : merged[0]; document.getElementById("wsIdLabel").textContent = wsId;
+      } catch { renderWsDropdown(); }
+    }
+    async function loadSharedMembers() {
+      const box = document.getElementById("sharedMemberChips"); document.querySelectorAll(".cur-ws-lbl").forEach((e) => { e.textContent = wsId; });
+      if (!box) return;
+      try { const res = await req(`/api/workspaces/${wsId}/members`); box.innerHTML = (res.data || []).map((m) => `<span class="chip"><strong>${esc(m.display_name)}</strong> <span class="muted">(${esc(m.email)})</span> <span>${esc(m.role)}</span></span>`).join("") || `<span class="muted">No members</span>`; }
+      catch { box.innerHTML = ""; }
+    }
+    function syncCatSelect() { const t = document.getElementById("txType").value, rows = state.categories.filter((c) => c.entry_type === t && c.is_active); document.getElementById("txCat").innerHTML = rows.length ? rows.map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("") : `<option value="">No ${t}</option>`; }
+    function renderCatChips() { document.getElementById("catChips").innerHTML = state.categories.map((c) => `<span class="chip"><strong>${esc(c.name)}</strong><span>${esc(c.entry_type)}</span><button type="button" class="sec sm" onclick="toggleCat(${c.id},${c.is_active ? 0 : 1})">${c.is_active ? "Hide" : "Show"}</button></span>`).join("") || `<span class="muted">No categories</span>`; }
+    window.toggleCat = async (id, is_active) => { try { await req(`/api/workspaces/${wsId}/categories/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ is_active }) }); await loadMeta(); toast("Updated"); } catch (e) { toast(e.message, true); } };
+    function syncUI() {
+      document.getElementById("wsHeading").textContent = state.workspace_name; document.getElementById("curTag").textContent = state.currency;
+      document.querySelectorAll(".cur-lbl").forEach((e) => { e.textContent = state.currency; });
+      document.getElementById("txMember").innerHTML = state.members.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join("");
+      document.getElementById("txPay").innerHTML = state.payment_methods.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
+      syncCatSelect(); renderCatChips(); loadSharedMembers();
+      document.getElementById("pName").value = state.workspace_name; document.getElementById("pCur").value = state.currency;
+      document.getElementById("pMembers").value = state.members.join(", "); document.getElementById("pPays").value = state.payment_methods.join(", ");
+    }
+    function syncFilters() {
+      const fm = document.getElementById("fMember"), fc = document.getElementById("fCat"), pm = fm.value, pc = fc.value;
+      const mems = Array.from(new Set([...state.members, ...monthTxs.map((t) => t.member_name).filter(Boolean)]));
+      fm.innerHTML = `<option value="">All Members</option>` + mems.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join(""); fm.value = mems.includes(pm) ? pm : "";
+      const cats = Array.from(new Set([...state.categories.map((c) => c.name), ...monthTxs.map((t) => t.category).filter(Boolean)])).sort();
+      fc.innerHTML = `<option value="">All Categories</option>` + cats.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join(""); fc.value = cats.includes(pc) ? pc : "";
+    }
+    function renderMembers() {
+      const map = new Map(); for (const m of state.members) map.set(m, { member: m, income: 0, expense: 0, saving: 0 });
+      for (const t of monthTxs) {
+        const n = t.member_name || "Unknown"; if (!map.has(n)) map.set(n, { member: n, income: 0, expense: 0, saving: 0 });
+        const r = map.get(n), a = Number(t.amount_mmk || 0);
+        if (t.entry_type === "Income") r.income += a; else if (t.entry_type === "Expense") r.expense += a; else if (t.entry_type === "Saving") r.saving += a;
+      }
+      document.getElementById("memSumBody").innerHTML = Array.from(map.values()).map((r) => `<tr><td><strong>${esc(r.member)}</strong></td><td>${fmt(r.income)}</td><td>${fmt(r.expense)}</td><td>${fmt(r.saving)}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No data</td></tr>`;
+    }
+    async function renderSlipLink(key) {
+      if (!key) return `<span class="muted">-</span>`;
+      try { const r = await fetch(`${API}/api/receipts/${encodeURIComponent(key)}`, { headers: { Authorization: `Bearer ${token}` } }); if (!r.ok) return `<span class="muted">N/A</span>`; return `<a href="${URL.createObjectURL(await r.blob())}" target="_blank" rel="noopener">Slip</a>`; }
+      catch { return `<span class="muted">-</span>`; }
+    }
+    async function renderTxs() {
+      const fm = document.getElementById("fMember").value, ft = document.getElementById("fType").value, fc = document.getElementById("fCat").value;
+      const list = monthTxs.filter((t) => (!fm || t.member_name === fm) && (!ft || t.entry_type === ft) && (!fc || t.category === fc));
+      document.getElementById("filterBar").textContent = `Showing ${list.length} of ${monthTxs.length} · Total: ${fmt(list.reduce((s, t) => s + Number(t.amount_mmk || 0), 0))}`;
+      const body = document.getElementById("txBody");
+      if (!list.length) { body.innerHTML = `<tr><td colspan="9" class="muted">No entries</td></tr>`; return; }
+      body.innerHTML = (await Promise.all(list.map(async (t) => `<tr><td>${esc(t.tx_date)}</td><td>${esc(t.member_name)}</td><td>${esc(t.entry_type)}</td><td>${esc(t.category)}</td><td><strong>${fmt(t.amount_mmk)}</strong></td><td>${esc(t.payment_method)}</td><td>${esc(t.notes || "")}</td><td>${await renderSlipLink(t.receipt_key)}</td><td><button type="button" class="sec sm" onclick="openEdit(${t.id})">Edit</button> <button type="button" class="sec sm" onclick="delTx(${t.id})">Del</button></td></tr>`))).join("");
+    }
+    function fillEdit(type, cat, mem, pay) {
+      document.getElementById("eMember").innerHTML = state.members.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join("");
+      document.getElementById("ePay").innerHTML = state.payment_methods.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
+      document.getElementById("eMember").value = mem; document.getElementById("ePay").value = pay;
+      const names = state.categories.filter((c) => c.entry_type === type && c.is_active).map((c) => c.name);
+      if (cat && !names.includes(cat)) names.unshift(cat);
+      document.getElementById("eCat").innerHTML = names.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join(""); document.getElementById("eCat").value = cat;
+    }
+    window.openEdit = (id) => { const tx = monthTxs.find((x) => Number(x.id) === Number(id)); if (!tx) return; document.getElementById("eId").value = tx.id; document.getElementById("eIdLbl").textContent = tx.id; document.getElementById("eDate").value = tx.tx_date; document.getElementById("eType").value = tx.entry_type; document.getElementById("eAmt").value = tx.amount_mmk; document.getElementById("eNotes").value = tx.notes || ""; fillEdit(tx.entry_type, tx.category, tx.member_name, tx.payment_method); document.getElementById("editBox").classList.remove("hidden"); };
+    window.delTx = async (id) => { if (!confirm(`Delete #${id}?`)) return; try { await req(`/api/workspaces/${wsId}/transactions/${id}`, { method: "DELETE" }); toast("Deleted"); await loadMonth(); } catch (e) { toast(e.message, true); } };
+    async function loadMeta() {
+      const [sRes, cRes] = await Promise.all([req(`/api/workspaces/${wsId}/settings`), req(`/api/workspaces/${wsId}/categories?include_inactive=1`)]);
+      const s = sRes.data || {}; state.currency = s.currency || "MMK"; state.workspace_name = s.workspace_name || wsId;
+      state.members = s.members?.length ? s.members : ["Me"]; state.payment_methods = s.payment_methods?.length ? s.payment_methods : ["Cash"];
+      state.categories = cRes.data || []; syncUI(); syncFilters();
+    }
+    async function loadMonth() {
+      const m = monthInput.value; document.getElementById("monthLbl").textContent = m;
+      const [sumRes, txRes] = await Promise.all([req(`/api/workspaces/${wsId}/summary?month=${encodeURIComponent(m)}`), req(`/api/workspaces/${wsId}/transactions?month=${encodeURIComponent(m)}`)]);
+      const sum = sumRes.summary || {};
+      document.getElementById("kIncome").textContent = fmt(sum.total_income); document.getElementById("kExpense").textContent = fmt(sum.total_expense);
+      document.getElementById("kSaving").textContent = fmt(sum.total_saving); document.getElementById("kBalance").textContent = fmt(sum.net_balance);
+      document.getElementById("catSumBody").innerHTML = (sumRes.categories || []).map((r) => `<tr><td>${esc(r.category)}</td><td>${esc(r.entry_type)}</td><td>${r.tx_count}</td><td><strong>${fmt(r.total_mmk)}</strong></td></tr>`).join("") || `<tr><td colspan="4" class="muted">No data</td></tr>`;
+      monthTxs = txRes.data || []; syncFilters(); renderMembers(); await renderTxs();
+    }
+    async function enterApp(user, defWs) {
+      currentUser = user; document.getElementById("userEmailLabel").textContent = `${user.display_name} (${user.email})`;
+      wsId = localStorage.getItem(`lp_active_ws_${user.id}`) || defWs || `family_${user.id}`;
+      saveUserWorkspace(wsId); renderWsDropdown(); await refreshWorkspacesList();
+      document.getElementById("authScreen").classList.add("hidden"); document.getElementById("appShell").classList.remove("hidden");
+      await loadMeta(); await loadMonth();
+    }
+
+    document.getElementById("modeLoginBtn").addEventListener("click", () => { authMode = "login"; document.getElementById("nameFieldWrap").classList.add("hidden"); document.getElementById("confirmFieldWrap").classList.add("hidden"); document.getElementById("authSubmitBtn").textContent = "Sign In"; });
+    document.getElementById("modeRegisterBtn").addEventListener("click", () => { authMode = "register"; document.getElementById("nameFieldWrap").classList.remove("hidden"); document.getElementById("confirmFieldWrap").classList.remove("hidden"); document.getElementById("authSubmitBtn").textContent = "Create Account"; });
+    document.getElementById("authForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        const pw = document.getElementById("authPassword").value;
+        if (authMode === "register" && pw !== document.getElementById("authConfirmPassword").value) { toast("Passwords do not match", true); return; }
+        const r = await fetch(`${API}${authMode === "register" ? "/api/auth/register" : "/api/auth/login"}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: document.getElementById("authEmail").value.trim(), password: pw, ...(authMode === "register" ? { display_name: document.getElementById("authName").value.trim() } : {}) }) });
+        const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Auth failed");
+        token = d.token; localStorage.setItem(TOKEN_KEY, token); await enterApp(d.user, d.default_workspace_id); toast(`Welcome, ${d.user.display_name}`);
+      } catch (err) { toast(err.message, true); }
+    });
+    document.getElementById("toggleForgotBtn").addEventListener("click", () => { document.getElementById("forgotBox").classList.toggle("hidden"); const em = document.getElementById("authEmail").value.trim(); if (em && !document.getElementById("fpEmail").value) document.getElementById("fpEmail").value = em; });
+    document.getElementById("sendCodeBtn").addEventListener("click", async () => {
+      const email = document.getElementById("fpEmail").value.trim(); if (!email) { toast("Enter email", true); return; }
+      try { const r = await fetch(`${API}/api/auth/forgot-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) }); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Failed"); if (d.reset_code) document.getElementById("fpCode").value = d.reset_code; document.getElementById("fpCodeHint").textContent = d.reset_code ? `Code: ${d.reset_code}` : (d.message || "Sent"); toast("Code requested"); } catch (err) { toast(err.message, true); }
+    });
+    document.getElementById("doResetBtn").addEventListener("click", async () => {
+      const email = document.getElementById("fpEmail").value.trim(), code = document.getElementById("fpCode").value.trim(), new_password = document.getElementById("fpNewPw").value, cpw = document.getElementById("fpConfirmPw").value;
+      if (!email || !code || new_password.length < 6) { toast("Fill all fields", true); return; } if (new_password !== cpw) { toast("Passwords do not match", true); return; }
+      try { const r = await fetch(`${API}/api/auth/reset-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, code, new_password }) }); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Reset failed"); document.getElementById("forgotBox").classList.add("hidden"); toast("Password updated"); } catch (err) { toast(err.message, true); }
+    });
+    document.getElementById("logoutBtn").addEventListener("click", async () => { await req("/api/auth/logout", { method: "POST" }).catch(() => {}); logoutLocal(); });
+    document.getElementById("wsSelect").addEventListener("change", async (e) => { wsId = saveUserWorkspace(e.target.value) || wsId; renderWsDropdown(); await loadMeta(); await loadMonth(); });
+    document.getElementById("addWsBtn").addEventListener("click", async () => { const next = saveUserWorkspace(prompt("New workspace ID:")); if (!next) return; await req("/api/workspaces", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workspace_id: next, workspace_name: next }) }).catch(() => {}); wsId = next; await refreshWorkspacesList(); await loadMeta(); await loadMonth(); });
+    document.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => { document.getElementById("tab-overview").classList.toggle("hidden", b.dataset.tab !== "overview"); document.getElementById("tab-prefs").classList.toggle("hidden", b.dataset.tab !== "prefs"); }));
+    document.getElementById("txType").addEventListener("change", syncCatSelect);
+    document.getElementById("quickCatBtn").addEventListener("click", async () => { const t = document.getElementById("txType").value, n = prompt(`New ${t} category:`); if (!n?.trim()) return; try { await req(`/api/workspaces/${wsId}/categories`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: n.trim(), entry_type: t }) }); await loadMeta(); document.getElementById("txCat").value = n.trim(); toast("Added"); } catch (e) { toast(e.message, true); } });
+    document.getElementById("txForm").addEventListener("submit", async (e) => {
+      e.preventDefault(); const b = document.getElementById("txSubmitBtn"); b.disabled = true;
+      try { const fd = new FormData(e.target); const r = await fetch(`${API}/api/workspaces/${wsId}/transactions`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd }); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "Save failed"); e.target.reset(); txDateInput.value = `${monthInput.value}-${String(now.getDate()).padStart(2, "0")}`; const sm = String(fd.get("tx_date") || "").slice(0, 7); if (sm && sm !== monthInput.value) monthInput.value = sm; toast("Saved"); await loadMonth(); } catch (err) { toast(err.message, true); } finally { b.disabled = false; }
+    });
+    document.getElementById("eType").addEventListener("change", () => fillEdit(document.getElementById("eType").value, document.getElementById("eCat").value, document.getElementById("eMember").value, document.getElementById("ePay").value));
+    document.getElementById("eCancelBtn").addEventListener("click", () => document.getElementById("editBox").classList.add("hidden"));
+    document.getElementById("editForm").addEventListener("submit", async (e) => {
+      e.preventDefault(); const id = document.getElementById("eId").value, tx_date = document.getElementById("eDate").value;
+      try { await req(`/api/workspaces/${wsId}/transactions/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tx_date, member_name: document.getElementById("eMember").value, entry_type: document.getElementById("eType").value, category: document.getElementById("eCat").value, amount_mmk: Number(document.getElementById("eAmt").value), payment_method: document.getElementById("ePay").value, notes: document.getElementById("eNotes").value.trim() }) }); document.getElementById("editBox").classList.add("hidden"); const sm = tx_date.slice(0, 7); if (sm && sm !== monthInput.value) monthInput.value = sm; toast("Updated"); await loadMonth(); } catch (err) { toast(err.message, true); }
+    });
+    document.getElementById("prefForm").addEventListener("submit", async (e) => { e.preventDefault(); try { await req(`/api/workspaces/${wsId}/settings`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workspace_name: document.getElementById("pName").value.trim(), currency: document.getElementById("pCur").value, members: document.getElementById("pMembers").value.split(",").map((s) => s.trim()).filter(Boolean), payment_methods: document.getElementById("pPays").value.split(",").map((s) => s.trim()).filter(Boolean) }) }); toast("Saved"); await loadMeta(); await loadMonth(); } catch (err) { toast(err.message, true); } });
+    document.getElementById("inviteMemberForm").addEventListener("submit", async (e) => { e.preventDefault(); const email = document.getElementById("inviteEmail").value.trim(); try { await req(`/api/workspaces/${wsId}/members`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) }); document.getElementById("inviteEmail").value = ""; toast("Invited"); await loadMeta(); await loadSharedMembers(); } catch (err) { toast(err.message, true); } });
+    document.getElementById("catForm").addEventListener("submit", async (e) => { e.preventDefault(); const name = document.getElementById("cName").value.trim(), entry_type = document.getElementById("cType").value; try { await req(`/api/workspaces/${wsId}/categories`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, entry_type }) }); document.getElementById("cName").value = ""; toast("Added"); await loadMeta(); } catch (err) { toast(err.message, true); } });
+    ["fMember", "fType", "fCat"].forEach((id) => document.getElementById(id).addEventListener("change", renderTxs));
+    document.getElementById("fResetBtn").addEventListener("click", () => { document.getElementById("fMember").value = ""; document.getElementById("fType").value = ""; document.getElementById("fCat").value = ""; renderTxs(); });
+    monthInput.addEventListener("change", loadMonth);
+    document.getElementById("refreshBtn").addEventListener("click", async () => { await refreshWorkspacesList(); await loadMeta(); await loadMonth(); toast("Synced"); });
+    (async () => { if (!token) return; try { const me = await req("/api/auth/me"); await enterApp(me.user, `family_${me.user.id}`); } catch { logoutLocal(); } })();
+  </script>
+<script src="/sayin-ui.js"></script></body>
+</html>

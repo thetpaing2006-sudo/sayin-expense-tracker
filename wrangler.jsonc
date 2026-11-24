@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "expense-portal-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-01",
+  "d1_databases": [
+    {
+      "binding": "family_expense_portal_db",
+      "database_name": "family-expense-portal-db",
+      "database_id": "86853fe6-fa20-4c27-81c1-bd1d85ea1281"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "bucket_name": "family-expense-receipts",
+      "binding": "family_expense_receipts"
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}
