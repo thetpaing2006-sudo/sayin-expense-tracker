@@ -207,84 +207,70 @@
     </header>
 
     <!-- Auth Section -->
-    <section id="authSection" class="auth-wrap">
-      <div class="card">
-        <h2>Sayin Account Sign In</h2>
-        <p class="muted" style="margin-bottom: 14px;">
-          D1 database နဲ့ R2 receipt storage ချိတ်ဆက်ရန် သင့် account ဖြင့် ဝင်ရောက်ပါ။
-        </p>
+    <!-- Auth Section (Clean Public Sign In) -->
+<section id="authSection" class="auth-wrap">
+  <div class="card">
+    <h2>Sayin Sign In</h2>
+    <p class="muted" style="margin-bottom: 14px;">
+      သင့် account ဖြင့် ဝင်ရောက်ပြီး စာရင်းများကို စီမံခန့်ခွဲပါ။
+    </p>
 
-        <div style="margin-bottom: 14px;">
-          <label for="apiBaseInput">Backend Worker API Base URL</label>
-          <input type="url" id="apiBaseInput" placeholder="https://expense-portal-api.<your-subdomain>.workers.dev" />
-          <div class="muted" style="margin-top: 4px;">
-            လိုအပ်ပါက ကိုယ့် <code>expense-portal-api</code> Worker URL ကို ထည့်ပြီး Save လုပ်ပါ။
-          </div>
-          <div style="margin-top: 8px; display: flex; gap: 8px;">
-            <button type="button" id="saveApiBaseBtn" class="small">Save API URL</button>
-            <button type="button" id="testHealthBtn" class="small">Test API</button>
-          </div>
-        </div>
+    <div class="auth-tabs">
+      <button type="button" id="tabLogin" class="active">Login</button>
+      <button type="button" id="tabRegister">Register</button>
+      <button type="button" id="tabForgot">Reset PW</button>
+    </div>
 
-        <div class="auth-tabs">
-          <button type="button" id="tabLogin" class="active">Login</button>
-          <button type="button" id="tabRegister">Register</button>
-          <button type="button" id="tabForgot">Reset PW</button>
-        </div>
-
-        <!-- Login Form -->
-        <form id="loginForm">
-          <div style="margin-bottom: 10px;">
-            <label for="loginEmail">Email</label>
-            <input type="email" id="loginEmail" required placeholder="you@example.com" />
-          </div>
-          <div style="margin-bottom: 14px;">
-            <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" required placeholder="••••••••" />
-          </div>
-          <button type="submit" class="primary" style="width: 100%;">Sign In</button>
-        </form>
-
-        <!-- Register Form -->
-        <form id="registerForm" class="hidden">
-          <div style="margin-bottom: 10px;">
-            <label for="regName">Display Name</label>
-            <input type="text" id="regName" required placeholder="Thet Paing Soe" />
-          </div>
-          <div style="margin-bottom: 10px;">
-            <label for="regEmail">Email</label>
-            <input type="email" id="regEmail" required placeholder="you@example.com" />
-          </div>
-          <div style="margin-bottom: 14px;">
-            <label for="regPassword">Password (min 6 chars)</label>
-            <input type="password" id="regPassword" minlength="6" required placeholder="At least 6 characters" />
-          </div>
-          <button type="submit" class="primary" style="width: 100%;">Create Account</button>
-        </form>
-
-        <!-- Forgot / Reset Password Form -->
-        <div id="forgotWrap" class="hidden">
-          <form id="forgotForm" style="margin-bottom: 14px;">
-            <label for="forgotEmail">Account Email (Send 6-digit Reset Code)</label>
-            <div style="display: flex; gap: 8px;">
-              <input type="email" id="forgotEmail" required placeholder="you@example.com" />
-              <button type="submit" class="primary small">Send Code</button>
-            </div>
-          </form>
-          <form id="resetForm">
-            <div style="margin-bottom: 10px;">
-              <label for="resetCode">Reset Code</label>
-              <input type="text" id="resetCode" required placeholder="123456" />
-            </div>
-            <div style="margin-bottom: 14px;">
-              <label for="resetNewPassword">New Password (min 6 chars)</label>
-              <input type="password" id="resetNewPassword" minlength="6" required />
-            </div>
-            <button type="submit" class="primary" style="width: 100%;">Update Password</button>
-          </form>
-        </div>
+    <form id="loginForm">
+      <div style="margin-bottom: 10px;">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" required placeholder="you@example.com" />
       </div>
-    </section>
+      <div style="margin-bottom: 14px;">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" required placeholder="••••••••" />
+      </div>
+      <button type="submit" class="primary" style="width: 100%;">Sign In</button>
+    </form>
+
+    <form id="registerForm" class="hidden">
+      <div style="margin-bottom: 10px;">
+        <label for="regName">Display Name</label>
+        <input type="text" id="regName" required placeholder="Your Name" />
+      </div>
+      <div style="margin-bottom: 10px;">
+        <label for="regEmail">Email</label>
+        <input type="email" id="regEmail" required placeholder="you@example.com" />
+      </div>
+      <div style="margin-bottom: 14px;">
+        <label for="regPassword">Password (min 6 chars)</label>
+        <input type="password" id="regPassword" minlength="6" required placeholder="At least 6 characters" />
+      </div>
+      <button type="submit" class="primary" style="width: 100%;">Create Account</button>
+    </form>
+
+    <div id="forgotWrap" class="hidden">
+      <form id="forgotForm" style="margin-bottom: 14px;">
+        <label for="forgotEmail">Account Email (Send 6-digit Reset Code)</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="email" id="forgotEmail" required placeholder="you@example.com" />
+          <button type="submit" class="primary small">Send Code</button>
+        </div>
+      </form>
+      <form id="resetForm">
+        <div style="margin-bottom: 10px;">
+          <label for="resetCode">Reset Code</label>
+          <input type="text" id="resetCode" required placeholder="123456" />
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label for="resetNewPassword">New Password (min 6 chars)</label>
+          <input type="password" id="resetNewPassword" minlength="6" required />
+        </div>
+        <button type="submit" class="primary" style="width: 100%;">Update Password</button>
+      </form>
+    </div>
+  </div>
+</section>
 
     <!-- Main App Section -->
     <main id="appSection" class="hidden">
