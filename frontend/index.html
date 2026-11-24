@@ -476,6 +476,27 @@
   <div id="toast"></div>
 
   <script>
+    const DEFAULT_API_BASE = 'https://expense-portal-api.YOUR_SUBDOMAIN.workers.dev';
+
+    const STORAGE_KEYS = {
+      apiBase: 'sayin_api_base_url',
+      token: 'sayin_auth_token',
+      wsId: 'sayin_active_ws_id',
+      theme: 'sayin_theme'
+    };
+
+    const state = {
+      apiBase: DEFAULT_API_BASE,
+      token: localStorage.getItem(STORAGE_KEYS.token) || '',
+      user: null,
+      workspaces: [],
+      wsId: localStorage.getItem(STORAGE_KEYS.wsId) || '',
+      month: new Date().toISOString().slice(0, 7),
+      settings: null,
+      categories: [],
+      transactions: [],
+      summary: null
+    };
     const STORAGE_KEYS = {
       apiBase: 'sayin_api_base_url',
       token: 'sayin_auth_token',
