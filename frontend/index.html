@@ -178,6 +178,32 @@
       font-size: 12px; font-weight: 600; text-decoration: underline; box-shadow: none;
     }
 
+    /* Power BI Slicer Bar */
+    .slicer-group {
+      display: inline-flex;
+      padding: 4px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+    .slicer-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 6px 12px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      box-shadow: none;
+    }
+    .slicer-btn.active {
+      background: linear-gradient(135deg, #10b981 0%, #059669 75%, #ca8a04 145%);
+      color: #ffffff;
+      border-color: rgba(234, 179, 8, 0.45);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+
     .auth-wrap { max-width: 440px; margin: 36px auto; }
     .auth-logo-header { display: flex; justify-content: center; margin-bottom: 14px; }
     .auth-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
@@ -343,7 +369,7 @@
     @media print {
       body { background: #ffffff !important; color: #0f172a !important; }
       .container { max-width: 100% !important; padding: 0 !important; }
-      .topbar, .nav-tabs, button, #toast, #authSection, #tab-transactions, #tab-workspace, #tab-admin {
+      .topbar, .nav-tabs, button, .slicer-group, #toast, #authSection, #tab-transactions, #tab-workspace, #tab-admin {
         display: none !important;
       }
       #appSection, #tab-dashboard {
@@ -507,39 +533,23 @@
         <div class="print-header">
           <div>
             <h2 style="margin: 0;" id="printTitle">Sayin Financial & Budget Pool Report</h2>
-            <div class="muted" id="printSubtitle">Workspace · Month</div>
+            <div class="muted" id="printSubtitle">Workspace · Period</div>
           </div>
           <div class="muted" id="printGeneratedAt"></div>
         </div>
 
-        <div class="kpi-grid">
-          <div class="kpi inc-border">
-            <div class="label">Total Income (Month)</div>
-            <div class="val inc" id="kpiIncome">0</div>
-            <div class="sub" id="kpiIncomeSub">Monthly inflow</div>
-          </div>
-          <div class="kpi">
-            <div class="label">Total Pool Budget</div>
-            <div class="val" id="kpiPoolAllocated">0</div>
-            <div class="sub" id="kpiPoolAllocSub">Allocated envelopes</div>
-          </div>
-          <div class="kpi exp-border">
-            <div class="label">Total Expense</div>
-            <div class="val exp" id="kpiExpense">0</div>
-            <div class="sub" id="kpiExpenseSub">Monthly outflow</div>
-          </div>
-          <div class="kpi inc-border">
-            <div class="label">Remaining Pool Balance</div>
-            <div class="val inc" id="kpiPoolRemaining">0</div>
-            <div class="sub" id="kpiPoolRemSub">Available in pools</div>
-          </div>
-        </div>
-
+        <!-- Power BI Period Slicer (Monthly / Yearly) -->
         <div class="card" id="budgetHealthCard">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
-              <h2 style="margin: 0;">Monthly Budget Health Report</h2>
-              <p class="muted" id="poolPlanNote" style="margin: 4px 0 0;">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <h2 style="margin: 0;" id="dashReportHeading">Monthly Budget Health Report</h2>
+                <div class="slicer-group" role="group" aria-label="Period Slicer">
+                  <button type="button" class="slicer-btn active" id="slicerMonthlyBtn" data-period="monthly">လချုပ် (Monthly)</button>
+                  <button type="button" class="slicer-btn" id="slicerYearlyBtn" data-period="yearly">နှစ်ချုပ် (Yearly)</button>
+                </div>
+              </div>
+              <p class="muted" id="poolPlanNote" style="margin: 6px 0 0;">
                 လစဉ် ဝင်ငွေ၊ Budget Pool ခွဲဝေမှုနှင့် လက်ကျန်အခြေအနေ။
               </p>
             </div>
@@ -549,6 +559,29 @@
               <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
               <button type="button" class="small primary" id="dashPrintBtn">Print / PDF Report</button>
             </div>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi inc-border">
+            <div class="label" id="kpiIncomeLabel">Total Income (Month)</div>
+            <div class="val inc" id="kpiIncome">0</div>
+            <div class="sub" id="kpiIncomeSub">Period inflow</div>
+          </div>
+          <div class="kpi">
+            <div class="label" id="kpiPoolAllocLabel">Total Pool Budget</div>
+            <div class="val" id="kpiPoolAllocated">0</div>
+            <div class="sub" id="kpiPoolAllocSub">Allocated envelopes</div>
+          </div>
+          <div class="kpi exp-border">
+            <div class="label" id="kpiExpenseLabel">Total Expense</div>
+            <div class="val exp" id="kpiExpense">0</div>
+            <div class="sub" id="kpiExpenseSub">Period outflow</div>
+          </div>
+          <div class="kpi inc-border">
+            <div class="label" id="kpiPoolRemLabel">Remaining Pool Balance</div>
+            <div class="val inc" id="kpiPoolRemaining">0</div>
+            <div class="sub" id="kpiPoolRemSub">Available in pools</div>
           </div>
         </div>
 
@@ -570,7 +603,7 @@
         <div class="grid-2">
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
-              <h3 style="margin: 0;">Pool Budget vs Spent (Bar Chart)</h3>
+              <h3 style="margin: 0;" id="poolBarTitle">Pool Budget vs Spent (Bar Chart)</h3>
               <span class="muted">Budget vs Actual Spent</span>
             </div>
             <div class="chart-canvas-wrap">
@@ -593,7 +626,7 @@
         <div class="grid-2">
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
-              <h3 style="margin: 0;">Expense Mix by Category (Doughnut)</h3>
+              <h3 style="margin: 0;" id="catDonutTitle">Expense Mix by Category (Doughnut)</h3>
               <span class="muted">Category Share %</span>
             </div>
             <div class="chart-canvas-wrap">
@@ -603,8 +636,8 @@
 
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
-              <h3 style="margin: 0;">Cashflow & Saving Overview</h3>
-              <span class="muted">Selected Month</span>
+              <h3 style="margin: 0;" id="cashflowTitle">Cashflow & Saving Overview</h3>
+              <span class="muted" id="cashflowPeriodTag">Selected Period</span>
             </div>
             <div class="chart-canvas-wrap" style="height: 195px;">
               <canvas id="cashflowBarCanvas"></canvas>
@@ -616,7 +649,7 @@
         <!-- Budget Pool Cards -->
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
-            <h2 style="margin: 0;">Budget Pools Balance & Utilization</h2>
+            <h2 style="margin: 0;" id="poolCardsTitle">Budget Pools Balance & Utilization</h2>
             <span class="muted" id="dashPoolCountLabel">0 Pools</span>
           </div>
           <div id="dashboardPoolCards" class="pool-grid"></div>
@@ -625,13 +658,13 @@
         <!-- Category Summary + Member Activity Matrix -->
         <div class="grid-2">
           <div class="card">
-            <h3>Category Breakdown (Selected Month)</h3>
+            <h3 id="catSummaryTitle">Category Breakdown</h3>
             <div id="categorySummaryBars"></div>
           </div>
 
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
-              <h3 style="margin: 0;">Member Activity Report (Selected Month)</h3>
+              <h3 style="margin: 0;" id="memberReportTitle">Member Activity Report</h3>
               <span class="muted">By Member</span>
             </div>
             <div class="table-wrap">
@@ -1032,7 +1065,8 @@
     const STORAGE_KEYS = {
       token: 'sayin_auth_token',
       wsId: 'sayin_active_ws_id',
-      theme: 'sayin_theme'
+      theme: 'sayin_theme',
+      period: 'sayin_dashboard_period'
     };
 
     const state = {
@@ -1043,10 +1077,12 @@
       workspaces: [],
       wsId: localStorage.getItem(STORAGE_KEYS.wsId) || '',
       month: new Date().toISOString().slice(0, 7),
+      periodMode: localStorage.getItem(STORAGE_KEYS.period) === 'yearly' ? 'yearly' : 'monthly',
       settings: null,
       categories: [],
       pools: [],
       transactions: [],
+      yearlyTransactions: [],
       summary: null,
       categorySummary: [],
       sixMonthTrend: [],
@@ -1120,6 +1156,19 @@
       if (state.summary) renderDashboard();
     }
 
+    function syncSlicerButtons() {
+      const isYearly = state.periodMode === 'yearly';
+      $('slicerMonthlyBtn')?.classList.toggle('active', !isYearly);
+      $('slicerYearlyBtn')?.classList.toggle('active', isYearly);
+    }
+
+    function setPeriodMode(mode) {
+      state.periodMode = mode === 'yearly' ? 'yearly' : 'monthly';
+      localStorage.setItem(STORAGE_KEYS.period, state.periodMode);
+      syncSlicerButtons();
+      renderDashboard();
+    }
+
     function getApiUrl(path) {
       const base = (state.apiBase || '').replace(/\/+$/, '');
       return `${base}${path}`;
@@ -1163,6 +1212,15 @@
         list.push(d.toISOString().slice(0, 7));
       }
       return list;
+    }
+
+    function getYearMonths(anchorMonth) {
+      const yr = String(anchorMonth || new Date().toISOString().slice(0, 7)).slice(0, 4);
+      const months = [];
+      for (let m = 1; m <= 12; m++) {
+        months.push(`${yr}-${String(m).padStart(2, '0')}`);
+      }
+      return { year: yr, months };
     }
 
     // CSV Parser & Sheet Row Normalizer for မှတ်တမ်းများ
@@ -1305,8 +1363,10 @@
       const m = encodeURIComponent(state.month);
       const sixMonths = getLastSixMonths(state.month);
       const prevFiveMonths = sixMonths.slice(0, 5);
+      const { months: yearMonths } = getYearMonths(state.month);
+      const otherYearMonths = yearMonths.filter((ym) => ym !== state.month);
 
-      const [setRes, catRes, txRes, sumRes, memRes, poolRes, ...prevSumResults] = await Promise.all([
+      const [setRes, catRes, txRes, sumRes, memRes, poolRes, ...restResults] = await Promise.all([
         apiFetch(`/api/workspaces/${ws}/settings`),
         apiFetch(`/api/workspaces/${ws}/categories`),
         apiFetch(`/api/workspaces/${ws}/transactions?month=${m}`),
@@ -1318,8 +1378,14 @@
             month: pm,
             summary: { total_income: 0, total_expense: 0, total_saving: 0 }
           }))
+        ),
+        ...otherYearMonths.map((ym) =>
+          apiFetch(`/api/workspaces/${ws}/transactions?month=${encodeURIComponent(ym)}`).catch(() => ({ data: [] }))
         )
       ]);
+
+      const prevSumResults = restResults.slice(0, prevFiveMonths.length);
+      const otherYearTxResults = restResults.slice(prevFiveMonths.length);
 
       state.settings = setRes.data;
       state.categories = catRes.data || [];
@@ -1335,6 +1401,17 @@
       };
       state.categorySummary = sumRes.categories || [];
       state.pools = poolRes.data || sumRes.pools || [];
+
+      const yearTxMap = new Map();
+      yearMonths.forEach((ym) => {
+        if (ym === state.month) {
+          yearTxMap.set(ym, state.transactions);
+        } else {
+          const idx = otherYearMonths.indexOf(ym);
+          yearTxMap.set(ym, idx >= 0 ? (otherYearTxResults[idx]?.data || []) : []);
+        }
+      });
+      state.yearlyTransactions = yearMonths.flatMap((ym) => yearTxMap.get(ym) || []);
 
       const trendMap = new Map();
       prevFiveMonths.forEach((pm, idx) => {
@@ -1358,6 +1435,7 @@
       renderSettingsForm(memRes.data || []);
       renderCategories();
       renderPoolManager();
+      syncSlicerButtons();
       renderDashboard();
       renderTransactions();
     }
@@ -1545,6 +1623,97 @@
         toast(err.message, 'error');
       }
     };
+
+    function buildActiveDashboardViewModel() {
+      const isYearly = state.periodMode === 'yearly';
+      const { year } = getYearMonths(state.month);
+      const basePools = state.pools || [];
+
+      if (!isYearly) {
+        const sum = state.summary || {};
+        return {
+          isYearly: false,
+          periodLabel: state.month,
+          totalIncome: Number(sum.total_income || 0),
+          totalExpense: Number(sum.total_expense || 0),
+          totalSaving: Number(sum.total_saving || 0),
+          totalAllocated: Number(sum.total_pool_allocated || 0),
+          totalRemaining: Number(sum.total_pool_remaining || 0),
+          unalloc: Number(sum.unallocated_income ?? (Number(sum.total_income || 0) - Number(sum.total_pool_allocated || 0))),
+          pools: basePools,
+          cats: state.categorySummary || [],
+          txList: state.transactions || []
+        };
+      }
+
+      const yTx = state.yearlyTransactions || [];
+      let totalIncome = 0;
+      let totalExpense = 0;
+      let totalSaving = 0;
+      const spentByPool = new Map();
+      const topupByPool = new Map();
+      const catMap = new Map();
+
+      for (const tx of yTx) {
+        const amt = Number(tx.amount_mmk || 0);
+        const type = tx.entry_type;
+        if (type === 'Income') totalIncome += amt;
+        else if (type === 'Saving') totalSaving += amt;
+        else totalExpense += amt;
+
+        if (tx.pool_id !== null && tx.pool_id !== undefined) {
+          const pid = Number(tx.pool_id);
+          if (type === 'Expense') spentByPool.set(pid, (spentByPool.get(pid) || 0) + amt);
+          if (type === 'Income') topupByPool.set(pid, (topupByPool.get(pid) || 0) + amt);
+        }
+
+        const catKey = `${tx.category || 'Uncategorized'}||${type}`;
+        if (!catMap.has(catKey)) {
+          catMap.set(catKey, { category: tx.category || 'Uncategorized', entry_type: type, total_mmk: 0 });
+        }
+        catMap.get(catKey).total_mmk += amt;
+      }
+
+      const yearlyPools = basePools.map((p) => {
+        const pid = Number(p.id);
+        const defAmt = Number(p.default_amount || 0);
+        const allocated = defAmt * 12;
+        const spent = Number(spentByPool.get(pid) || 0);
+        const topup = Number(topupByPool.get(pid) || 0);
+        const available = allocated + topup;
+        const remaining = available - spent;
+        const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : 0;
+        const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
+        return {
+          ...p,
+          allocated_amount: allocated,
+          spent_amount: spent,
+          topup_amount: topup,
+          available_budget: available,
+          remaining_balance: remaining,
+          utilization_pct: util,
+          status
+        };
+      });
+
+      const totalAllocated = yearlyPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
+      const totalRemaining = yearlyPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
+      const cats = [...catMap.values()].sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
+
+      return {
+        isYearly: true,
+        periodLabel: `${year} (Yearly)`,
+        totalIncome,
+        totalExpense,
+        totalSaving,
+        totalAllocated,
+        totalRemaining,
+        unalloc: totalIncome - totalAllocated,
+        pools: yearlyPools,
+        cats,
+        txList: yTx
+      };
+    }
 
     // Power BI Charts (Chart.js) with Sayin Logo Palette (Emerald, Navy, Gold)
     function getChartTextColor() {
@@ -1760,12 +1929,12 @@
       }
     }
 
-    function renderMemberReport(cur) {
+    function renderMemberReport(txList, cur) {
       const tbody = $('dashMemberReportBody');
       if (!tbody) return;
 
       const map = new Map();
-      for (const tx of state.transactions || []) {
+      for (const tx of txList || []) {
         const name = tx.member_name || 'Unknown';
         if (!map.has(name)) {
           map.set(name, { member: name, income: 0, expense: 0, saving: 0, count: 0 });
@@ -1789,27 +1958,44 @@
             <td>${r.count}</td>
           </tr>
         `).join('')
-        : '<tr><td colspan="5" class="muted">No member transactions for this month.</td></tr>';
+        : '<tr><td colspan="5" class="muted">No member transactions for this period.</td></tr>';
     }
 
     function renderDashboard() {
       const cur = state.settings?.currency || 'MMK';
-      const sum = state.summary || {};
-      const pools = state.pools || [];
-      const cats = state.categorySummary || [];
+      const vm = buildActiveDashboardViewModel();
+      const {
+        isYearly,
+        periodLabel,
+        totalIncome,
+        totalAllocated,
+        totalExpense,
+        totalSaving,
+        totalRemaining,
+        unalloc,
+        pools,
+        cats,
+        txList
+      } = vm;
 
-      const totalIncome = Number(sum.total_income || 0);
-      const totalAllocated = Number(sum.total_pool_allocated || 0);
-      const totalExpense = Number(sum.total_expense || 0);
-      const totalSaving = Number(sum.total_saving || 0);
-      const totalRemaining = Number(sum.total_pool_remaining || 0);
-      const unalloc = Number(sum.unallocated_income ?? (totalIncome - totalAllocated));
+      if ($('dashReportHeading')) {
+        $('dashReportHeading').textContent = isYearly
+          ? `Yearly Budget Health Report (${periodLabel})`
+          : `Monthly Budget Health Report (${periodLabel})`;
+      }
+      if ($('kpiIncomeLabel')) $('kpiIncomeLabel').textContent = isYearly ? 'Total Income (Year)' : 'Total Income (Month)';
+      if ($('kpiPoolAllocLabel')) $('kpiPoolAllocLabel').textContent = isYearly ? 'Total Pool Budget (12M)' : 'Total Pool Budget';
+      if ($('kpiExpenseLabel')) $('kpiExpenseLabel').textContent = isYearly ? 'Total Expense (Year)' : 'Total Expense';
+      if ($('kpiPoolRemLabel')) $('kpiPoolRemLabel').textContent = isYearly ? 'Remaining Pool Balance (Year)' : 'Remaining Pool Balance';
+      if ($('cashflowPeriodTag')) $('cashflowPeriodTag').textContent = periodLabel;
+      if ($('catSummaryTitle')) $('catSummaryTitle').textContent = `Category Breakdown (${periodLabel})`;
+      if ($('memberReportTitle')) $('memberReportTitle').textContent = `Member Activity Report (${periodLabel})`;
 
       if ($('printTitle')) {
-        $('printTitle').textContent = `${state.settings?.workspace_name || state.wsId} — Financial & Budget Pool Report`;
+        $('printTitle').textContent = `${state.settings?.workspace_name || state.wsId} — ${isYearly ? 'Yearly' : 'Monthly'} Financial Report`;
       }
       if ($('printSubtitle')) {
-        $('printSubtitle').textContent = `Period: ${state.month} · Currency: ${cur}`;
+        $('printSubtitle').textContent = `Period: ${periodLabel} · Currency: ${cur}`;
       }
       if ($('printGeneratedAt')) {
         $('printGeneratedAt').textContent = `Generated: ${new Date().toLocaleString()}`;
@@ -1853,14 +2039,14 @@
           : warnPools.length
             ? ` · Approaching limit: ${warnPools.map((p) => p.pool_name).join(', ')}`
             : ' · All pools within budget';
-        $('poolPlanNote').textContent = `Month (${state.month}) · ${allocText}${alertText}`;
+        $('poolPlanNote').textContent = `Period (${periodLabel}) · ${allocText}${alertText}`;
       }
 
       if ($('dashPoolCountLabel')) {
         $('dashPoolCountLabel').textContent = `${pools.length} Active Pools`;
       }
 
-      renderPowerBiCharts(pools, cats, sum, cur);
+      renderPowerBiCharts(pools, cats, { total_income: totalIncome, total_expense: totalExpense, total_saving: totalSaving }, cur);
 
       const poolCardsEl = $('dashboardPoolCards');
       poolCardsEl.innerHTML = pools.length
@@ -1899,7 +2085,7 @@
         </div>
       `).join('');
 
-      const catsList = state.categorySummary || [];
+      const catsList = cats || [];
       const maxCat = Math.max(...catsList.map((c) => Number(c.total_mmk || 0)), 1);
       $('categorySummaryBars').innerHTML = catsList.length
         ? catsList.slice(0, 8).map((c) => `
@@ -1908,16 +2094,20 @@
             <div class="bar-track"><div class="bar-fill ${c.entry_type === 'Income' ? 'inc' : c.entry_type === 'Saving' ? 'sav' : 'exp'}" style="width:${Math.min(100, (Number(c.total_mmk || 0) / maxCat) * 100)}%"></div></div>
           </div>
         `).join('')
-        : '<div class="muted">No data for this month.</div>';
+        : '<div class="muted">No data for this period.</div>';
 
-      renderMemberReport(cur);
+      renderMemberReport(txList, cur);
     }
 
     window.addEventListener('resize', () => {
       if (state.summary && !$('tab-dashboard')?.classList.contains('hidden')) {
-        renderPowerBiCharts(state.pools || [], state.categorySummary || [], state.summary || {}, state.settings?.currency || 'MMK');
+        const vm = buildActiveDashboardViewModel();
+        renderPowerBiCharts(vm.pools, vm.cats, { total_income: vm.totalIncome, total_expense: vm.totalExpense, total_saving: vm.totalSaving }, state.settings?.currency || 'MMK');
       }
     });
+
+    $('slicerMonthlyBtn')?.addEventListener('click', () => setPeriodMode('monthly'));
+    $('slicerYearlyBtn')?.addEventListener('click', () => setPeriodMode('yearly'));
 
     $('dashRefreshBtn')?.addEventListener('click', async () => {
       try {
@@ -2617,6 +2807,7 @@
         document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b === btn));
         ['dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => $('tab-' + t).classList.toggle('hidden', t !== target));
         if (target === 'dashboard') {
+          syncSlicerButtons();
           renderDashboard();
         } else if (target === 'admin') {
           await loadFullAdminConsole();
@@ -2809,6 +3000,7 @@
     });
 
     applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
+    syncSlicerButtons();
     $('txDate').value = new Date().toISOString().slice(0, 10);
 
     (async function boot() {
