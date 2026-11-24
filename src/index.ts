@@ -34,6 +34,13 @@ const DEFAULT_CATEGORIES: Array<{ name: string; entry_type: string }> = [
   { name: 'Investment', entry_type: 'Saving' },
 ]
 
+const DEFAULT_POOLS: Array<{ pool_name: string; default_amount: number; color_tag: string }> = [
+  { pool_name: 'Food & Groceries Pool', default_amount: 300000, color_tag: '#10b981' },
+  { pool_name: 'Bills & Utilities Pool', default_amount: 150000, color_tag: '#38bdf8' },
+  { pool_name: 'Transport & Fuel Pool', default_amount: 150000, color_tag: '#f59e0b' },
+  { pool_name: 'Family & Personal Pool', default_amount: 200000, color_tag: '#a855f7' },
+]
+
 function normalizeEmail(v: unknown): string {
   return String(v || '').trim().toLowerCase()
 }
@@ -75,6 +82,123 @@ async function ensureAdminTable(db: D1Database) {
     .run()
 }
 
+let poolSchemaReady = false
+async function ensureBudgetPoolSchema(db: D1Database) {
+  if (poolSchemaReady) return
+
+  await db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS budget_pools (
+         id INTEGER PRIMARY KEY AUTOINCREMENT,
+         workspace_id TEXT NOT NULL,
+         user_id INTEGER,
+         pool_name TEXT NOT NULL,
+         default_amount REAL NOT NULL DEFAULT 0,
+         color_tag TEXT NOT NULL DEFAULT '#38bdf8',
+         is_active INTEGER NOT NULL DEFAULT 1,
+         created_at TEXT DEFAULT (datetime('now')),
+         UNIQUE(workspace_id, pool_name)
+       )`
+    )
+    .run()
+
+  await db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS budget_pool_overrides (
+         id INTEGER PRIMARY KEY AUTOINCREMENT,
+         workspace_id TEXT NOT NULL,
+         pool_id INTEGER NOT NULL,
+         tx_month TEXT NOT NULL,
+         allocated_amount REAL NOT NULL DEFAULT 0,
+         updated_at TEXT DEFAULT (datetime('now')),
+         UNIQUE(workspace_id, pool_id, tx_month)
+       )`
+    )
+    .run()
+
+  try {
+    await db.prepare('ALTER TABLE transactions ADD COLUMN pool_id INTEGER').run()
+  } catch {
+    // Column already exists
+  }
+
+  poolSchemaReady = true
+}
+
+async function seedDefaultPoolsForWorkspace(db: D1Database, wsId: string, userId: number) {
+  await ensureBudgetPoolSchema(db)
+  for (const p of DEFAULT_POOLS) {
+    await db
+      .prepare(
+        `INSERT OR IGNORE INTO budget_pools (workspace_id, user_id, pool_name, default_amount, color_tag, is_active)
+         VALUES (?, ?, ?, ?, ?, 1)`
+      )
+      .bind(wsId, userId, p.pool_name, p.default_amount, p.color_tag)
+      .run()
+  }
+}
+
+async function getPoolsWithBalances(db: D1Database, wsId: string, userId: number, month: string) {
+  await ensureBudgetPoolSchema(db)
+  const existingCount = await db
+    .prepare('SELECT COUNT(*) AS cnt FROM budget_pools WHERE workspace_id = ? AND is_active = 1')
+    .bind(wsId)
+    .first<{ cnt: number }>()
+
+  if (!existingCount || Number(existingCount.cnt || 0) === 0) {
+    await seedDefaultPoolsForWorkspace(db, wsId, userId)
+  }
+
+  const targetMonth = month || new Date().toISOString().slice(0, 7)
+
+  const { results: pools } = await db
+    .prepare(
+      `SELECT p.id, p.workspace_id, p.pool_name, p.default_amount, p.color_tag, p.is_active,
+              o.allocated_amount AS override_amount,
+              COALESCE(o.allocated_amount, p.default_amount) AS allocated_amount,
+              COALESCE(SUM(CASE WHEN t.entry_type = 'Expense' THEN t.amount_mmk ELSE 0 END), 0) AS spent_amount,
+              COALESCE(SUM(CASE WHEN t.entry_type = 'Income' THEN t.amount_mmk ELSE 0 END), 0) AS topup_amount
+       FROM budget_pools p
+       LEFT JOIN budget_pool_overrides o
+         ON o.pool_id = p.id AND o.workspace_id = p.workspace_id AND o.tx_month = ?
+       LEFT JOIN transactions t
+         ON t.pool_id = p.id AND t.workspace_id = p.workspace_id AND t.tx_month = ?
+       WHERE p.workspace_id = ? AND p.is_active = 1
+       GROUP BY p.id
+       ORDER BY p.id ASC`
+    )
+    .bind(targetMonth, targetMonth, wsId)
+    .all<any>()
+
+  return (pools || []).map((row) => {
+    const allocated = Number(row.allocated_amount || 0)
+    const defaultAmt = Number(row.default_amount || 0)
+    const spent = Number(row.spent_amount || 0)
+    const topup = Number(row.topup_amount || 0)
+    const availableBudget = allocated + topup
+    const remainingBalance = availableBudget - spent
+    const utilizationPct = availableBudget > 0 ? Math.round((spent / availableBudget) * 1000) / 10 : 0
+    const status = remainingBalance < 0 ? 'over_budget' : utilizationPct >= 80 ? 'warning' : 'healthy'
+
+    return {
+      id: Number(row.id),
+      workspace_id: row.workspace_id,
+      pool_name: row.pool_name,
+      default_amount: defaultAmt,
+      override_amount: row.override_amount !== null && row.override_amount !== undefined ? Number(row.override_amount) : null,
+      allocated_amount: allocated,
+      topup_amount: topup,
+      available_budget: availableBudget,
+      spent_amount: spent,
+      remaining_balance: remainingBalance,
+      utilization_pct: utilizationPct,
+      status,
+      color_tag: row.color_tag || '#38bdf8',
+      month: targetMonth,
+    }
+  })
+}
+
 async function isPortalAdmin(db: D1Database, email: string): Promise<boolean> {
   const clean = normalizeEmail(email)
   if (!clean) return false
@@ -114,6 +238,8 @@ async function seedWorkspaceForUser(db: D1Database, userId: number, wsId: string
       .bind(wsId, userId, cat.name, cat.entry_type)
       .run()
   }
+
+  await seedDefaultPoolsForWorkspace(db, wsId, userId)
 }
 
 async function addMemberNameToSettings(db: D1Database, wsId: string, memberName: string) {
@@ -658,6 +784,160 @@ app.patch('/api/workspaces/:wsId/settings', async (c) => {
   return c.json({ success: true, data: updated })
 })
 
+// Budget Pools Endpoints
+app.get('/api/workspaces/:wsId/pools', async (c) => {
+  const user = c.get('user')
+  const wsId = c.req.param('wsId')
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
+
+  const month = String(c.req.query('month') || new Date().toISOString().slice(0, 7)).trim()
+  const pools = await getPoolsWithBalances(c.env.family_expense_portal_db, wsId, user.id, month)
+  const totalDefault = pools.reduce((acc, p) => acc + p.default_amount, 0)
+  const totalAllocated = pools.reduce((acc, p) => acc + p.allocated_amount, 0)
+  const totalSpent = pools.reduce((acc, p) => acc + p.spent_amount, 0)
+  const totalRemaining = pools.reduce((acc, p) => acc + p.remaining_balance, 0)
+
+  return c.json({
+    workspace_id: wsId,
+    month,
+    summary: {
+      total_default: totalDefault,
+      total_allocated: totalAllocated,
+      total_spent: totalSpent,
+      total_remaining: totalRemaining,
+    },
+    data: pools,
+  })
+})
+
+app.post('/api/workspaces/:wsId/pools', async (c) => {
+  const user = c.get('user')
+  const wsId = c.req.param('wsId')
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
+
+  await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
+  const body = await c.req.json().catch(() => ({}))
+  const poolName = String(body.pool_name || '').trim()
+  const defaultAmount = Number(body.default_amount ?? 0)
+  const colorTag = String(body.color_tag || '#38bdf8').trim() || '#38bdf8'
+
+  if (!poolName || !(defaultAmount >= 0)) {
+    return c.json({ error: 'Valid pool_name and default_amount (>= 0) are required' }, 400)
+  }
+
+  await c.env.family_expense_portal_db
+    .prepare(
+      `INSERT INTO budget_pools (workspace_id, user_id, pool_name, default_amount, color_tag, is_active)
+       VALUES (?, ?, ?, ?, ?, 1)
+       ON CONFLICT(workspace_id, pool_name)
+       DO UPDATE SET default_amount = excluded.default_amount, color_tag = excluded.color_tag, is_active = 1`
+    )
+    .bind(wsId, user.id, poolName, defaultAmount, colorTag)
+    .run()
+
+  const row = await c.env.family_expense_portal_db
+    .prepare('SELECT * FROM budget_pools WHERE workspace_id = ? AND pool_name = ?')
+    .bind(wsId, poolName)
+    .first()
+
+  return c.json({ success: true, data: row }, 201)
+})
+
+app.patch('/api/workspaces/:wsId/pools/:poolId', async (c) => {
+  const user = c.get('user')
+  const wsId = c.req.param('wsId')
+  const poolId = Number(c.req.param('poolId'))
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
+  if (!poolId) return c.json({ error: 'Invalid pool id' }, 400)
+
+  await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
+  const existing = await c.env.family_expense_portal_db
+    .prepare('SELECT * FROM budget_pools WHERE id = ? AND workspace_id = ?')
+    .bind(poolId, wsId)
+    .first<any>()
+  if (!existing) return c.json({ error: 'Budget pool not found' }, 404)
+
+  const body = await c.req.json().catch(() => ({}))
+  const poolName = typeof body.pool_name === 'string' && body.pool_name.trim() ? body.pool_name.trim() : existing.pool_name
+  const defaultAmount = body.default_amount !== undefined ? Number(body.default_amount) : Number(existing.default_amount)
+  const colorTag = typeof body.color_tag === 'string' && body.color_tag.trim() ? body.color_tag.trim() : existing.color_tag
+  const isActive = body.is_active !== undefined ? (body.is_active ? 1 : 0) : existing.is_active
+
+  if (!(defaultAmount >= 0)) return c.json({ error: 'default_amount must be >= 0' }, 400)
+
+  await c.env.family_expense_portal_db
+    .prepare(
+      `UPDATE budget_pools
+       SET pool_name = ?, default_amount = ?, color_tag = ?, is_active = ?
+       WHERE id = ? AND workspace_id = ?`
+    )
+    .bind(poolName, defaultAmount, colorTag, isActive, poolId, wsId)
+    .run()
+
+  if (body.month && body.month_allocated_amount !== undefined) {
+    const month = String(body.month).trim()
+    const monthAlloc = Number(body.month_allocated_amount)
+    if (month && monthAlloc >= 0) {
+      await c.env.family_expense_portal_db
+        .prepare(
+          `INSERT INTO budget_pool_overrides (workspace_id, pool_id, tx_month, allocated_amount, updated_at)
+           VALUES (?, ?, ?, ?, datetime('now'))
+           ON CONFLICT(workspace_id, pool_id, tx_month)
+           DO UPDATE SET allocated_amount = excluded.allocated_amount, updated_at = datetime('now')`
+        )
+        .bind(wsId, poolId, month, monthAlloc)
+        .run()
+    }
+  }
+
+  return c.json({ success: true })
+})
+
+app.put('/api/workspaces/:wsId/pools/:poolId/month-budget', async (c) => {
+  const user = c.get('user')
+  const wsId = c.req.param('wsId')
+  const poolId = Number(c.req.param('poolId'))
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
+  if (!poolId) return c.json({ error: 'Invalid pool id' }, 400)
+
+  await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
+  const body = await c.req.json().catch(() => ({}))
+  const month = String(body.month || '').trim()
+  const allocatedAmount = Number(body.allocated_amount)
+
+  if (!month || !(allocatedAmount >= 0)) {
+    return c.json({ error: 'Valid month (YYYY-MM) and allocated_amount (>= 0) are required' }, 400)
+  }
+
+  await c.env.family_expense_portal_db
+    .prepare(
+      `INSERT INTO budget_pool_overrides (workspace_id, pool_id, tx_month, allocated_amount, updated_at)
+       VALUES (?, ?, ?, ?, datetime('now'))
+       ON CONFLICT(workspace_id, pool_id, tx_month)
+       DO UPDATE SET allocated_amount = excluded.allocated_amount, updated_at = datetime('now')`
+    )
+    .bind(wsId, poolId, month, allocatedAmount)
+    .run()
+
+  return c.json({ success: true, month, allocated_amount: allocatedAmount })
+})
+
+app.delete('/api/workspaces/:wsId/pools/:poolId', async (c) => {
+  const user = c.get('user')
+  const wsId = c.req.param('wsId')
+  const poolId = Number(c.req.param('poolId'))
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
+  if (!poolId) return c.json({ error: 'Invalid pool id' }, 400)
+
+  await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
+  await c.env.family_expense_portal_db
+    .prepare('UPDATE budget_pools SET is_active = 0 WHERE id = ? AND workspace_id = ?')
+    .bind(poolId, wsId)
+    .run()
+
+  return c.json({ success: true, deleted_id: poolId })
+})
+
 app.get('/api/workspaces/:wsId/categories', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
@@ -739,11 +1019,17 @@ app.get('/api/workspaces/:wsId/transactions', async (c) => {
   const wsId = c.req.param('wsId')
   if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
 
+  await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
   const month = c.req.query('month')
-  let query = 'SELECT * FROM transactions WHERE workspace_id = ?'
+  let query = `
+    SELECT t.*, p.pool_name
+    FROM transactions t
+    LEFT JOIN budget_pools p ON p.id = t.pool_id
+    WHERE t.workspace_id = ?
+  `
   const params: string[] = [wsId]
-  if (month) { query += ' AND tx_month = ?'; params.push(month) }
-  query += ' ORDER BY tx_date DESC, id DESC'
+  if (month) { query += ' AND t.tx_month = ?'; params.push(month) }
+  query += ' ORDER BY t.tx_date DESC, t.id DESC'
 
   const { results } = await c.env.family_expense_portal_db.prepare(query).bind(...params).all()
   return c.json({ data: results })
@@ -754,6 +1040,7 @@ app.post('/api/workspaces/:wsId/transactions', async (c) => {
   const wsId = c.req.param('wsId')
   if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
 
+  await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
   const body = await c.req.parseBody()
   const txDate = String(body.tx_date || '')
   const txMonth = txDate.slice(0, 7)
@@ -763,6 +1050,7 @@ app.post('/api/workspaces/:wsId/transactions', async (c) => {
   const amountMmk = Number(body.amount_mmk || 0)
   const paymentMethod = String(body.payment_method || 'Cash')
   const notes = body.notes ? String(body.notes) : null
+  const poolId = body.pool_id && String(body.pool_id).trim() !== '' ? Number(body.pool_id) : null
 
   if (!txDate || !memberName || !category || amountMmk <= 0) {
     return c.json({ error: 'Invalid input fields' }, 400)
@@ -781,13 +1069,13 @@ app.post('/api/workspaces/:wsId/transactions', async (c) => {
   const result = await c.env.family_expense_portal_db
     .prepare(
       `INSERT INTO transactions
-       (workspace_id, user_id, tx_date, tx_month, member_name, entry_type, category, amount_mmk, payment_method, notes, receipt_key)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       (workspace_id, user_id, tx_date, tx_month, member_name, entry_type, category, amount_mmk, payment_method, notes, receipt_key, pool_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .bind(wsId, user.id, txDate, txMonth, memberName, entryType, category, amountMmk, paymentMethod, notes, receiptKey)
+    .bind(wsId, user.id, txDate, txMonth, memberName, entryType, category, amountMmk, paymentMethod, notes, receiptKey, poolId)
     .run()
 
-  return c.json({ success: true, id: result.meta.last_row_id, receipt_key: receiptKey }, 201)
+  return c.json({ success: true, id: result.meta.last_row_id, receipt_key: receiptKey, pool_id: poolId }, 201)
 })
 
 app.patch('/api/workspaces/:wsId/transactions/:id', async (c) => {
@@ -797,10 +1085,11 @@ app.patch('/api/workspaces/:wsId/transactions/:id', async (c) => {
   if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
   if (!id) return c.json({ error: 'Invalid transaction id' }, 400)
 
+  await ensureBudgetPoolSchema(c.env.family_expense_portal_db)
   const existing = await c.env.family_expense_portal_db
     .prepare('SELECT * FROM transactions WHERE id = ? AND workspace_id = ?')
     .bind(id, wsId)
-    .first<{ tx_date: string; member_name: string; entry_type: string; category: string; amount_mmk: number; payment_method: string; notes: string | null }>()
+    .first<{ tx_date: string; member_name: string; entry_type: string; category: string; amount_mmk: number; payment_method: string; notes: string | null; pool_id: number | null }>()
   if (!existing) return c.json({ error: 'Transaction not found' }, 404)
 
   const body = await c.req.json().catch(() => ({}))
@@ -812,16 +1101,17 @@ app.patch('/api/workspaces/:wsId/transactions/:id', async (c) => {
   const amountMmk = body.amount_mmk !== undefined ? Number(body.amount_mmk) : existing.amount_mmk
   const paymentMethod = typeof body.payment_method === 'string' && body.payment_method.trim() ? body.payment_method.trim() : existing.payment_method
   const notes = body.notes !== undefined ? (body.notes ? String(body.notes) : null) : existing.notes
+  const poolId = body.pool_id !== undefined ? (body.pool_id ? Number(body.pool_id) : null) : existing.pool_id
 
   if (!txDate || !memberName || !category || !(amountMmk > 0)) return c.json({ error: 'Invalid input fields' }, 400)
 
   await c.env.family_expense_portal_db
     .prepare(
       `UPDATE transactions
-       SET tx_date = ?, tx_month = ?, member_name = ?, entry_type = ?, category = ?, amount_mmk = ?, payment_method = ?, notes = ?
+       SET tx_date = ?, tx_month = ?, member_name = ?, entry_type = ?, category = ?, amount_mmk = ?, payment_method = ?, notes = ?, pool_id = ?
        WHERE id = ? AND workspace_id = ?`
     )
-    .bind(txDate, txMonth, memberName, entryType, category, amountMmk, paymentMethod, notes, id, wsId)
+    .bind(txDate, txMonth, memberName, entryType, category, amountMmk, paymentMethod, notes, poolId, id, wsId)
     .run()
 
   const updated = await c.env.family_expense_portal_db
@@ -883,6 +1173,10 @@ app.get('/api/workspaces/:wsId/summary', async (c) => {
     .bind(wsId, month)
     .all()
 
+  const pools = await getPoolsWithBalances(c.env.family_expense_portal_db, wsId, user.id, month)
+  const totalAllocated = pools.reduce((acc, p) => acc + p.allocated_amount, 0)
+  const totalPoolRemaining = pools.reduce((acc, p) => acc + p.remaining_balance, 0)
+
   const totalIncome = Number(totalsRow?.total_income || 0)
   const totalExpense = Number(totalsRow?.total_expense || 0)
   const totalSaving = Number(totalsRow?.total_saving || 0)
@@ -895,8 +1189,12 @@ app.get('/api/workspaces/:wsId/summary', async (c) => {
       total_expense: totalExpense,
       total_saving: totalSaving,
       net_balance: totalIncome - totalExpense - totalSaving,
+      total_pool_allocated: totalAllocated,
+      total_pool_remaining: totalPoolRemaining,
+      unallocated_income: totalIncome - totalAllocated,
     },
     categories,
+    pools,
   })
 })
 
@@ -1032,12 +1330,14 @@ app.get('/api/admin/workspaces', async (c) => {
 
 app.get('/api/admin/transactions', async (c) => {
   const db = c.env.family_expense_portal_db
+  await ensureBudgetPoolSchema(db)
   const wsId = String(c.req.query('workspace_id') || '').trim()
   const month = String(c.req.query('month') || '').trim()
 
   let query = `
-    SELECT t.*, u.email AS creator_email, u.display_name AS creator_name
+    SELECT t.*, p.pool_name, u.email AS creator_email, u.display_name AS creator_name
     FROM transactions t
+    LEFT JOIN budget_pools p ON p.id = t.pool_id
     LEFT JOIN users u ON u.id = t.user_id
     WHERE 1=1
   `
