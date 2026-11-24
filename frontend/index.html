@@ -336,15 +336,26 @@
           </div>
         </div>
 
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+        <div class="card" id="budgetHealthCard">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div>
-              <h2 style="margin: 0;">Budget Pools Balance & Utilization</h2>
-              <p class="muted" style="margin: 2px 0 0;" id="poolPlanNote">
-                လစဉ် ကြိုတင်သတ်မှတ်ထားသော Budget Pool များ၏ လက်ကျန်ငွေနှင့် သုံးစွဲမှု အခြေအနေ။
+              <h2 style="margin: 0;">Monthly Budget Health Report</h2>
+              <p class="muted" id="poolPlanNote" style="margin: 4px 0 0;">
+                လစဉ် ဝင်ငွေ၊ Budget Pool ခွဲဝေမှုနှင့် လက်ကျန်အခြေအနေ။
               </p>
             </div>
-            <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="pill Income" id="dashHealthBadge">Healthy</span>
+              <button type="button" class="small" id="dashRefreshBtn">Refresh Report</button>
+              <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+            <h2 style="margin: 0;">Budget Pools Balance & Utilization</h2>
+            <span class="muted" id="dashPoolCountLabel">0 Pools</span>
           </div>
           <div id="dashboardPoolCards" class="pool-grid"></div>
         </div>
@@ -355,8 +366,29 @@
             <div id="cashflowBars"></div>
           </div>
           <div class="card">
-            <h3>Category Summary (Selected Month)</h3>
+            <h3>Category Breakdown (Selected Month)</h3>
             <div id="categorySummaryBars"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+            <h3 style="margin: 0;">Member Activity Report (Selected Month)</h3>
+            <span class="muted">Expense, Income & Saving by Member</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Income</th>
+                  <th>Expense</th>
+                  <th>Saving</th>
+                  <th>Transactions</th>
+                </tr>
+              </thead>
+              <tbody id="dashMemberReportBody"></tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -1120,25 +1152,90 @@
       }
     };
 
+    function renderMemberReport(cur) {
+      const tbody = $('dashMemberReportBody');
+      if (!tbody) return;
+
+      const map = new Map();
+      for (const tx of state.transactions || []) {
+        const name = tx.member_name || 'Unknown';
+        if (!map.has(name)) {
+          map.set(name, { member: name, income: 0, expense: 0, saving: 0, count: 0 });
+        }
+        const item = map.get(name);
+        const amt = Number(tx.amount_mmk || 0);
+        if (tx.entry_type === 'Income') item.income += amt;
+        else if (tx.entry_type === 'Saving') item.saving += amt;
+        else item.expense += amt;
+        item.count += 1;
+      }
+
+      const rows = [...map.values()].sort((a, b) => b.expense - a.expense);
+      tbody.innerHTML = rows.length
+        ? rows.map((r) => `
+          <tr>
+            <td><strong>${escapeHtml(r.member)}</strong></td>
+            <td style="color: var(--income);">${fmtNum(r.income)} ${escapeHtml(cur)}</td>
+            <td style="color: var(--expense);">${fmtNum(r.expense)} ${escapeHtml(cur)}</td>
+            <td style="color: var(--saving);">${fmtNum(r.saving)} ${escapeHtml(cur)}</td>
+            <td>${r.count}</td>
+          </tr>
+        `).join('')
+        : '<tr><td colspan="5" class="muted">No member transactions for this month.</td></tr>';
+    }
+
     function renderDashboard() {
       const cur = state.settings?.currency || 'MMK';
       const sum = state.summary || {};
+      const pools = state.pools || [];
 
-      $('kpiIncome').textContent = `${fmtNum(sum.total_income)} ${cur}`;
-      $('kpiPoolAllocated').textContent = `${fmtNum(sum.total_pool_allocated)} ${cur}`;
-      $('kpiExpense').textContent = `${fmtNum(sum.total_expense)} ${cur}`;
-      $('kpiPoolRemaining').textContent = `${fmtNum(sum.total_pool_remaining)} ${cur}`;
-      $('kpiPoolRemaining').className = `val ${Number(sum.total_pool_remaining || 0) < 0 ? 'exp' : 'inc'}`;
+      const totalIncome = Number(sum.total_income || 0);
+      const totalAllocated = Number(sum.total_pool_allocated || 0);
+      const totalExpense = Number(sum.total_expense || 0);
+      const totalSaving = Number(sum.total_saving || 0);
+      const totalRemaining = Number(sum.total_pool_remaining || 0);
+      const unalloc = Number(sum.unallocated_income ?? (totalIncome - totalAllocated));
 
-      const unalloc = Number(sum.unallocated_income || 0);
+      $('kpiIncome').textContent = `${fmtNum(totalIncome)} ${cur}`;
+      $('kpiPoolAllocated').textContent = `${fmtNum(totalAllocated)} ${cur}`;
+      $('kpiExpense').textContent = `${fmtNum(totalExpense)} ${cur}`;
+      $('kpiPoolRemaining').textContent = `${fmtNum(totalRemaining)} ${cur}`;
+      $('kpiPoolRemaining').className = `val ${totalRemaining < 0 ? 'exp' : totalRemaining === 0 ? 'warn' : 'inc'}`;
+
+      const overPools = pools.filter((p) => p.status === 'over_budget');
+      const warnPools = pools.filter((p) => p.status === 'warning');
+
+      const badgeEl = $('dashHealthBadge');
+      if (badgeEl) {
+        if (overPools.length > 0) {
+          badgeEl.className = 'pill Expense';
+          badgeEl.textContent = `${overPools.length} Pool Over Budget`;
+        } else if (warnPools.length > 0) {
+          badgeEl.className = 'pill Saving';
+          badgeEl.textContent = `${warnPools.length} Pool 80%+ Used`;
+        } else {
+          badgeEl.className = 'pill Income';
+          badgeEl.textContent = 'Healthy';
+        }
+      }
+
       if ($('poolPlanNote')) {
-        $('poolPlanNote').textContent = unalloc >= 0
-          ? `Selected Month (${state.month}) · Unallocated Income: ${fmtNum(unalloc)} ${cur}`
-          : `Selected Month (${state.month}) · Pool allocations exceed monthly income by ${fmtNum(Math.abs(unalloc))} ${cur}`;
+        const allocText = unalloc >= 0
+          ? `Unallocated Income: ${fmtNum(unalloc)} ${cur}`
+          : `Pool Budget exceeds Income by ${fmtNum(Math.abs(unalloc))} ${cur}`;
+        const alertText = overPools.length
+          ? ` · Over budget: ${overPools.map((p) => p.pool_name).join(', ')}`
+          : warnPools.length
+            ? ` · Approaching limit: ${warnPools.map((p) => p.pool_name).join(', ')}`
+            : ' · All pools within budget';
+        $('poolPlanNote').textContent = `Month (${state.month}) · ${allocText}${alertText}`;
+      }
+
+      if ($('dashPoolCountLabel')) {
+        $('dashPoolCountLabel').textContent = `${pools.length} Active Pools`;
       }
 
       const poolCardsEl = $('dashboardPoolCards');
-      const pools = state.pools || [];
       poolCardsEl.innerHTML = pools.length
         ? pools.map((p) => {
             const pct = Math.min(100, Number(p.utilization_pct || 0));
@@ -1163,11 +1260,11 @@
           }).join('')
         : '<div class="muted">No budget pools found for this workspace.</div>';
 
-      const maxFlow = Math.max(Number(sum.total_income || 0), Number(sum.total_expense || 0), Number(sum.total_saving || 0), 1);
+      const maxFlow = Math.max(totalIncome, totalExpense, totalSaving, 1);
       $('cashflowBars').innerHTML = [
-        { label: 'Income', val: sum.total_income, cls: 'inc' },
-        { label: 'Expense', val: sum.total_expense, cls: 'exp' },
-        { label: 'Saving', val: sum.total_saving, cls: 'sav' }
+        { label: 'Income', val: totalIncome, cls: 'inc' },
+        { label: 'Expense', val: totalExpense, cls: 'exp' },
+        { label: 'Saving', val: totalSaving, cls: 'sav' }
       ].map((item) => `
         <div class="bar-row">
           <div class="bar-meta"><span>${item.label}</span><span>${fmtNum(item.val)} ${cur}</span></div>
@@ -1185,6 +1282,8 @@
           </div>
         `).join('')
         : '<div class="muted">No data for this month.</div>';
+
+      renderMemberReport(cur);
     }
 
     function getFilteredTransactions() {
