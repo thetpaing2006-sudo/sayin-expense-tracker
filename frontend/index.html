@@ -153,7 +153,7 @@
     }
     .pool-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
     .pool-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-    .pool-dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+    .pool-dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; flex-shrink: 0; }
     .pool-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; margin-bottom: 10px; }
     .pool-metrics span.m-lbl { color: var(--muted); display: block; }
     .pool-metrics strong.rem-ok { color: var(--income); font-size: 14px; }
@@ -168,6 +168,13 @@
     .bar-fill.exp { background: var(--expense); }
     .bar-fill.sav { background: var(--saving); }
     .bar-fill.warn { background: var(--warn); }
+
+    /* Graph / Chart Styles */
+    .chart-box { width: 100%; min-height: 220px; display: flex; align-items: center; justify-content: center; }
+    .donut-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; width: 100%; }
+    .donut-legend { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+    .legend-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .legend-left { display: flex; align-items: center; gap: 8px; }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -349,6 +356,25 @@
               <button type="button" class="small" id="dashRefreshBtn">Refresh Report</button>
               <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
             </div>
+          </div>
+        </div>
+
+        <!-- Bar Chart & Donut/Pie Chart -->
+        <div class="grid-2">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <h3 style="margin: 0;">Pool Budget vs Spent (Bar Chart)</h3>
+              <span class="muted">Budget (Blue) vs Spent (Rose)</span>
+            </div>
+            <div id="poolBarChart" class="chart-box"></div>
+          </div>
+
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <h3 style="margin: 0;">Spending Mix by Category (Donut Chart)</h3>
+              <span class="muted">Selected Month</span>
+            </div>
+            <div id="categoryDonutChart" class="chart-box"></div>
           </div>
         </div>
 
@@ -1152,6 +1178,138 @@
       }
     };
 
+    // Bar Chart (Pool Budget vs Spent)
+    function renderPoolBarChart(pools, cur) {
+      const el = $('poolBarChart');
+      if (!el) return;
+      if (!pools || !pools.length) {
+        el.innerHTML = '<div class="muted">No budget pools for bar chart.</div>';
+        return;
+      }
+
+      const maxVal = Math.max(
+        ...pools.map((p) => Math.max(Number(p.available_budget || 0), Number(p.spent_amount || 0))),
+        1
+      );
+
+      const barGroupW = 54;
+      const gapW = 24;
+      const leftPad = 14;
+      const topPad = 20;
+      const chartH = 145;
+      const svgW = Math.max(320, leftPad * 2 + pools.length * (barGroupW + gapW));
+      const svgH = chartH + topPad + 36;
+
+      const barsSvg = pools.map((p, idx) => {
+        const x0 = leftPad + idx * (barGroupW + gapW);
+        const alloc = Number(p.available_budget || 0);
+        const spent = Number(p.spent_amount || 0);
+        const allocH = Math.round((alloc / maxVal) * chartH);
+        const spentH = Math.round((spent / maxVal) * chartH);
+        const allocY = topPad + (chartH - allocH);
+        const spentY = topPad + (chartH - spentH);
+        const label = String(p.pool_name || '').replace(/\s*Pool$/i, '').slice(0, 11);
+
+        return `
+          <g>
+            <rect x="${x0}" y="${allocY}" width="22" height="${allocH}" rx="4" fill="#38bdf8" opacity="0.85">
+              <title>${escapeHtml(p.pool_name)} Budget: ${fmtNum(alloc)} ${escapeHtml(cur)}</title>
+            </rect>
+            <rect x="${x0 + 26}" y="${spentY}" width="22" height="${spentH}" rx="4" fill="#f43f5e">
+              <title>${escapeHtml(p.pool_name)} Spent: ${fmtNum(spent)} ${escapeHtml(cur)}</title>
+            </rect>
+            <text x="${x0 + 24}" y="${topPad + chartH + 16}" text-anchor="middle" fill="currentColor" font-size="11" opacity="0.8">${escapeHtml(label)}</text>
+          </g>
+        `;
+      }).join('');
+
+      el.innerHTML = `
+        <div class="table-wrap" style="width:100%;">
+          <svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="${svgH}" role="img" aria-label="Pool Budget vs Spent Bar Chart">
+            <line x1="${leftPad}" y1="${topPad + chartH}" x2="${svgW - leftPad}" y2="${topPad + chartH}" stroke="rgba(148,163,184,0.3)" stroke-width="1" />
+            ${barsSvg}
+          </svg>
+        </div>
+      `;
+    }
+
+    // Donut / Pie Chart (Spending Mix by Category)
+    function renderCategoryDonutChart(cats, cur) {
+      const el = $('categoryDonutChart');
+      if (!el) return;
+
+      const expenseCats = (cats || [])
+        .filter((c) => c.entry_type === 'Expense' && Number(c.total_mmk || 0) > 0)
+        .sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
+
+      const sourceList = expenseCats.length
+        ? expenseCats
+        : (cats || []).filter((c) => Number(c.total_mmk || 0) > 0);
+
+      if (!sourceList.length) {
+        el.innerHTML = '<div class="muted">No spending data for donut chart this month.</div>';
+        return;
+      }
+
+      const palette = ['#38bdf8', '#10b981', '#f43f5e', '#f59e0b', '#a855f7', '#06b6d4', '#ec4899'];
+      const topItems = sourceList.slice(0, 6);
+      const otherSum = sourceList.slice(6).reduce((acc, c) => acc + Number(c.total_mmk || 0), 0);
+      const slices = topItems.map((c, i) => ({
+        name: c.category,
+        val: Number(c.total_mmk || 0),
+        color: palette[i % palette.length]
+      }));
+      if (otherSum > 0) {
+        slices.push({ name: 'Other', val: otherSum, color: '#64748b' });
+      }
+
+      const total = slices.reduce((acc, s) => acc + s.val, 0) || 1;
+      const r = 56;
+      const circ = 2 * Math.PI * r;
+      let offset = 0;
+
+      const circlesSvg = slices.map((s) => {
+        const frac = s.val / total;
+        const dash = frac * circ;
+        const seg = `
+          <circle cx="75" cy="75" r="${r}" fill="none"
+                  stroke="${s.color}" stroke-width="22"
+                  stroke-dasharray="${dash} ${circ - dash}"
+                  stroke-dashoffset="${-offset}"
+                  transform="rotate(-90 75 75)">
+            <title>${escapeHtml(s.name)}: ${fmtNum(s.val)} ${escapeHtml(cur)} (${Math.round(frac * 100)}%)</title>
+          </circle>
+        `;
+        offset += dash;
+        return seg;
+      }).join('');
+
+      const legendHtml = slices.map((s) => {
+        const pct = Math.round((s.val / total) * 100);
+        return `
+          <div class="legend-item">
+            <div class="legend-left">
+              <span class="pool-dot" style="background:${s.color}"></span>
+              <span>${escapeHtml(s.name)} (${pct}%)</span>
+            </div>
+            <strong>${fmtNum(s.val)} ${escapeHtml(cur)}</strong>
+          </div>
+        `;
+      }).join('');
+
+      el.innerHTML = `
+        <div class="donut-wrap">
+          <svg viewBox="0 0 150 150" width="150" height="150" role="img" aria-label="Spending Donut Chart">
+            <circle cx="75" cy="75" r="${r}" fill="none" stroke="rgba(148,163,184,0.16)" stroke-width="22" />
+            ${circlesSvg}
+            <text x="75" y="72" text-anchor="middle" fill="currentColor" font-size="10" opacity="0.7">TOTAL</text>
+            <text x="75" y="87" text-anchor="middle" fill="currentColor" font-size="11" font-weight="700">${fmtNum(total)}</text>
+          </svg>
+          <div class="donut-legend">${legendHtml}</div>
+        </div>
+      `;
+    }
+
     function renderMemberReport(cur) {
       const tbody = $('dashMemberReportBody');
       if (!tbody) return;
@@ -1234,6 +1392,9 @@
       if ($('dashPoolCountLabel')) {
         $('dashPoolCountLabel').textContent = `${pools.length} Active Pools`;
       }
+
+      renderPoolBarChart(pools, cur);
+      renderCategoryDonutChart(state.categorySummary || [], cur);
 
       const poolCardsEl = $('dashboardPoolCards');
       poolCardsEl.innerHTML = pools.length
