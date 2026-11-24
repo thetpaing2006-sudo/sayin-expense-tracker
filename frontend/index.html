@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b192c" />
+  <link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sayin%20%E2%80%94%20Budget%20Pool%20Portal%22%2C%22short_name%22%3A%22Sayin%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23060d1a%22%2C%22theme_color%22%3A%22%230b192c%22%7D" />
   <title>Sayin — စာရင်း & Budget Pool Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
@@ -178,7 +179,6 @@
       font-size: 12px; font-weight: 600; text-decoration: underline; box-shadow: none;
     }
 
-    /* Power BI Slicer Bar */
     .slicer-group {
       display: inline-flex;
       padding: 4px;
@@ -234,7 +234,6 @@
     }
     .card h2, .card h3 { margin: 0 0 10px; font-size: 17px; }
 
-    /* Power BI Glass KPI Cards */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 16px; }
     .kpi {
       background: linear-gradient(145deg, var(--surface), rgba(16, 185, 129, 0.05));
@@ -293,6 +292,15 @@
       width: 100%;
     }
 
+    .preview-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-soft);
+      font-size: 12px;
+    }
+
     .inline-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; min-width: 0; }
     .inline-form > * { min-width: 0; }
     .inline-form input[type="email"],
@@ -337,7 +345,6 @@
 
     .print-header { display: none; }
 
-    /* Mobile UI Adjustments */
     @media (max-width: 640px) {
       .container { padding: 12px 10px 44px; }
       .topbar { padding: 12px; gap: 10px; }
@@ -365,7 +372,6 @@
       #toast { left: 12px; right: 12px; bottom: 12px; max-width: none; }
     }
 
-    /* Print / PDF Styling */
     @media print {
       body { background: #ffffff !important; color: #0f172a !important; }
       .container { max-width: 100% !important; padding: 0 !important; }
@@ -538,7 +544,6 @@
           <div class="muted" id="printGeneratedAt"></div>
         </div>
 
-        <!-- Power BI Period Slicer (Monthly / Yearly) -->
         <div class="card" id="budgetHealthCard">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
@@ -585,7 +590,6 @@
           </div>
         </div>
 
-        <!-- 6-Month Trend Chart -->
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
             <div>
@@ -599,7 +603,6 @@
           </div>
         </div>
 
-        <!-- Power BI Visuals Row 1: Pool Bar Chart + Pool Mix Doughnut Chart -->
         <div class="grid-2">
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
@@ -622,7 +625,6 @@
           </div>
         </div>
 
-        <!-- Power BI Visuals Row 2: Category Expense Doughnut + Cashflow Chart -->
         <div class="grid-2">
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
@@ -646,7 +648,6 @@
           </div>
         </div>
 
-        <!-- Budget Pool Cards -->
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
             <h2 style="margin: 0;" id="poolCardsTitle">Budget Pools Balance & Utilization</h2>
@@ -655,7 +656,6 @@
           <div id="dashboardPoolCards" class="pool-grid"></div>
         </div>
 
-        <!-- Category Summary + Member Activity Matrix -->
         <div class="grid-2">
           <div class="card">
             <h3 id="catSummaryTitle">Category Breakdown</h3>
@@ -821,6 +821,28 @@
             </div>
           </form>
 
+          <!-- Pool-to-Pool Reallocation / Transfer -->
+          <div class="preview-box" style="margin-bottom: 16px;">
+            <strong style="display:block; margin-bottom:8px;">Pool-to-Pool Budget Transfer (လက်ရှိလအတွင်း ညှိလွှဲရန်)</strong>
+            <form id="poolTransferForm" class="grid-4" style="align-items: end;">
+              <div>
+                <label for="transferFromPool">From Pool</label>
+                <select id="transferFromPool" required></select>
+              </div>
+              <div>
+                <label for="transferToPool">To Pool</label>
+                <select id="transferToPool" required></select>
+              </div>
+              <div>
+                <label for="transferAmount">Transfer Amount</label>
+                <input type="number" id="transferAmount" min="0.01" step="any" required placeholder="0" />
+              </div>
+              <div>
+                <button type="submit" class="small primary" style="width:100%; padding:10px 12px;">Transfer Budget</button>
+              </div>
+            </form>
+          </div>
+
           <div class="table-wrap">
             <table>
               <thead>
@@ -938,17 +960,18 @@
           </div>
         </div>
 
-        <!-- One-Click Google Sheet / CSV Migration -->
+        <!-- One-Click Google Sheet / CSV Migration with Preview & Duplicate Check -->
         <div class="card">
           <h2 style="margin: 0 0 6px;">One-Time CSV Migration (မှတ်တမ်းများ Sheet)</h2>
           <p class="muted" style="margin: 0 0 12px;">
-            Google Sheet ရဲ့ <code>မှတ်တမ်းများ</code> tab ကို CSV download ဆွဲပြီး Target Workspace ရွေးကာ တစ်ကြိမ်တည်း မောင်းသွင်းပါ။
+            Google Sheet ရဲ့ <code>မှတ်တမ်းများ</code> tab ကို CSV download ဆွဲပြီး Target Workspace ရွေးကာ Preview စစ်ဆေးပြီးမှ မောင်းသွင်းပါ။
           </p>
           <form id="adminCsvImportForm" class="inline-form">
             <select id="adminImportWs" required style="max-width: 260px;"></select>
             <input type="file" id="adminImportCsvFile" accept=".csv,text/csv" required />
             <button type="submit" class="primary small" id="adminImportSubmitBtn">Import CSV to D1</button>
           </form>
+          <div id="adminImportPreview" class="preview-box hidden"></div>
           <div id="adminImportStatus" class="auth-status"></div>
         </div>
 
@@ -1089,7 +1112,8 @@
       adminUsers: [],
       adminAdmins: [],
       adminWorkspaces: [],
-      adminTransactions: []
+      adminTransactions: [],
+      preparedCsvRows: []
     };
 
     const charts = {
@@ -1455,6 +1479,15 @@
         .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.pool_name)} (Bal: ${fmtNum(p.remaining_balance)})</option>`)
         .join('');
 
+      const poolOpts = pools
+        .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.pool_name)} (Alloc: ${fmtNum(p.allocated_amount)})</option>`)
+        .join('');
+      if ($('transferFromPool')) $('transferFromPool').innerHTML = poolOpts;
+      if ($('transferToPool')) {
+        $('transferToPool').innerHTML = poolOpts;
+        if (pools.length > 1) $('transferToPool').selectedIndex = 1;
+      }
+
       updatePoolBalanceHint();
       updateCategoryDropdown();
     }
@@ -1624,6 +1657,49 @@
       }
     };
 
+    // Pool-to-Pool Budget Transfer
+    $('poolTransferForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fromId = Number($('transferFromPool')?.value || 0);
+      const toId = Number($('transferToPool')?.value || 0);
+      const amt = Number($('transferAmount')?.value || 0);
+
+      if (!fromId || !toId || fromId === toId) {
+        toast('Select two different pools to transfer', 'error');
+        return;
+      }
+      if (!(amt > 0)) {
+        toast('Transfer amount must be greater than 0', 'error');
+        return;
+      }
+
+      const fromPool = (state.pools || []).find((p) => Number(p.id) === fromId);
+      const toPool = (state.pools || []).find((p) => Number(p.id) === toId);
+      if (!fromPool || !toPool) return;
+
+      const nextFromAlloc = Math.max(0, Number(fromPool.allocated_amount || 0) - amt);
+      const nextToAlloc = Number(toPool.allocated_amount || 0) + amt;
+
+      try {
+        const encWs = encodeURIComponent(state.wsId);
+        await Promise.all([
+          apiFetch(`/api/workspaces/${encWs}/pools/${fromId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ month: state.month, month_allocated_amount: nextFromAlloc })
+          }),
+          apiFetch(`/api/workspaces/${encWs}/pools/${toId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ month: state.month, month_allocated_amount: nextToAlloc })
+          })
+        ]);
+        $('transferAmount').value = '';
+        toast(`Transferred ${fmtNum(amt)} to ${toPool.pool_name}`, 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
     function buildActiveDashboardViewModel() {
       const isYearly = state.periodMode === 'yearly';
       const { year } = getYearMonths(state.month);
@@ -1715,7 +1791,6 @@
       };
     }
 
-    // Power BI Charts (Chart.js) with Sayin Logo Palette (Emerald, Navy, Gold)
     function getChartTextColor() {
       return document.documentElement.getAttribute('data-theme') === 'light' ? '#334155' : '#cbd5e1';
     }
@@ -1743,7 +1818,6 @@
       const gridCol = getChartGridColor();
       const legendPos = getDoughnutLegendPosition();
 
-      // 1. 6-Month Income, Expense & Saving Trend Chart
       destroyChart('sixMonthTrend');
       const trendCtx = $('sixMonthTrendCanvas')?.getContext('2d');
       if (trendCtx) {
@@ -1797,7 +1871,6 @@
         });
       }
 
-      // 2. Pool Budget vs Spent Bar Chart
       destroyChart('poolBar');
       const poolCtx = $('poolBarCanvas')?.getContext('2d');
       if (poolCtx) {
@@ -1835,7 +1908,6 @@
         });
       }
 
-      // 3. Budget Pool Allocation Mix Doughnut Chart
       destroyChart('poolMixDonut');
       const poolMixCtx = $('poolMixDonutCanvas')?.getContext('2d');
       if (poolMixCtx) {
@@ -1866,7 +1938,6 @@
         });
       }
 
-      // 4. Expense Mix by Category Doughnut Chart
       destroyChart('categoryDonut');
       const donutCtx = $('categoryDonutCanvas')?.getContext('2d');
       if (donutCtx) {
@@ -1897,7 +1968,6 @@
         });
       }
 
-      // 5. Cashflow & Saving Bar Chart
       destroyChart('cashflowBar');
       const cfCtx = $('cashflowBarCanvas')?.getContext('2d');
       if (cfCtx) {
@@ -2473,28 +2543,33 @@
       }
     }
 
-    // One-Click CSV Import from မှတ်တမ်းများ Sheet
-    $('adminCsvImportForm')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    // CSV Preview & Duplicate-Aware Import
+    async function buildCsvPreview() {
       const targetWs = $('adminImportWs')?.value;
       const file = $('adminImportCsvFile')?.files?.[0];
-      if (!targetWs || !file) {
-        toast('Please select target workspace and CSV file', 'error');
+      const prevEl = $('adminImportPreview');
+      state.preparedCsvRows = [];
+
+      if (!file || !targetWs) {
+        prevEl?.classList.add('hidden');
         return;
       }
-
-      const btn = $('adminImportSubmitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Importing...';
-      setStatus('adminImportStatus', '');
 
       try {
         const text = await file.text();
         const rows = parseCsvText(text);
         if (rows.length < 2) throw new Error('CSV file has no data rows');
 
-        const poolRes = await apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/pools?month=${encodeURIComponent(state.month)}`);
+        const [poolRes, existingTxRes] = await Promise.all([
+          apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/pools?month=${encodeURIComponent(state.month)}`),
+          apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/transactions`)
+        ]);
+
         const targetPools = poolRes.data || [];
+        const existingTx = existingTxRes.data || [];
+        const existingKeys = new Set(
+          existingTx.map((t) => `${t.tx_date}|${Number(t.amount_mmk)}|${String(t.notes || '').trim().toLowerCase()}`)
+        );
 
         function matchPoolId(catText) {
           const c = String(catText || '').toLowerCase();
@@ -2510,9 +2585,11 @@
           return targetPools.find((p) => p.pool_name.toLowerCase().includes('family'))?.id || null;
         }
 
-        let importedCount = 0;
-        let skippedCount = 0;
-        const encWs = encodeURIComponent(targetWs);
+        let invalidCount = 0;
+        let duplicateCount = 0;
+        let sumInc = 0;
+        let sumExp = 0;
+        const ready = [];
 
         for (let i = 1; i < rows.length; i++) {
           const r = rows[i];
@@ -2527,20 +2604,91 @@
           const notes = String(r[6] || '').trim();
 
           if (!txDate || !entryType || amountMmk <= 0) {
-            skippedCount++;
+            invalidCount++;
+            continue;
+          }
+
+          const dupKey = `${txDate}|${Number(amountMmk)}|${notes.toLowerCase()}`;
+          if (existingKeys.has(dupKey)) {
+            duplicateCount++;
             continue;
           }
 
           const poolId = entryType === 'Expense' ? matchPoolId(category) : null;
+          if (entryType === 'Income') sumInc += amountMmk;
+          if (entryType === 'Expense') sumExp += amountMmk;
+
+          ready.push({
+            tx_date: txDate,
+            member_name: memberName,
+            entry_type: entryType,
+            category,
+            amount_mmk: amountMmk,
+            payment_method: paymentMethod,
+            notes,
+            pool_id: poolId
+          });
+        }
+
+        state.preparedCsvRows = ready;
+        if (prevEl) {
+          prevEl.classList.remove('hidden');
+          prevEl.innerHTML = `
+            <div><strong>Import Preview (${escapeHtml(targetWs)})</strong></div>
+            <div style="margin-top:4px;">
+              Ready to Import: <strong style="color:var(--income);">${ready.length}</strong> rows ·
+              Duplicates Skipped: <strong>${duplicateCount}</strong> ·
+              Invalid/Other Skipped: <strong>${invalidCount}</strong>
+            </div>
+            <div class="muted" style="margin-top:4px;">
+              Preview Income: <strong>${fmtNum(sumInc)}</strong> · Preview Expense: <strong>${fmtNum(sumExp)}</strong>
+            </div>
+          `;
+        }
+      } catch (err) {
+        if (prevEl) {
+          prevEl.classList.remove('hidden');
+          prevEl.innerHTML = `<span style="color:var(--expense);">${escapeHtml(err.message)}</span>`;
+        }
+      }
+    }
+
+    $('adminImportCsvFile')?.addEventListener('change', buildCsvPreview);
+    $('adminImportWs')?.addEventListener('change', buildCsvPreview);
+
+    $('adminCsvImportForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const targetWs = $('adminImportWs')?.value;
+      if (!targetWs) return;
+
+      if (!state.preparedCsvRows.length) {
+        await buildCsvPreview();
+      }
+      const readyList = state.preparedCsvRows || [];
+      if (!readyList.length) {
+        toast('No new rows to import', 'error');
+        return;
+      }
+
+      const btn = $('adminImportSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Importing...';
+      setStatus('adminImportStatus', '');
+
+      try {
+        let importedCount = 0;
+        const encWs = encodeURIComponent(targetWs);
+
+        for (const item of readyList) {
           const fd = new FormData();
-          fd.append('tx_date', txDate);
-          fd.append('member_name', memberName);
-          fd.append('entry_type', entryType);
-          fd.append('category', category);
-          fd.append('amount_mmk', String(amountMmk));
-          fd.append('payment_method', paymentMethod);
-          if (poolId) fd.append('pool_id', String(poolId));
-          if (notes) fd.append('notes', notes);
+          fd.append('tx_date', item.tx_date);
+          fd.append('member_name', item.member_name);
+          fd.append('entry_type', item.entry_type);
+          fd.append('category', item.category);
+          fd.append('amount_mmk', String(item.amount_mmk));
+          fd.append('payment_method', item.payment_method);
+          if (item.pool_id) fd.append('pool_id', String(item.pool_id));
+          if (item.notes) fd.append('notes', item.notes);
 
           await apiFetch(`/api/workspaces/${encWs}/transactions`, {
             method: 'POST',
@@ -2550,7 +2698,9 @@
         }
 
         $('adminImportCsvFile').value = '';
-        const msg = `Imported ${importedCount} rows into ${targetWs}` + (skippedCount ? ` (${skippedCount} skipped)` : '');
+        state.preparedCsvRows = [];
+        $('adminImportPreview')?.classList.add('hidden');
+        const msg = `Imported ${importedCount} new rows into ${targetWs}`;
         setStatus('adminImportStatus', msg, 'ok');
         toast(msg, 'success');
         if (targetWs === state.wsId) await loadWorkspaceDetails();
@@ -2621,13 +2771,11 @@
       }
     });
 
-    // Theme
     $('themeToggleBtn').addEventListener('click', () => {
       const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       applyTheme(next);
     });
 
-    // Auth Tabs + Forgot / Reset Password
     function showAuthMode(mode) {
       const isLogin = mode === 'login';
       const isReg = mode === 'register';
@@ -2998,6 +3146,16 @@
         toast(err.message, 'error');
       }
     });
+
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      const swCode = `
+        self.addEventListener('install', () => self.skipWaiting());
+        self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+      `;
+      const swBlob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swUrl).catch(() => {});
+    }
 
     applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
     syncSlicerButtons();
