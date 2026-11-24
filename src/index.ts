@@ -18,6 +18,8 @@ type AuthUser = {
 const app = new Hono<{ Bindings: Bindings; Variables: { user: AuthUser } }>()
 app.use('/api/*', cors())
 
+const GLOBAL_ADMIN_EMAIL = 'thetpaing2006@gmail.com'
+
 const DEFAULT_PAYMENT_METHODS = ['Cash', 'KBZPay', 'WavePay', 'Bank Transfer', 'Card']
 const DEFAULT_CATEGORIES: Array<{ name: string; entry_type: string }> = [
   { name: 'Salary', entry_type: 'Income' },
@@ -31,6 +33,10 @@ const DEFAULT_CATEGORIES: Array<{ name: string; entry_type: string }> = [
   { name: 'Emergency Saving', entry_type: 'Saving' },
   { name: 'Investment', entry_type: 'Saving' },
 ]
+
+function normalizeEmail(v: unknown): string {
+  return String(v || '').trim().toLowerCase()
+}
 
 function toHex(buf: ArrayBuffer | Uint8Array): string {
   const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf)
@@ -55,6 +61,31 @@ async function hashPassword(password: string, saltHex?: string): Promise<{ hashH
     256
   )
   return { hashHex: toHex(bits), saltHex: toHex(saltBytes) }
+}
+
+async function ensureAdminTable(db: D1Database) {
+  await db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS admin_users (
+         email TEXT PRIMARY KEY,
+         added_by TEXT,
+         created_at TEXT DEFAULT (datetime('now'))
+       )`
+    )
+    .run()
+}
+
+async function isPortalAdmin(db: D1Database, email: string): Promise<boolean> {
+  const clean = normalizeEmail(email)
+  if (!clean) return false
+  if (clean === GLOBAL_ADMIN_EMAIL) return true
+
+  await ensureAdminTable(db)
+  const row = await db
+    .prepare('SELECT email FROM admin_users WHERE lower(email) = ?')
+    .bind(clean)
+    .first<{ email: string }>()
+  return Boolean(row)
 }
 
 async function seedWorkspaceForUser(db: D1Database, userId: number, wsId: string, wsName: string, members: string[]) {
@@ -120,21 +151,25 @@ async function getUserFromRequest(c: any): Promise<AuthUser | null> {
   return row || null
 }
 
-async function hasWorkspaceAccess(db: D1Database, wsId: string, userId: number): Promise<boolean> {
+async function hasWorkspaceAccess(db: D1Database, wsId: string, user: AuthUser): Promise<boolean> {
+  if (await isPortalAdmin(db, user.email)) {
+    return true
+  }
+
   const mem = await db
     .prepare('SELECT id FROM workspace_members WHERE workspace_id = ? AND user_id = ?')
-    .bind(wsId, userId)
+    .bind(wsId, user.id)
     .first()
   if (mem) return true
 
   const owned = await db
     .prepare('SELECT workspace_id FROM workspace_settings WHERE workspace_id = ? AND user_id = ?')
-    .bind(wsId, userId)
+    .bind(wsId, user.id)
     .first()
   if (owned) {
     await db
       .prepare("INSERT OR IGNORE INTO workspace_members (workspace_id, user_id, role) VALUES (?, ?, 'owner')")
-      .bind(wsId, userId)
+      .bind(wsId, user.id)
       .run()
     return true
   }
@@ -151,11 +186,20 @@ app.use('/api/*', async (c, next) => {
   return next()
 })
 
+app.use('/api/admin/*', async (c, next) => {
+  const user = c.get('user')
+  const allowed = await isPortalAdmin(c.env.family_expense_portal_db, user.email)
+  if (!allowed) {
+    return c.json({ error: 'Forbidden. Portal Admin access required.' }, 403)
+  }
+  return next()
+})
+
 app.get('/', (c) => c.text('Expense Portal Shared Workspace API is running'))
 
 app.post('/api/auth/register', async (c) => {
   const body = await c.req.json().catch(() => ({}))
-  const email = String(body.email || '').trim().toLowerCase()
+  const email = normalizeEmail(body.email)
   const displayName = String(body.display_name || '').trim() || email.split('@')[0] || 'User'
   const password = String(body.password || '')
   const inviteToken = String(body.invite_token || '').trim()
@@ -180,7 +224,6 @@ app.post('/api/auth/register', async (c) => {
   const wsId = `family_${userId}`
   await seedWorkspaceForUser(c.env.family_expense_portal_db, userId, wsId, `${displayName}'s Family Space`, [displayName])
 
-  // Auto-join any pending invited workspaces matching invite_token or invited_email
   const pendingInvites = inviteToken
     ? await c.env.family_expense_portal_db
         .prepare(
@@ -233,7 +276,7 @@ app.post('/api/auth/register', async (c) => {
 
 app.post('/api/auth/login', async (c) => {
   const body = await c.req.json().catch(() => ({}))
-  const email = String(body.email || '').trim().toLowerCase()
+  const email = normalizeEmail(body.email)
   const password = String(body.password || '')
   if (!email || !password) return c.json({ error: 'Email and password are required' }, 400)
 
@@ -261,7 +304,7 @@ app.post('/api/auth/login', async (c) => {
 
 app.post('/api/auth/forgot-password', async (c) => {
   const body = await c.req.json().catch(() => ({}))
-  const email = String(body.email || '').trim().toLowerCase()
+  const email = normalizeEmail(body.email)
   if (!email) return c.json({ error: 'Email is required' }, 400)
 
   const userRow = await c.env.family_expense_portal_db
@@ -329,7 +372,7 @@ app.post('/api/auth/forgot-password', async (c) => {
 
 app.post('/api/auth/reset-password', async (c) => {
   const body = await c.req.json().catch(() => ({}))
-  const email = String(body.email || '').trim().toLowerCase()
+  const email = normalizeEmail(body.email)
   const resetCode = String(body.code || '').trim()
   const newPassword = String(body.new_password || '')
 
@@ -386,6 +429,20 @@ app.post('/api/auth/logout', async (c) => {
 
 app.get('/api/workspaces', async (c) => {
   const user = c.get('user')
+  if (await isPortalAdmin(c.env.family_expense_portal_db, user.email)) {
+    const { results } = await c.env.family_expense_portal_db
+      .prepare(
+        `SELECT ws.workspace_id,
+                'admin' AS role,
+                COALESCE(ws.workspace_name, ws.workspace_id) AS workspace_name,
+                COALESCE(ws.currency, 'MMK') AS currency
+         FROM workspace_settings ws
+         ORDER BY ws.workspace_id ASC`
+      )
+      .all()
+    return c.json({ data: results })
+  }
+
   const { results } = await c.env.family_expense_portal_db
     .prepare(
       `SELECT wm.workspace_id, wm.role,
@@ -416,7 +473,7 @@ app.post('/api/workspaces', async (c) => {
 app.get('/api/workspaces/:wsId/members', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) {
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) {
     return c.json({ error: 'Forbidden' }, 403)
   }
 
@@ -437,12 +494,12 @@ app.get('/api/workspaces/:wsId/members', async (c) => {
 app.post('/api/workspaces/:wsId/members', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) {
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) {
     return c.json({ error: 'Forbidden' }, 403)
   }
 
   const body = await c.req.json().catch(() => ({}))
-  const email = String(body.email || '').trim().toLowerCase()
+  const email = normalizeEmail(body.email)
   if (!email) return c.json({ error: 'Member email is required' }, 400)
 
   const targetUser = await c.env.family_expense_portal_db
@@ -464,12 +521,12 @@ app.post('/api/workspaces/:wsId/members', async (c) => {
 app.post('/api/workspaces/:wsId/invites', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) {
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) {
     return c.json({ error: 'Forbidden' }, 403)
   }
 
   const body = await c.req.json().catch(() => ({}))
-  const email = String(body.email || '').trim().toLowerCase()
+  const email = normalizeEmail(body.email)
   const appUrl = String(body.app_url || 'https://family-expense-portal-ui.pages.dev').replace(/\/+$/, '')
   if (!email || !email.includes('@')) {
     return c.json({ error: 'Valid email is required' }, 400)
@@ -571,7 +628,7 @@ async function getSettingsForSharedWs(db: D1Database, wsId: string, user: AuthUs
 app.get('/api/workspaces/:wsId/settings', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
   const data = await getSettingsForSharedWs(c.env.family_expense_portal_db, wsId, user)
   return c.json({ data })
 })
@@ -579,7 +636,7 @@ app.get('/api/workspaces/:wsId/settings', async (c) => {
 app.patch('/api/workspaces/:wsId/settings', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
 
   const current = await getSettingsForSharedWs(c.env.family_expense_portal_db, wsId, user)
   const body = await c.req.json().catch(() => ({}))
@@ -604,7 +661,7 @@ app.patch('/api/workspaces/:wsId/settings', async (c) => {
 app.get('/api/workspaces/:wsId/categories', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
 
   const entryType = c.req.query('entry_type')
   const includeInactive = c.req.query('include_inactive') === '1'
@@ -621,7 +678,7 @@ app.get('/api/workspaces/:wsId/categories', async (c) => {
 app.post('/api/workspaces/:wsId/categories', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
 
   const body = await c.req.json().catch(() => ({}))
   const name = String(body.name || '').trim()
@@ -651,7 +708,7 @@ app.patch('/api/workspaces/:wsId/categories/:id', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
   const id = Number(c.req.param('id'))
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
   if (!id) return c.json({ error: 'Invalid category id' }, 400)
 
   const existing = await c.env.family_expense_portal_db
@@ -680,7 +737,7 @@ app.patch('/api/workspaces/:wsId/categories/:id', async (c) => {
 app.get('/api/workspaces/:wsId/transactions', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
 
   const month = c.req.query('month')
   let query = 'SELECT * FROM transactions WHERE workspace_id = ?'
@@ -695,7 +752,7 @@ app.get('/api/workspaces/:wsId/transactions', async (c) => {
 app.post('/api/workspaces/:wsId/transactions', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
 
   const body = await c.req.parseBody()
   const txDate = String(body.tx_date || '')
@@ -737,7 +794,7 @@ app.patch('/api/workspaces/:wsId/transactions/:id', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
   const id = Number(c.req.param('id'))
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
   if (!id) return c.json({ error: 'Invalid transaction id' }, 400)
 
   const existing = await c.env.family_expense_portal_db
@@ -778,7 +835,7 @@ app.delete('/api/workspaces/:wsId/transactions/:id', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
   const id = Number(c.req.param('id'))
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
   if (!id) return c.json({ error: 'Invalid transaction id' }, 400)
 
   const existing = await c.env.family_expense_portal_db
@@ -798,7 +855,7 @@ app.delete('/api/workspaces/:wsId/transactions/:id', async (c) => {
 app.get('/api/workspaces/:wsId/summary', async (c) => {
   const user = c.get('user')
   const wsId = c.req.param('wsId')
-  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user.id))) return c.json({ error: 'Forbidden' }, 403)
+  if (!(await hasWorkspaceAccess(c.env.family_expense_portal_db, wsId, user))) return c.json({ error: 'Forbidden' }, 403)
 
   const month = c.req.query('month')
   if (!month) return c.json({ error: 'month query parameter is required' }, 400)
@@ -850,9 +907,9 @@ app.get('/api/receipts/*', async (c) => {
   const wsPart = parts[0]?.startsWith('ws_') ? parts[0].slice(3) : ''
 
   if (wsPart) {
-    const ok = await hasWorkspaceAccess(c.env.family_expense_portal_db, wsPart, user.id)
+    const ok = await hasWorkspaceAccess(c.env.family_expense_portal_db, wsPart, user)
     if (!ok) return c.json({ error: 'Forbidden' }, 403)
-  } else if (!key.startsWith(`u_${user.id}/`)) {
+  } else if (!key.startsWith(`u_${user.id}/`) && !(await isPortalAdmin(c.env.family_expense_portal_db, user.email))) {
     return c.json({ error: 'Forbidden' }, 403)
   }
 
@@ -863,6 +920,140 @@ app.get('/api/receipts/*', async (c) => {
   object.writeHttpMetadata(headers)
   headers.set('etag', object.httpEtag)
   return new Response(object.body, { headers })
+})
+
+// Portal Admin Endpoints
+app.get('/api/admin/overview', async (c) => {
+  const db = c.env.family_expense_portal_db
+  await ensureAdminTable(db)
+
+  const usersCount = await db.prepare('SELECT COUNT(*) AS cnt FROM users').first<{ cnt: number }>()
+  const wsCount = await db.prepare('SELECT COUNT(*) AS cnt FROM workspace_settings').first<{ cnt: number }>()
+  const txCount = await db.prepare('SELECT COUNT(*) AS cnt FROM transactions').first<{ cnt: number }>()
+  const adminsRes = await db.prepare('SELECT email, added_by, created_at FROM admin_users ORDER BY created_at ASC').all()
+
+  return c.json({
+    global_admin: GLOBAL_ADMIN_EMAIL,
+    counts: {
+      users: Number(usersCount?.cnt || 0),
+      workspaces: Number(wsCount?.cnt || 0),
+      transactions: Number(txCount?.cnt || 0),
+    },
+    admins: adminsRes.results || [],
+  })
+})
+
+app.get('/api/admin/users', async (c) => {
+  const db = c.env.family_expense_portal_db
+  await ensureAdminTable(db)
+
+  const { results } = await db
+    .prepare(
+      `SELECT u.id, u.email, u.display_name, u.created_at,
+              COUNT(DISTINCT wm.workspace_id) AS workspace_count
+       FROM users u
+       LEFT JOIN workspace_members wm ON wm.user_id = u.id
+       GROUP BY u.id
+       ORDER BY u.id DESC`
+    )
+    .all()
+
+  const adminsRes = await db.prepare('SELECT email FROM admin_users').all<{ email: string }>()
+  const extraSet = new Set((adminsRes.results || []).map((r) => normalizeEmail(r.email)))
+
+  const enriched = (results || []).map((u: any) => {
+    const em = normalizeEmail(u.email)
+    const admin_level = em === GLOBAL_ADMIN_EMAIL ? 'global_admin' : extraSet.has(em) ? 'admin' : 'user'
+    return { ...u, admin_level }
+  })
+
+  return c.json({ data: enriched })
+})
+
+app.post('/api/admin/users/admins', async (c) => {
+  const user = c.get('user')
+  if (normalizeEmail(user.email) !== GLOBAL_ADMIN_EMAIL) {
+    return c.json({ error: 'Only Global Admin can add admins.' }, 403)
+  }
+
+  const body = await c.req.json().catch(() => ({}))
+  const targetEmail = normalizeEmail(body.email)
+  if (!targetEmail || !targetEmail.includes('@')) {
+    return c.json({ error: 'Valid email is required' }, 400)
+  }
+  if (targetEmail === GLOBAL_ADMIN_EMAIL) {
+    return c.json({ error: 'Already Global Admin' }, 400)
+  }
+
+  const db = c.env.family_expense_portal_db
+  await ensureAdminTable(db)
+  await db
+    .prepare('INSERT OR IGNORE INTO admin_users (email, added_by) VALUES (?, ?)')
+    .bind(targetEmail, user.email)
+    .run()
+
+  return c.json({ success: true, email: targetEmail }, 201)
+})
+
+app.delete('/api/admin/users/admins/:email', async (c) => {
+  const user = c.get('user')
+  if (normalizeEmail(user.email) !== GLOBAL_ADMIN_EMAIL) {
+    return c.json({ error: 'Only Global Admin can remove admins.' }, 403)
+  }
+
+  const targetEmail = normalizeEmail(decodeURIComponent(c.req.param('email') || ''))
+  if (!targetEmail || targetEmail === GLOBAL_ADMIN_EMAIL) {
+    return c.json({ error: 'Cannot remove Global Admin' }, 400)
+  }
+
+  const db = c.env.family_expense_portal_db
+  await ensureAdminTable(db)
+  await db.prepare('DELETE FROM admin_users WHERE lower(email) = ?').bind(targetEmail).run()
+
+  return c.json({ success: true, removed_email: targetEmail })
+})
+
+app.get('/api/admin/workspaces', async (c) => {
+  const db = c.env.family_expense_portal_db
+  const { results } = await db
+    .prepare(
+      `SELECT ws.workspace_id, ws.workspace_name, ws.currency, ws.user_id AS owner_user_id,
+              u.email AS owner_email, u.display_name AS owner_name,
+              (SELECT COUNT(*) FROM workspace_members wm WHERE wm.workspace_id = ws.workspace_id) AS member_count,
+              (SELECT COUNT(*) FROM transactions t WHERE t.workspace_id = ws.workspace_id) AS tx_count
+       FROM workspace_settings ws
+       LEFT JOIN users u ON u.id = ws.user_id
+       ORDER BY ws.workspace_id ASC`
+    )
+    .all()
+
+  return c.json({ data: results })
+})
+
+app.get('/api/admin/transactions', async (c) => {
+  const db = c.env.family_expense_portal_db
+  const wsId = String(c.req.query('workspace_id') || '').trim()
+  const month = String(c.req.query('month') || '').trim()
+
+  let query = `
+    SELECT t.*, u.email AS creator_email, u.display_name AS creator_name
+    FROM transactions t
+    LEFT JOIN users u ON u.id = t.user_id
+    WHERE 1=1
+  `
+  const params: string[] = []
+  if (wsId) {
+    query += ' AND t.workspace_id = ?'
+    params.push(wsId)
+  }
+  if (month) {
+    query += ' AND t.tx_month = ?'
+    params.push(month)
+  }
+  query += ' ORDER BY t.tx_date DESC, t.id DESC LIMIT 200'
+
+  const { results } = await db.prepare(query).bind(...params).all()
+  return c.json({ data: results })
 })
 
 export default app
