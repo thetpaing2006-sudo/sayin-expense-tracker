@@ -201,7 +201,7 @@
       </div>
     </header>
 
-    <!-- Public Auth Section: Login + Register + Forgot Password inside Login -->
+    <!-- Public Auth Section -->
     <section id="authSection" class="auth-wrap">
       <div class="card">
         <h2>Sayin Sign In</h2>
@@ -214,7 +214,6 @@
           <button type="button" id="tabRegister">Register</button>
         </div>
 
-        <!-- Login Form -->
         <form id="loginForm">
           <div style="margin-bottom: 12px;">
             <label for="loginEmail">Email</label>
@@ -231,7 +230,6 @@
           <div id="loginStatus" class="auth-status"></div>
         </form>
 
-        <!-- Register Form -->
         <form id="registerForm" class="hidden">
           <div style="margin-bottom: 12px;">
             <label for="regName">Display Name</label>
@@ -253,7 +251,6 @@
           <div id="regStatus" class="auth-status"></div>
         </form>
 
-        <!-- Forgot / Reset Password Panel (Opened from Login) -->
         <div id="forgotWrap" class="hidden">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <strong style="font-size: 14px;">Reset Password</strong>
@@ -487,7 +484,59 @@
         </div>
       </section>
 
+      <!-- Full Portal Admin Console Section -->
       <section id="tab-admin" class="hidden">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+            <div>
+              <h2 style="margin: 0;">Portal Admin Console</h2>
+              <p class="muted" style="margin: 4px 0 0;">
+                Workspaces, Categories, Transactions, Google Form sync နဲ့ Admin access တို့ကို တစ်နေရာတည်း စီမံခန့်ခွဲပါ။
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="small" id="adminReloadBtn">Reload Portal Data</button>
+              <button type="button" class="small" id="adminJumpWorkspaceBtn">Open Workspace & Categories</button>
+            </div>
+          </div>
+
+          <div class="kpi-grid" style="margin-bottom: 0;">
+            <div class="kpi">
+              <div class="label">Workspaces</div>
+              <div class="val" id="adminStatWorkspaces">0</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Categories</div>
+              <div class="val" id="adminStatCategories">0</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Transactions (Month)</div>
+              <div class="val" id="adminStatTransactions">0</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Form Mappings</div>
+              <div class="val" id="adminStatMappings">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>All Workspaces Overview</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Workspace Name</th>
+                  <th>Workspace ID</th>
+                  <th>Currency</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="adminWorkspaceTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
         <div class="grid-2">
           <div class="card">
             <h2>Google Form → Workspace Mapping</h2>
@@ -553,7 +602,7 @@
         <div class="card">
           <h2>Global Admin & Admin Access</h2>
           <p class="muted" style="margin-bottom: 12px;">
-            Global Admin (<code>thetpaing2006@gmail.com</code>) မှ Admin access ထပ်ပေးနိုင်သည့် email များကို စီမံပါ။
+            Global Admin (<code>thetpaing2006@gmail.com</code>) မှ Portal Admin access ထပ်ပေးနိုင်သည့် email များကို စီမံပါ။
           </p>
 
           <form id="addAdminEmailForm" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
@@ -801,6 +850,9 @@
       renderCategories();
       renderDashboard();
       renderTransactions();
+      if (!$('tab-admin')?.classList.contains('hidden')) {
+        renderAdminPanel();
+      }
     }
 
     function renderFormOptions() {
@@ -977,7 +1029,7 @@
       }
     };
 
-    // Admin Panel Helpers
+    // Full Portal Admin Helpers
     function loadAdminMappings() {
       try {
         return JSON.parse(localStorage.getItem(ADMIN_STORAGE.mappings) || '{}');
@@ -995,6 +1047,44 @@
         return JSON.parse(localStorage.getItem(ADMIN_STORAGE.syncLogs) || '[]');
       } catch {
         return [];
+      }
+    }
+
+    window.switchToWorkspaceFromAdmin = async function(wsId) {
+      if (!wsId) return;
+      state.wsId = wsId;
+      localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
+      $('workspaceSelect').value = state.wsId;
+      resetTxForm();
+      await loadWorkspaceDetails();
+      document.querySelector('.nav-tabs button[data-tab="workspace"]')?.click();
+      toast(`Switched to ${wsId}`, 'success');
+    };
+
+    function renderAdminOverview() {
+      const mappings = loadAdminMappings();
+      if ($('adminStatWorkspaces')) $('adminStatWorkspaces').textContent = String((state.workspaces || []).length);
+      if ($('adminStatCategories')) $('adminStatCategories').textContent = String((state.categories || []).length);
+      if ($('adminStatTransactions')) $('adminStatTransactions').textContent = String((state.transactions || []).length);
+      if ($('adminStatMappings')) $('adminStatMappings').textContent = String(Object.keys(mappings).length);
+
+      const wsBody = $('adminWorkspaceTableBody');
+      if (wsBody) {
+        wsBody.innerHTML = (state.workspaces || []).length
+          ? state.workspaces.map((w) => {
+              const activeBadge = w.workspace_id === state.wsId ? ' <span class="pill Income">Active</span>' : '';
+              return `
+                <tr>
+                  <td><strong>${escapeHtml(w.workspace_name)}</strong>${activeBadge}</td>
+                  <td><code>${escapeHtml(w.workspace_id)}</code></td>
+                  <td>${escapeHtml(w.currency || 'MMK')}</td>
+                  <td>
+                    <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${escapeHtml(w.workspace_id).replace(/'/g, "\\'")}')">Manage</button>
+                  </td>
+                </tr>
+              `;
+            }).join('')
+          : '<tr><td colspan="4" class="muted">No workspaces found.</td></tr>';
       }
     }
 
@@ -1037,6 +1127,8 @@
     }
 
     function renderAdminPanel() {
+      renderAdminOverview();
+
       const wsOptionsHtml = (state.workspaces || [])
         .map((w) => `<option value="${escapeHtml(w.workspace_id)}">${escapeHtml(w.workspace_name)} (${escapeHtml(w.workspace_id)})</option>`)
         .join('');
@@ -1101,6 +1193,20 @@
       renderAdminAccessTable();
       toast('Admin removed', 'success');
     };
+
+    $('adminReloadBtn')?.addEventListener('click', async () => {
+      try {
+        await loadWorkspacesAndData();
+        renderAdminPanel();
+        toast('Portal data refreshed', 'success');
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $('adminJumpWorkspaceBtn')?.addEventListener('click', () => {
+      document.querySelector('.nav-tabs button[data-tab="workspace"]')?.click();
+    });
 
     $('formMappingRuleForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -1173,7 +1279,7 @@
       applyTheme(next);
     });
 
-    // Auth Tabs (Login / Register) + Forgot Password flow from Login
+    // Auth Tabs + Forgot / Reset Password
     function showAuthMode(mode) {
       const isLogin = mode === 'login';
       const isReg = mode === 'register';
