@@ -2544,6 +2544,7 @@
     }
 
     // CSV Preview & Duplicate-Aware Import
+// Smart CSV Preview: Reads Budget Pool (col 9) & Pool ID (col 10) + detects New vs Existing Update
     async function buildCsvPreview() {
       const targetWs = $('adminImportWs')?.value;
       const file = $('adminImportCsvFile')?.files?.[0];
@@ -2567,26 +2568,78 @@
 
         const targetPools = poolRes.data || [];
         const existingTx = existingTxRes.data || [];
-        const existingKeys = new Set(
-          existingTx.map((t) => `${t.tx_date}|${Number(t.amount_mmk)}|${String(t.notes || '').trim().toLowerCase()}`)
-        );
+        const existingMap = new Map();
+        existingTx.forEach((t) => {
+          const key = `${t.tx_date}|${Number(t.amount_mmk)}|${String(t.notes || '').trim().toLowerCase()}`;
+          existingMap.set(key, t);
+        });
 
-        function matchPoolId(catText) {
+        function resolvePoolId(poolColText, catText, poolIdText = '') {
+          const pidSlug = String(poolIdText || '').trim().toLowerCase();
+          const pName = String(poolColText || '').trim().toLowerCase();
+
+          // 1. Match by Pool ID column (numeric ID or slug like pool_food_groceries)
+          if (pidSlug) {
+            const byNum = targetPools.find((p) => String(p.id) === pidSlug);
+            if (byNum) return byNum.id;
+
+            const slugToKeyword = {
+              pool_food_groceries: 'food',
+              pool_dining_snacks: 'dining',
+              pool_shopping_lifestyle: 'shopping',
+              pool_gifts_social: 'gift',
+              pool_tps_personal: 'tps',
+              pool_household_housing: 'household',
+              pool_pet_care: 'pet',
+              pool_transport_fuel: 'transport',
+              pool_bills_utilities_tax: 'bill',
+              pool_debt_repayment: 'debt',
+              pool_kids_education: 'education',
+              pool_health_medical: 'health',
+              pool_family_support: 'family support',
+              pool_charity_donations: 'charity',
+              pool_family_general: 'family'
+            };
+            const kw = slugToKeyword[pidSlug];
+            if (kw) {
+              const bySlug = targetPools.find((p) => p.pool_name.trim().toLowerCase().includes(kw));
+              if (bySlug) return bySlug.id;
+            }
+          }
+
+          // 2. Match by exact or partial Budget Pool title
+          if (pName) {
+            const exact = targetPools.find((p) => p.pool_name.trim().toLowerCase() === pName);
+            if (exact) return exact.id;
+            const partial = targetPools.find(
+              (p) => pName.includes(p.pool_name.trim().toLowerCase()) || p.pool_name.trim().toLowerCase().includes(pName)
+            );
+            if (partial) return partial.id;
+          }
+
+          // 3. Fallback by category
           const c = String(catText || '').toLowerCase();
-          if (c.includes('grocer') || c.includes('food') || c.includes('အစားအသောက်') || c.includes('မုန့်') || c.includes('gas')) {
+          if (c.includes('grocer') || c.includes('food') || c.includes('အစားအသောက်') || c.includes('gas')) {
             return targetPools.find((p) => p.pool_name.toLowerCase().includes('food'))?.id || null;
+          }
+          if (c.includes('entertainment') || c.includes('ဖျော်ဖြေရေး') || c.includes('မုန့်စား')) {
+            return targetPools.find((p) => p.pool_name.toLowerCase().includes('dining'))?.id || null;
           }
           if (c.includes('transport') || c.includes('သွားလာရေး')) {
             return targetPools.find((p) => p.pool_name.toLowerCase().includes('transport'))?.id || null;
           }
-          if (c.includes('bill') || c.includes('housing') || c.includes('အိမ်') || c.includes('household') || c.includes('tax')) {
+          if (c.includes('bill') || c.includes('internet') || c.includes('electric') || c.includes('tax')) {
             return targetPools.find((p) => p.pool_name.toLowerCase().includes('bill'))?.id || null;
+          }
+          if (c.includes('housing') || c.includes('အိမ်') || c.includes('household')) {
+            return targetPools.find((p) => p.pool_name.toLowerCase().includes('household'))?.id || null;
           }
           return targetPools.find((p) => p.pool_name.toLowerCase().includes('family'))?.id || null;
         }
 
         let invalidCount = 0;
-        let duplicateCount = 0;
+        let newCount = 0;
+        let updateCount = 0;
         let sumInc = 0;
         let sumExp = 0;
         const ready = [];
@@ -2602,23 +2655,29 @@
           const amountMmk = normalizeSheetAmount(r[4]);
           const paymentMethod = String(r[5] || 'Cash').trim();
           const notes = String(r[6] || '').trim();
+          const csvPoolName = String(r[8] || r[9] || '').trim();
+          const csvPoolId = String(r[10] || '').trim();
 
           if (!txDate || !entryType || amountMmk <= 0) {
             invalidCount++;
             continue;
           }
 
+          const poolId = entryType === 'Expense' ? resolvePoolId(csvPoolName, category, csvPoolId) : null;
           const dupKey = `${txDate}|${Number(amountMmk)}|${notes.toLowerCase()}`;
-          if (existingKeys.has(dupKey)) {
-            duplicateCount++;
-            continue;
-          }
+          const existingRow = existingMap.get(dupKey);
 
-          const poolId = entryType === 'Expense' ? matchPoolId(category) : null;
           if (entryType === 'Income') sumInc += amountMmk;
           if (entryType === 'Expense') sumExp += amountMmk;
 
+          if (existingRow) {
+            updateCount++;
+          } else {
+            newCount++;
+          }
+
           ready.push({
+            existing_id: existingRow ? existingRow.id : null,
             tx_date: txDate,
             member_name: memberName,
             entry_type: entryType,
@@ -2626,7 +2685,8 @@
             amount_mmk: amountMmk,
             payment_method: paymentMethod,
             notes,
-            pool_id: poolId
+            pool_id: poolId,
+            csv_pool_name: csvPoolName
           });
         }
 
@@ -2634,11 +2694,11 @@
         if (prevEl) {
           prevEl.classList.remove('hidden');
           prevEl.innerHTML = `
-            <div><strong>Import Preview (${escapeHtml(targetWs)})</strong></div>
+            <div><strong>Smart Import Preview (${escapeHtml(targetWs)})</strong></div>
             <div style="margin-top:4px;">
-              Ready to Import: <strong style="color:var(--income);">${ready.length}</strong> rows ·
-              Duplicates Skipped: <strong>${duplicateCount}</strong> ·
-              Invalid/Other Skipped: <strong>${invalidCount}</strong>
+              New Rows: <strong style="color:var(--income);">${newCount}</strong> ·
+              Existing Rows to Update Pool: <strong style="color:var(--gold);">${updateCount}</strong> ·
+              Invalid Skipped: <strong>${invalidCount}</strong>
             </div>
             <div class="muted" style="margin-top:4px;">
               Preview Income: <strong>${fmtNum(sumInc)}</strong> · Preview Expense: <strong>${fmtNum(sumExp)}</strong>
@@ -2653,10 +2713,7 @@
       }
     }
 
-    $('adminImportCsvFile')?.addEventListener('change', buildCsvPreview);
-    $('adminImportWs')?.addEventListener('change', buildCsvPreview);
-
-   $('adminCsvImportForm')?.addEventListener('submit', async (e) => {
+    $('adminCsvImportForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const targetWs = $('adminImportWs')?.value;
       if (!targetWs) return;
@@ -2666,53 +2723,71 @@
       }
       const readyList = state.preparedCsvRows || [];
       if (!readyList.length) {
-        toast('No new rows to import', 'error');
+        toast('No valid rows found in CSV', 'error');
         return;
       }
 
       const btn = $('adminImportSubmitBtn');
       btn.disabled = true;
-      btn.textContent = 'Importing...';
+      btn.textContent = 'Syncing CSV...';
       setStatus('adminImportStatus', '');
 
       try {
-        let importedCount = 0;
+        let insertedCount = 0;
+        let updatedCount = 0;
         let failedCount = 0;
         let lastErr = '';
         const encWs = encodeURIComponent(targetWs);
 
         for (const item of readyList) {
           try {
-            const fd = new FormData();
-            fd.append('tx_date', item.tx_date);
-            fd.append('member_name', item.member_name);
-            fd.append('entry_type', item.entry_type);
-            fd.append('category', item.category);
-            fd.append('amount_mmk', String(item.amount_mmk));
-            fd.append('payment_method', item.payment_method);
-            if (item.pool_id) fd.append('pool_id', String(item.pool_id));
-            if (item.notes) fd.append('notes', item.notes);
+            if (item.existing_id) {
+              await apiFetch(`/api/workspaces/${encWs}/transactions/${item.existing_id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                  tx_date: item.tx_date,
+                  member_name: item.member_name,
+                  entry_type: item.entry_type,
+                  category: item.category,
+                  amount_mmk: item.amount_mmk,
+                  payment_method: item.payment_method,
+                  notes: item.notes,
+                  pool_id: item.pool_id
+                })
+              });
+              updatedCount++;
+            } else {
+              const fd = new FormData();
+              fd.append('tx_date', item.tx_date);
+              fd.append('member_name', item.member_name);
+              fd.append('entry_type', item.entry_type);
+              fd.append('category', item.category);
+              fd.append('amount_mmk', String(item.amount_mmk));
+              fd.append('payment_method', item.payment_method);
+              if (item.pool_id) fd.append('pool_id', String(item.pool_id));
+              if (item.notes) fd.append('notes', item.notes);
 
-            await apiFetch(`/api/workspaces/${encWs}/transactions`, {
-              method: 'POST',
-              body: fd
-            });
-            importedCount++;
+              await apiFetch(`/api/workspaces/${encWs}/transactions`, {
+                method: 'POST',
+                body: fd
+              });
+              insertedCount++;
+            }
           } catch (rowErr) {
             failedCount++;
             lastErr = rowErr?.message || 'Row failed';
           }
         }
 
-        if (importedCount > 0) {
+        if (insertedCount > 0 || updatedCount > 0) {
           $('adminImportCsvFile').value = '';
           state.preparedCsvRows = [];
           $('adminImportPreview')?.classList.add('hidden');
         }
 
         const msg = failedCount > 0
-          ? `Imported ${importedCount} rows, ${failedCount} failed (${lastErr})`
-          : `Imported ${importedCount} new rows into ${targetWs}`;
+          ? `Inserted ${insertedCount}, Updated ${updatedCount}, Failed ${failedCount} (${lastErr})`
+          : `Done: ${insertedCount} new rows inserted, ${updatedCount} existing rows updated in ${targetWs}`;
         setStatus('adminImportStatus', msg, failedCount > 0 ? 'err' : 'ok');
         toast(msg, failedCount > 0 ? 'error' : 'success');
         if (targetWs === state.wsId) await loadWorkspaceDetails();
