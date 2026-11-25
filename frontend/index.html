@@ -1198,29 +1198,29 @@
       return `${base}${path}`;
     }
 
-  async function apiFetch(path, options = {}) {
-  const headers = new Headers(options.headers || {});
-  if (state.token) headers.set('Authorization', `Bearer ${state.token}`);
-  if (!(options.body instanceof FormData) && !headers.has('Content-Type') && options.method && options.method !== 'GET') {
-    headers.set('Content-Type', 'application/json');
-  }
+    async function apiFetch(path, options = {}) {
+      const headers = new Headers(options.headers || {});
+      if (state.token) headers.set('Authorization', `Bearer ${state.token}`);
+      if (!(options.body instanceof FormData) && !headers.has('Content-Type') && options.method && options.method !== 'GET') {
+        headers.set('Content-Type', 'application/json');
+      }
 
-  let res;
-  try {
-    res = await fetch(getApiUrl(path), { ...options, headers });
-  } catch {
-    throw new Error('Cannot reach API server. Check Worker URL / network.');
-  }
+      let res;
+      try {
+        res = await fetch(getApiUrl(path), { ...options, headers });
+      } catch {
+        throw new Error('Cannot reach API server. Check Worker URL / network.');
+      }
 
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    if (res.status === 401) {
-      handleLogout(false);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (res.status === 401) {
+          handleLogout(false);
+        }
+        throw new Error(data.error || data.message || `Request failed (${res.status})`);
+      }
+      return data;
     }
-    throw new Error(data.error || data.message || `Request failed (${res.status})`);
-  }
-  return data;
-}
 
     function fmtNum(n) {
       return Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
@@ -2543,8 +2543,135 @@
       }
     }
 
-    // CSV Preview & Duplicate-Aware Import
-// Smart CSV Preview: Reads Budget Pool (col 9) & Pool ID (col 10) + detects New vs Existing Update
+    // 5 Merged Budget Pools (Income -> pool_id = null; Expenses -> 5 clean pools)
+    const MERGED_POOL_DEFS = [
+      { key: 'food_dining', name: 'Food & Dining Pool', color: '#10b981' },
+      { key: 'home_bills', name: 'Home & Bills Pool', color: '#38bdf8' },
+      { key: 'transport', name: 'Transport Pool', color: '#f59e0b' },
+      { key: 'personal_family', name: 'Personal & Family Pool', color: '#a855f7' },
+      { key: 'lifestyle_debt', name: 'Lifestyle, Debt & Other Pool', color: '#f43f5e' }
+    ];
+
+    function normalizePoolKey(v) {
+      return String(v || '')
+        .toLowerCase()
+        .replace(/^pool_/, '')
+        .replace(/&/g, ' and ')
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '');
+    }
+
+    const SLUG_TO_MERGED_KEY = {
+      food_groceries: 'food_dining',
+      dining_snacks: 'food_dining',
+      food_and_groceries_pool: 'food_dining',
+      dining_out_and_snacks_pool: 'food_dining',
+      food_and_dining_pool: 'food_dining',
+
+      household_housing: 'home_bills',
+      bills_utilities_tax: 'home_bills',
+      household_and_housing_pool: 'home_bills',
+      bills_utilities_and_tax_pool: 'home_bills',
+      bills_and_utilities_pool: 'home_bills',
+      home_and_bills_pool: 'home_bills',
+
+      transport_fuel: 'transport',
+      transport_and_fuel_pool: 'transport',
+      transport_pool: 'transport',
+
+      tps_personal: 'personal_family',
+      family_support: 'personal_family',
+      family_general: 'personal_family',
+      kids_education: 'personal_family',
+      health_medical: 'personal_family',
+      family_and_personal_pool: 'personal_family',
+      kids_and_education_pool: 'personal_family',
+      health_and_medical_pool: 'personal_family',
+      personal_and_family_pool: 'personal_family',
+
+      shopping_lifestyle: 'lifestyle_debt',
+      gifts_social: 'lifestyle_debt',
+      pet_care: 'lifestyle_debt',
+      charity_donations: 'lifestyle_debt',
+      debt_repayment: 'lifestyle_debt',
+      shopping_and_lifestyle_pool: 'lifestyle_debt',
+      gifts_and_social_pool: 'lifestyle_debt',
+      pet_care_pool: 'lifestyle_debt',
+      charity_and_donations_pool: 'lifestyle_debt',
+      debt_and_credit_repayment_pool: 'lifestyle_debt',
+      lifestyle_debt_and_other_pool: 'lifestyle_debt'
+    };
+
+    function resolveMergedPoolKey(entryType, poolColText, catText, poolIdText = '') {
+      // Income does not need a budget pool
+      if (entryType === 'Income') return null;
+
+      const pidSlug = normalizePoolKey(poolIdText);
+      const pName = normalizePoolKey(poolColText);
+
+      if (pidSlug && SLUG_TO_MERGED_KEY[pidSlug]) return SLUG_TO_MERGED_KEY[pidSlug];
+      if (pName && SLUG_TO_MERGED_KEY[pName]) return SLUG_TO_MERGED_KEY[pName];
+
+      const c = String(catText || '').toLowerCase();
+      if (c.includes('grocer') || c.includes('food') || c.includes('အစားအသောက်') || c.includes('entertainment') || c.includes('ဖျော်ဖြေရေး') || c.includes('မုန့်စား')) {
+        return 'food_dining';
+      }
+      if (c.includes('bill') || c.includes('internet') || c.includes('electric') || c.includes('tax') || c.includes('housing') || c.includes('အိမ်') || c.includes('household')) {
+        return 'home_bills';
+      }
+      if (c.includes('transport') || c.includes('သွားလာရေး')) {
+        return 'transport';
+      }
+      if (c.includes('debt') || c.includes('အကြွေး') || c.includes('shop') || c.includes('gift') || c.includes('pet') || c.includes('charity')) {
+        return 'lifestyle_debt';
+      }
+      return 'personal_family';
+    }
+
+    async function ensureMergedPoolsAndMap(targetWs, month, neededKeys, defaultAmount = 0) {
+      const encWs = encodeURIComponent(targetWs);
+      const encM = encodeURIComponent(month || state.month);
+      const res = await apiFetch(`/api/workspaces/${encWs}/pools?month=${encM}`);
+      let pools = res.data || [];
+
+      const findIdByKey = (mergedKey, list) => {
+        const def = MERGED_POOL_DEFS.find((d) => d.key === mergedKey);
+        if (!def) return null;
+        const targetNorm = normalizePoolKey(def.name);
+        const found = (list || []).find((p) => normalizePoolKey(p.pool_name) === targetNorm);
+        return found ? Number(found.id) : null;
+      };
+
+      let createdAny = false;
+      for (const key of neededKeys) {
+        if (!findIdByKey(key, pools)) {
+          const def = MERGED_POOL_DEFS.find((d) => d.key === key);
+          if (!def) continue;
+          await apiFetch(`/api/workspaces/${encWs}/pools`, {
+            method: 'POST',
+            body: JSON.stringify({
+              pool_name: def.name,
+              default_amount: Number(defaultAmount) || 0,
+              color_tag: def.color
+            })
+          });
+          createdAny = true;
+        }
+      }
+
+      if (createdAny) {
+        const refreshed = await apiFetch(`/api/workspaces/${encWs}/pools?month=${encM}`);
+        pools = refreshed.data || [];
+      }
+
+      const keyToId = {};
+      for (const key of neededKeys) {
+        keyToId[key] = findIdByKey(key, pools);
+      }
+      return { pools, keyToId };
+    }
+
+    // Smart CSV Preview: Merges into 5 Expense Pools (Income -> null) + detects New vs Existing Update
     async function buildCsvPreview() {
       const targetWs = $('adminImportWs')?.value;
       const file = $('adminImportCsvFile')?.files?.[0];
@@ -2561,12 +2688,7 @@
         const rows = parseCsvText(text);
         if (rows.length < 2) throw new Error('CSV file has no data rows');
 
-        const [poolRes, existingTxRes] = await Promise.all([
-          apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/pools?month=${encodeURIComponent(state.month)}`),
-          apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/transactions`)
-        ]);
-
-        const targetPools = poolRes.data || [];
+        const existingTxRes = await apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/transactions`);
         const existingTx = existingTxRes.data || [];
         const existingMap = new Map();
         existingTx.forEach((t) => {
@@ -2574,75 +2696,13 @@
           existingMap.set(key, t);
         });
 
-        function resolvePoolId(poolColText, catText, poolIdText = '') {
-          const pidSlug = String(poolIdText || '').trim().toLowerCase();
-          const pName = String(poolColText || '').trim().toLowerCase();
-
-          // 1. Match by Pool ID column (numeric ID or slug like pool_food_groceries)
-          if (pidSlug) {
-            const byNum = targetPools.find((p) => String(p.id) === pidSlug);
-            if (byNum) return byNum.id;
-
-            const slugToKeyword = {
-              pool_food_groceries: 'food',
-              pool_dining_snacks: 'dining',
-              pool_shopping_lifestyle: 'shopping',
-              pool_gifts_social: 'gift',
-              pool_tps_personal: 'tps',
-              pool_household_housing: 'household',
-              pool_pet_care: 'pet',
-              pool_transport_fuel: 'transport',
-              pool_bills_utilities_tax: 'bill',
-              pool_debt_repayment: 'debt',
-              pool_kids_education: 'education',
-              pool_health_medical: 'health',
-              pool_family_support: 'family support',
-              pool_charity_donations: 'charity',
-              pool_family_general: 'family'
-            };
-            const kw = slugToKeyword[pidSlug];
-            if (kw) {
-              const bySlug = targetPools.find((p) => p.pool_name.trim().toLowerCase().includes(kw));
-              if (bySlug) return bySlug.id;
-            }
-          }
-
-          // 2. Match by exact or partial Budget Pool title
-          if (pName) {
-            const exact = targetPools.find((p) => p.pool_name.trim().toLowerCase() === pName);
-            if (exact) return exact.id;
-            const partial = targetPools.find(
-              (p) => pName.includes(p.pool_name.trim().toLowerCase()) || p.pool_name.trim().toLowerCase().includes(pName)
-            );
-            if (partial) return partial.id;
-          }
-
-          // 3. Fallback by category
-          const c = String(catText || '').toLowerCase();
-          if (c.includes('grocer') || c.includes('food') || c.includes('အစားအသောက်') || c.includes('gas')) {
-            return targetPools.find((p) => p.pool_name.toLowerCase().includes('food'))?.id || null;
-          }
-          if (c.includes('entertainment') || c.includes('ဖျော်ဖြေရေး') || c.includes('မုန့်စား')) {
-            return targetPools.find((p) => p.pool_name.toLowerCase().includes('dining'))?.id || null;
-          }
-          if (c.includes('transport') || c.includes('သွားလာရေး')) {
-            return targetPools.find((p) => p.pool_name.toLowerCase().includes('transport'))?.id || null;
-          }
-          if (c.includes('bill') || c.includes('internet') || c.includes('electric') || c.includes('tax')) {
-            return targetPools.find((p) => p.pool_name.toLowerCase().includes('bill'))?.id || null;
-          }
-          if (c.includes('housing') || c.includes('အိမ်') || c.includes('household')) {
-            return targetPools.find((p) => p.pool_name.toLowerCase().includes('household'))?.id || null;
-          }
-          return targetPools.find((p) => p.pool_name.toLowerCase().includes('family'))?.id || null;
-        }
-
         let invalidCount = 0;
         let newCount = 0;
         let updateCount = 0;
         let sumInc = 0;
         let sumExp = 0;
-        const ready = [];
+        const parsedItems = [];
+        const neededPoolKeys = new Set();
 
         for (let i = 1; i < rows.length; i++) {
           const r = rows[i];
@@ -2663,7 +2723,9 @@
             continue;
           }
 
-          const poolId = entryType === 'Expense' ? resolvePoolId(csvPoolName, category, csvPoolId) : null;
+          const mergedKey = resolveMergedPoolKey(entryType, csvPoolName, category, csvPoolId);
+          if (mergedKey) neededPoolKeys.add(mergedKey);
+
           const dupKey = `${txDate}|${Number(amountMmk)}|${notes.toLowerCase()}`;
           const existingRow = existingMap.get(dupKey);
 
@@ -2676,7 +2738,7 @@
             newCount++;
           }
 
-          ready.push({
+          parsedItems.push({
             existing_id: existingRow ? existingRow.id : null,
             tx_date: txDate,
             member_name: memberName,
@@ -2685,10 +2747,18 @@
             amount_mmk: amountMmk,
             payment_method: paymentMethod,
             notes,
-            pool_id: poolId,
+            merged_pool_key: mergedKey,
             csv_pool_name: csvPoolName
           });
         }
+
+        // Auto-create the 5 merged pools in D1 if missing and get real numeric IDs
+        const { keyToId } = await ensureMergedPoolsAndMap(targetWs, state.month, neededPoolKeys, 0);
+
+        const ready = parsedItems.map((item) => ({
+          ...item,
+          pool_id: item.merged_pool_key ? (keyToId[item.merged_pool_key] ?? null) : null
+        }));
 
         state.preparedCsvRows = ready;
         if (prevEl) {
@@ -2701,7 +2771,8 @@
               Invalid Skipped: <strong>${invalidCount}</strong>
             </div>
             <div class="muted" style="margin-top:4px;">
-              Preview Income: <strong>${fmtNum(sumInc)}</strong> · Preview Expense: <strong>${fmtNum(sumExp)}</strong>
+              Preview Income (Unpooled): <strong>${fmtNum(sumInc)}</strong> ·
+              Preview Expense (5 Merged Pools): <strong>${fmtNum(sumExp)}</strong>
             </div>
           `;
         }
@@ -2712,6 +2783,9 @@
         }
       }
     }
+
+    $('adminImportCsvFile')?.addEventListener('change', buildCsvPreview);
+    $('adminImportWs')?.addEventListener('change', buildCsvPreview);
 
     $('adminCsvImportForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
