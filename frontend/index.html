@@ -318,6 +318,7 @@
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { padding: 10px; border-bottom: 1px solid var(--border-soft); text-align: left; vertical-align: middle; }
     th { color: var(--muted); font-weight: 700; font-size: 12px; white-space: nowrap; }
+    td input[type="checkbox"], th input[type="checkbox"] { width: auto; padding: 0; cursor: pointer; }
     .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
     .pill.Income { background: rgba(16, 185, 129, 0.18); color: var(--income); border: 1px solid rgba(16, 185, 129, 0.28); }
     .pill.Expense { background: rgba(244, 63, 94, 0.18); color: var(--expense); border: 1px solid rgba(244, 63, 94, 0.28); }
@@ -759,6 +760,8 @@
                 <option value="Expense">Expense</option>
                 <option value="Saving">Saving</option>
               </select>
+              <!-- [Bulk Delete Button] -->
+              <button type="button" id="deleteSelectedTxBtn" class="danger hidden">Delete Selected (0)</button>
               <button type="button" id="exportCsvBtn">Export CSV</button>
             </div>
           </div>
@@ -767,6 +770,8 @@
             <table>
               <thead>
                 <tr>
+                  <!-- [Select All Checkbox] -->
+                  <th style="width:36px;"><input type="checkbox" id="selectAllTxCb" title="Select All" /></th>
                   <th>Date</th>
                   <th>Member</th>
                   <th>Type</th>
@@ -1116,6 +1121,8 @@
       preparedCsvRows: []
     };
 
+    const selectedTxIds = new Set();
+
     const charts = {
       sixMonthTrend: null,
       poolBar: null,
@@ -1128,6 +1135,10 @@
 
     function normalizeEmail(v) {
       return String(v || '').trim().toLowerCase();
+    }
+
+    function normalizeNoteKey(v) {
+      return String(v || '').trim().toLowerCase().replace(/\s+/g, ' ');
     }
 
     function escapeHtml(str) {
@@ -1247,7 +1258,6 @@
       return { year: yr, months };
     }
 
-    // CSV Parser & Sheet Row Normalizer for မှတ်တမ်းများ
     function parseCsvText(csvText) {
       const clean = String(csvText || '').replace(/^\uFEFF/, '');
       const rows = [];
@@ -1297,11 +1307,15 @@
     function normalizeSheetDate(rawDate) {
       const s = String(rawDate || '').trim();
       if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-      const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      const m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
       if (m) {
-        const mm = String(m[1]).padStart(2, '0');
-        const dd = String(m[2]).padStart(2, '0');
-        return `${m[3]}-${mm}-${dd}`;
+        const p1 = Number(m[1]);
+        const p2 = Number(m[2]);
+        const yr = m[3];
+        if (p1 > 12 && p2 <= 12) {
+          return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
+        }
+        return `${yr}-${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}`;
       }
       return '';
     }
@@ -1657,7 +1671,6 @@
       }
     };
 
-    // Pool-to-Pool Budget Transfer
     $('poolTransferForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fromId = Number($('transferFromPool')?.value || 0);
@@ -2222,30 +2235,104 @@
       }
     }
 
+    // [Multiselect Delete Helpers]
+    function updateBulkDeleteUi() {
+      const btn = $('deleteSelectedTxBtn');
+      const selectAllCb = $('selectAllTxCb');
+      const rows = getFilteredTransactions();
+      const visibleIds = rows.map((r) => Number(r.id));
+      const checkedVisibleCount = visibleIds.filter((id) => selectedTxIds.has(id)).length;
+
+      if (btn) {
+        btn.classList.toggle('hidden', selectedTxIds.size === 0);
+        btn.textContent = `Delete Selected (${selectedTxIds.size})`;
+      }
+      if (selectAllCb) {
+        selectAllCb.checked = visibleIds.length > 0 && checkedVisibleCount === visibleIds.length;
+        selectAllCb.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < visibleIds.length;
+      }
+    }
+
+    window.toggleSelectTx = function(id, checked) {
+      const numId = Number(id);
+      if (checked) selectedTxIds.add(numId);
+      else selectedTxIds.delete(numId);
+      updateBulkDeleteUi();
+    };
+
+    $('selectAllTxCb')?.addEventListener('change', (e) => {
+      const rows = getFilteredTransactions();
+      if (e.target.checked) {
+        rows.forEach((r) => selectedTxIds.add(Number(r.id)));
+      } else {
+        rows.forEach((r) => selectedTxIds.delete(Number(r.id)));
+      }
+      renderTransactions();
+    });
+
+    $('deleteSelectedTxBtn')?.addEventListener('click', async () => {
+      const ids = [...selectedTxIds];
+      if (!ids.length) return;
+      if (!confirm(`Delete ${ids.length} selected transaction(s)?`)) return;
+
+      const btn = $('deleteSelectedTxBtn');
+      btn.disabled = true;
+      btn.textContent = `Deleting (${ids.length})...`;
+
+      let okCount = 0;
+      let failCount = 0;
+      const encWs = encodeURIComponent(state.wsId);
+
+      for (const id of ids) {
+        try {
+          await apiFetch(`/api/workspaces/${encWs}/transactions/${id}`, { method: 'DELETE' });
+          selectedTxIds.delete(id);
+          okCount++;
+        } catch {
+          failCount++;
+        }
+      }
+
+      btn.disabled = false;
+      updateBulkDeleteUi();
+      toast(
+        failCount > 0
+          ? `Deleted ${okCount}, failed ${failCount}`
+          : `Deleted ${okCount} selected transaction(s)`,
+        failCount > 0 ? 'error' : 'success'
+      );
+      await loadWorkspaceDetails();
+    });
+
     function renderTransactions() {
       const cur = state.settings?.currency || 'MMK';
       const rows = getFilteredTransactions();
       $('txTableBody').innerHTML = rows.length
-        ? rows.map((r) => `
-          <tr>
-            <td>${escapeHtml(r.tx_date)}</td>
-            <td>${escapeHtml(r.member_name)}</td>
-            <td><span class="pill ${escapeHtml(r.entry_type)}">${escapeHtml(r.entry_type)}</span></td>
-            <td>${r.pool_name ? `<span class="pill Pool">${escapeHtml(r.pool_name)}</span>` : '<span class="muted">General</span>'}</td>
-            <td>${escapeHtml(r.category)}</td>
-            <td><strong>${fmtNum(r.amount_mmk)}</strong> ${escapeHtml(cur)}</td>
-            <td>${escapeHtml(r.payment_method || '-')}</td>
-            <td>${escapeHtml(r.notes || '-')}</td>
-            <td>${r.receipt_key ? `<button type="button" class="small" onclick="openReceipt('${escapeHtml(r.receipt_key).replace(/'/g, "\\'")}')">View</button>` : '-'}</td>
-            <td>
-              <div class="row-actions">
-                <button type="button" class="small" onclick="startEditTx(${r.id})">Edit</button>
-                <button type="button" class="small danger" onclick="deleteTx(${r.id})">Delete</button>
-              </div>
-            </td>
-          </tr>
-        `).join('')
-        : '<tr><td colspan="10" class="muted">No transactions found.</td></tr>';
+        ? rows.map((r) => {
+            const isChecked = selectedTxIds.has(Number(r.id));
+            return `
+              <tr>
+                <td><input type="checkbox" class="tx-row-cb" ${isChecked ? 'checked' : ''} onchange="toggleSelectTx(${r.id}, this.checked)" /></td>
+                <td>${escapeHtml(r.tx_date)}</td>
+                <td>${escapeHtml(r.member_name)}</td>
+                <td><span class="pill ${escapeHtml(r.entry_type)}">${escapeHtml(r.entry_type)}</span></td>
+                <td>${r.pool_name ? `<span class="pill Pool">${escapeHtml(r.pool_name)}</span>` : '<span class="muted">General</span>'}</td>
+                <td>${escapeHtml(r.category)}</td>
+                <td><strong>${fmtNum(r.amount_mmk)}</strong> ${escapeHtml(cur)}</td>
+                <td>${escapeHtml(r.payment_method || '-')}</td>
+                <td>${escapeHtml(r.notes || '-')}</td>
+                <td>${r.receipt_key ? `<button type="button" class="small" onclick="openReceipt('${escapeHtml(r.receipt_key).replace(/'/g, "\\'")}')">View</button>` : '-'}</td>
+                <td>
+                  <div class="row-actions">
+                    <button type="button" class="small" onclick="startEditTx(${r.id})">Edit</button>
+                    <button type="button" class="small danger" onclick="deleteTx(${r.id})">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('')
+        : '<tr><td colspan="11" class="muted">No transactions found.</td></tr>';
+      updateBulkDeleteUi();
     }
 
     window.openReceipt = openReceipt;
@@ -2328,6 +2415,7 @@
       if (!confirm('Delete this transaction?')) return;
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${id}`, { method: 'DELETE' });
+        selectedTxIds.delete(Number(id));
         toast('Transaction deleted', 'success');
         await loadWorkspaceDetails();
       } catch (err) {
@@ -2582,7 +2670,7 @@
 
     // 5 Merged Budget Pools (Income -> pool_id = null; Expenses -> 5 clean pools)
     const MERGED_POOL_DEFS = [
-      { key: 'food_dining', name: 'Food & Groceries Pool', color: '#10b981' },
+      { key: 'food_dining', name: 'Food & Dining Pool', color: '#10b981' },
       { key: 'home_bills', name: 'Home & Bills Pool', color: '#38bdf8' },
       { key: 'transport', name: 'Transport Pool', color: '#f59e0b' },
       { key: 'personal_family', name: 'Personal & Family Pool', color: '#a855f7' },
@@ -2640,7 +2728,6 @@
     };
 
     function resolveMergedPoolKey(entryType, poolColText, catText, poolIdText = '') {
-      // Income does not need a budget pool
       if (entryType === 'Income') return null;
 
       const pidSlug = normalizePoolKey(poolIdText);
@@ -2708,8 +2795,8 @@
       return { pools, keyToId };
     }
 
-    // Smart CSV Preview: Merges into 5 Expense Pools (Income -> null) + detects New vs Existing Update
-   async function buildCsvPreview() {
+    // Smart CSV Preview with Header Auto-Detect + Duplicate Match
+    async function buildCsvPreview() {
       const targetWs = $('adminImportWs')?.value;
       const file = $('adminImportCsvFile')?.files?.[0];
       const prevEl = $('adminImportPreview');
@@ -2725,7 +2812,6 @@
         const rows = parseCsvText(text);
         if (rows.length < 2) throw new Error('CSV file has no data rows');
 
-        // Detect column indices by header name with fallback to positional index
         const headers = (rows[0] || []).map((h) => String(h || '').trim().toLowerCase());
         const findCol = (keywords, fallbackIdx) => {
           const idx = headers.findIndex((h) => keywords.some((k) => h.includes(k)));
@@ -2742,28 +2828,16 @@
         const colPoolName = findCol(['budget pool'], 8);
         const colPoolId = findCol(['pool id'], 9);
 
-        const parseFlexibleDate = (raw) => {
-          const direct = normalizeSheetDate(raw);
-          if (direct) return direct;
-          const s = String(raw || '').trim();
-          const m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
-          if (!m) return '';
-          const p1 = Number(m[1]);
-          const p2 = Number(m[2]);
-          const yr = m[3];
-          // If first part > 12, treat as DD/MM/YYYY
-          if (p1 > 12 && p2 <= 12) {
-            return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
-          }
-          return `${yr}-${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}`;
-        };
-
         const existingTxRes = await apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/transactions`);
         const existingTx = existingTxRes.data || [];
         const existingMap = new Map();
+        const dateAmtMap = new Map();
+
         existingTx.forEach((t) => {
-          const key = `${t.tx_date}|${Number(t.amount_mmk)}|${String(t.notes || '').trim().toLowerCase()}`;
-          existingMap.set(key, t);
+          const exactKey = `${t.tx_date}|${Number(t.amount_mmk)}|${normalizeNoteKey(t.notes)}`;
+          existingMap.set(exactKey, t);
+          const looseKey = `${t.tx_date}|${Number(t.amount_mmk)}`;
+          if (!dateAmtMap.has(looseKey)) dateAmtMap.set(looseKey, t);
         });
 
         let invalidCount = 0;
@@ -2778,7 +2852,7 @@
           const r = rows[i];
           if (!r || r.every((cell) => !cell)) continue;
 
-          const txDate = parseFlexibleDate(r[colDate]);
+          const txDate = normalizeSheetDate(r[colDate]);
           const memberName = String(r[colMember] || state.user?.display_name || 'Member').trim();
           const entryType = normalizeSheetType(r[colType]) || 'Expense';
           const category = String(r[colCategory] || 'General').trim();
@@ -2796,8 +2870,9 @@
           const mergedKey = resolveMergedPoolKey(entryType, csvPoolName, category, csvPoolId);
           if (mergedKey) neededPoolKeys.add(mergedKey);
 
-          const dupKey = `${txDate}|${Number(amountMmk)}|${notes.toLowerCase()}`;
-          const existingRow = existingMap.get(dupKey);
+          const exactKey = `${txDate}|${Number(amountMmk)}|${normalizeNoteKey(notes)}`;
+          const looseKey = `${txDate}|${Number(amountMmk)}`;
+          const existingRow = existingMap.get(exactKey) || dateAmtMap.get(looseKey) || null;
 
           if (entryType === 'Income') sumInc += amountMmk;
           if (entryType === 'Expense') sumExp += amountMmk;
