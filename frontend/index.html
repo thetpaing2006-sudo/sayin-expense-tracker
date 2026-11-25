@@ -2709,7 +2709,7 @@
     }
 
     // Smart CSV Preview: Merges into 5 Expense Pools (Income -> null) + detects New vs Existing Update
-    async function buildCsvPreview() {
+   async function buildCsvPreview() {
       const targetWs = $('adminImportWs')?.value;
       const file = $('adminImportCsvFile')?.files?.[0];
       const prevEl = $('adminImportPreview');
@@ -2724,6 +2724,39 @@
         const text = await file.text();
         const rows = parseCsvText(text);
         if (rows.length < 2) throw new Error('CSV file has no data rows');
+
+        // Detect column indices by header name with fallback to positional index
+        const headers = (rows[0] || []).map((h) => String(h || '').trim().toLowerCase());
+        const findCol = (keywords, fallbackIdx) => {
+          const idx = headers.findIndex((h) => keywords.some((k) => h.includes(k)));
+          return idx >= 0 ? idx : fallbackIdx;
+        };
+
+        const colDate = findCol(['date', 'နေ့စွဲ'], 0);
+        const colMember = findCol(['member', 'family', 'ထည့်သွင်းသူ'], 1);
+        const colType = findCol(['type', 'အမျိုးအစား |'], 2);
+        const colCategory = findCol(['category', 'အမျိုးအစားခွဲ'], 3);
+        const colAmount = findCol(['amount', 'ငွေပမာဏ'], 4);
+        const colPayment = findCol(['payment', 'ငွေပေးချေမှု'], 5);
+        const colNotes = findCol(['notes', 'မှတ်ချက်'], 6);
+        const colPoolName = findCol(['budget pool'], 8);
+        const colPoolId = findCol(['pool id'], 9);
+
+        const parseFlexibleDate = (raw) => {
+          const direct = normalizeSheetDate(raw);
+          if (direct) return direct;
+          const s = String(raw || '').trim();
+          const m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+          if (!m) return '';
+          const p1 = Number(m[1]);
+          const p2 = Number(m[2]);
+          const yr = m[3];
+          // If first part > 12, treat as DD/MM/YYYY
+          if (p1 > 12 && p2 <= 12) {
+            return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
+          }
+          return `${yr}-${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}`;
+        };
 
         const existingTxRes = await apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/transactions`);
         const existingTx = existingTxRes.data || [];
@@ -2745,17 +2778,17 @@
           const r = rows[i];
           if (!r || r.every((cell) => !cell)) continue;
 
-          const txDate = normalizeSheetDate(r[0]);
-          const memberName = String(r[1] || state.user?.display_name || 'Member').trim();
-          const entryType = normalizeSheetType(r[2]);
-          const category = String(r[3] || 'General').trim();
-          const amountMmk = normalizeSheetAmount(r[4]);
-          const paymentMethod = String(r[5] || 'Cash').trim();
-          const notes = String(r[6] || '').trim();
-          const csvPoolName = String(r[8] || r[9] || '').trim();
-          const csvPoolId = String(r[10] || '').trim();
+          const txDate = parseFlexibleDate(r[colDate]);
+          const memberName = String(r[colMember] || state.user?.display_name || 'Member').trim();
+          const entryType = normalizeSheetType(r[colType]) || 'Expense';
+          const category = String(r[colCategory] || 'General').trim();
+          const amountMmk = normalizeSheetAmount(r[colAmount]);
+          const paymentMethod = String(r[colPayment] || 'Cash').trim();
+          const notes = String(r[colNotes] || '').trim();
+          const csvPoolName = String(r[colPoolName] || '').trim();
+          const csvPoolId = String(r[colPoolId] || '').trim();
 
-          if (!txDate || !entryType || amountMmk <= 0) {
+          if (!txDate || amountMmk <= 0) {
             invalidCount++;
             continue;
           }
@@ -2789,7 +2822,6 @@
           });
         }
 
-        // Auto-create the 5 merged pools in D1 if missing and get real numeric IDs
         const { keyToId } = await ensureMergedPoolsAndMap(targetWs, state.month, neededPoolKeys, 0);
 
         const ready = parsedItems.map((item) => ({
