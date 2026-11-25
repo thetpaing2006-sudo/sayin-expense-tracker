@@ -2250,27 +2250,64 @@
 
     window.openReceipt = openReceipt;
 
+    function ensureSelectOption(selectEl, value) {
+      if (!selectEl || value === null || value === undefined || value === '') return;
+      const strVal = String(value);
+      const exists = Array.from(selectEl.options).some((opt) => opt.value === strVal);
+      if (!exists) {
+        const opt = document.createElement('option');
+        opt.value = strVal;
+        opt.textContent = strVal;
+        selectEl.appendChild(opt);
+      }
+      selectEl.value = strVal;
+    }
+
     window.startEditTx = function(id) {
-      const tx = state.transactions.find((x) => x.id === id);
-      if (!tx) return;
+      const tx = (state.transactions || []).find((x) => Number(x.id) === Number(id));
+      if (!tx) {
+        toast('Transaction not found in current list', 'error');
+        return;
+      }
+
+      document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === 'transactions'));
+      ['dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => $('tab-' + t).classList.toggle('hidden', t !== 'transactions'));
+
       $('editingTxId').value = String(tx.id);
       $('txFormTitle').textContent = `Edit Transaction #${tx.id}`;
-      $('txDate').value = tx.tx_date;
-      $('txMember').value = tx.member_name;
-      $('txType').value = tx.entry_type;
+      $('txDate').value = tx.tx_date || '';
+      ensureSelectOption($('txMember'), tx.member_name);
+
+      $('txType').value = tx.entry_type || 'Expense';
       updateCategoryDropdown();
-      $('txCategory').value = tx.category;
-      $('txPool').value = tx.pool_id ? String(tx.pool_id) : '';
+      ensureSelectOption($('txCategory'), tx.category);
+
+      const poolVal = tx.pool_id ? String(tx.pool_id) : '';
+      if (poolVal) {
+        const poolExists = Array.from($('txPool').options).some((opt) => opt.value === poolVal);
+        if (!poolExists && tx.pool_name) {
+          const opt = document.createElement('option');
+          opt.value = poolVal;
+          opt.textContent = `${tx.pool_name} (Hidden Pool)`;
+          $('txPool').appendChild(opt);
+        }
+      }
+      $('txPool').value = poolVal;
       updatePoolBalanceHint();
+
       $('txAmount').value = tx.amount_mmk;
-      $('txPayment').value = tx.payment_method || 'Cash';
+      ensureSelectOption($('txPayment'), tx.payment_method || 'Cash');
       $('txNotes').value = tx.notes || '';
       $('receiptInputWrap').classList.add('hidden');
       $('txSubmitBtn').textContent = 'Update Transaction';
       $('txCancelEditBtn').classList.remove('hidden');
 
-      document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === 'transactions'));
-      ['dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => $('tab-' + t).classList.toggle('hidden', t !== 'transactions'));
+      const formCard = $('txForm')?.closest('.card');
+      if (formCard) {
+        formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     };
 
     function resetTxForm() {
