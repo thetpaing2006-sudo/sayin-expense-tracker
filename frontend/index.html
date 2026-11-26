@@ -846,8 +846,11 @@
             <div>
               <h2 style="margin: 0;">Monthly Budget Pools (<span id="poolManageMonthLabel">-</span>)</h2>
               <p class="muted" style="margin: 4px 0 0;">
-                ကုန်ကျစရိတ် ထုတ်သုံးမည့် Pool များကို ဖန်တီးပါ။ Monthly Default ပြင်ရင် This Month ပါ လိုက်ပြောင်းပြီး၊ This Month ကို သီးသန့်ပြင်ရင် Custom ဖြစ်သွားပါမယ်။
+                Pool အားလုံးရဲ့ Monthly Default နဲ့ This Month Budget တွေကို တစ်ပြိုင်နက် ဖြည့်ပြီး <strong>Save All Pools</strong> ခလုပ်တစ်ခုတည်းနဲ့ တစ်ခါတည်း Save လုပ်နိုင်ပါတယ်။
               </p>
+            </div>
+            <div class="inline-form">
+              <button type="button" class="primary" id="saveAllPoolsBtn" onclick="saveAllPools()">Save All Pools</button>
             </div>
           </div>
 
@@ -1647,7 +1650,7 @@
                   <input type="number" step="any" min="0" id="poolDefInput_${p.id}"
                          class="pool-amt-input"
                          value="${escapeHtml(p.default_amount)}"
-                         oninput="syncPoolDefaultInput(${p.id})"
+                         oninput="syncPoolDefaultInput(${p.id}); markPoolDirty(${p.id})"
                          title="လတိုင်း သုံးမည့် ပုံသေပမာဏ" />
                 </td>
                 <td>
@@ -1655,6 +1658,7 @@
                     <input type="number" step="any" min="0" id="poolMonthInput_${p.id}"
                            class="pool-amt-input"
                            value="${escapeHtml(p.allocated_amount)}"
+                           oninput="markPoolDirty(${p.id})"
                            title="${escapeHtml(state.month)} တစ်လတည်းအတွက် ပမာဏ" />
                     ${isCustom ? `<button type="button" class="small" onclick="resetPoolMonthBudget(${p.id})" title="Default အတိုင်း ပြန်ထားရန်">Reset</button>` : ''}
                   </div>
@@ -1684,28 +1688,109 @@
       }
     };
 
-    window.savePoolRow = async function(poolId) {
-      const defVal = Number($(`poolDefInput_${poolId}`)?.value);
-      const monthVal = Number($(`poolMonthInput_${poolId}`)?.value);
+    const dirtyPoolIds = new Set();
+
+    window.markPoolDirty = function(poolId) {
+      dirtyPoolIds.add(Number(poolId));
+    };
+
+    function buildPoolPatchPayload(poolId) {
+      const pool = (state.pools || []).find((p) => Number(p.id) === Number(poolId));
+      const defEl = $(`poolDefInput_${poolId}`);
+      const monthEl = $(`poolMonthInput_${poolId}`);
+      const defVal = Number(defEl?.value);
+      const monthVal = Number(monthEl?.value);
       if (!(defVal >= 0) || !(monthVal >= 0)) {
-        toast('Budget amounts must be 0 or greater', 'error');
+        return { error: 'Budget amounts must be 0 or greater' };
+      }
+
+      const row = document.querySelector(`tr[data-pool-id="${poolId}"]`);
+      const wasCustom = row?.dataset.isCustom === '1' || (pool && pool.override_amount !== null && pool.override_amount !== undefined);
+      const prevDef = Number(pool?.default_amount ?? 0);
+      const prevAlloc = Number(pool?.allocated_amount ?? prevDef);
+
+      const payload = {
+        default_amount: defVal,
+        month: state.month
+      };
+
+      // If user explicitly set a different month amount or it was already custom and changed, send month_allocated_amount;
+      // if only default changed and month matches new default (or wasn't custom), keep in sync with default.
+      if (monthVal !== defVal && (monthVal !== prevAlloc || defVal === prevDef)) {
+        payload.month_allocated_amount = monthVal;
+      } else if (wasCustom && monthVal !== defVal) {
+        payload.month_allocated_amount = monthVal;
+      } else {
+        payload.month_allocated_amount = defVal;
+      }
+
+      return { payload };
+    }
+
+    window.savePoolRow = async function(poolId) {
+      const { payload, error } = buildPoolPatchPayload(poolId);
+      if (error) {
+        toast(error, 'error');
         return;
       }
 
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools/${poolId}`, {
           method: 'PATCH',
-          body: JSON.stringify({
-            default_amount: defVal,
-            month: state.month,
-            month_allocated_amount: monthVal
-          })
+          body: JSON.stringify(payload)
         });
+        dirtyPoolIds.delete(Number(poolId));
         toast('Budget pool updated', 'success');
         await loadWorkspaceDetails();
       } catch (err) {
         toast(err.message, 'error');
       }
+    };
+
+    window.saveAllPools = async function() {
+      const pools = state.pools || [];
+      if (!pools.length) return;
+
+      const btn = $('saveAllPoolsBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Saving All...';
+      }
+
+      let savedCount = 0;
+      let errCount = 0;
+      const encWs = encodeURIComponent(state.wsId);
+
+      for (const p of pools) {
+        const pid = Number(p.id);
+        const { payload, error } = buildPoolPatchPayload(pid);
+        if (error) {
+          errCount++;
+          continue;
+        }
+        try {
+          await apiFetch(`/api/workspaces/${encWs}/pools/${pid}`, {
+            method: 'PATCH',
+            body: JSON.stringify(payload)
+          });
+          dirtyPoolIds.delete(pid);
+          savedCount++;
+        } catch {
+          errCount++;
+        }
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Save All Pools';
+      }
+
+      if (errCount > 0) {
+        toast(`Saved ${savedCount} pool(s), ${errCount} failed`, 'error');
+      } else {
+        toast(`All ${savedCount} budget pools saved`, 'success');
+      }
+      await loadWorkspaceDetails();
     };
 
     window.resetPoolMonthBudget = async function(poolId) {
