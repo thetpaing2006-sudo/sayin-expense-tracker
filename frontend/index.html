@@ -1319,6 +1319,10 @@
         const p1 = Number(m[1]);
         const p2 = Number(m[2]);
         const yr = m[3];
+        // Spreadsheet dates in this sheet use DD/MM/YYYY (day first, month second)
+        if (p2 >= 1 && p2 <= 12 && p1 >= 1 && p1 <= 31) {
+          return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
+        }
         if (p1 > 12 && p2 <= 12) {
           return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
         }
@@ -1468,11 +1472,13 @@
           saving: Number(s.total_saving || 0)
         });
       });
+      const activeMonthAgg = aggregateTransactions(state.transactions || [], state.pools || [], 1);
+      const hasActiveTx = (state.transactions || []).length > 0;
       trendMap.set(state.month, {
         month: state.month,
-        income: Number(state.summary.total_income || 0),
-        expense: Number(state.summary.total_expense || 0),
-        saving: Number(state.summary.total_saving || 0)
+        income: hasActiveTx ? activeMonthAgg.totalIncome : Number(state.summary.total_income || 0),
+        expense: hasActiveTx ? activeMonthAgg.totalExpense : Number(state.summary.total_expense || 0),
+        saving: hasActiveTx ? activeMonthAgg.totalSaving : Number(state.summary.total_saving || 0)
       });
       state.sixMonthTrend = sixMonths.map((ym) => trendMap.get(ym) || { month: ym, income: 0, expense: 0, saving: 0 });
 
@@ -1720,47 +1726,30 @@
       }
     });
 
-    function buildActiveDashboardViewModel() {
-      const isYearly = state.periodMode === 'yearly';
-      const { year } = getYearMonths(state.month);
-      const basePools = state.pools || [];
-
-      if (!isYearly) {
-        const sum = state.summary || {};
-        return {
-          isYearly: false,
-          periodLabel: state.month,
-          totalIncome: Number(sum.total_income || 0),
-          totalExpense: Number(sum.total_expense || 0),
-          totalSaving: Number(sum.total_saving || 0),
-          totalAllocated: Number(sum.total_pool_allocated || 0),
-          totalRemaining: Number(sum.total_pool_remaining || 0),
-          unalloc: Number(sum.unallocated_income ?? (Number(sum.total_income || 0) - Number(sum.total_pool_allocated || 0))),
-          pools: basePools,
-          cats: state.categorySummary || [],
-          txList: state.transactions || []
-        };
-      }
-
-      const yTx = state.yearlyTransactions || [];
+    function aggregateTransactions(txList, basePools, multiplier = 1) {
       let totalIncome = 0;
       let totalExpense = 0;
       let totalSaving = 0;
-      const spentByPool = new Map();
-      const topupByPool = new Map();
+      const spentByPoolId = new Map();
+      const spentByPoolName = new Map();
+      const topupByPoolId = new Map();
       const catMap = new Map();
 
-      for (const tx of yTx) {
+      for (const tx of (txList || [])) {
         const amt = Number(tx.amount_mmk || 0);
         const type = tx.entry_type;
         if (type === 'Income') totalIncome += amt;
         else if (type === 'Saving') totalSaving += amt;
         else totalExpense += amt;
 
-        if (tx.pool_id !== null && tx.pool_id !== undefined) {
-          const pid = Number(tx.pool_id);
-          if (type === 'Expense') spentByPool.set(pid, (spentByPool.get(pid) || 0) + amt);
-          if (type === 'Income') topupByPool.set(pid, (topupByPool.get(pid) || 0) + amt);
+        const pid = (tx.pool_id !== null && tx.pool_id !== undefined && tx.pool_id !== '') ? Number(tx.pool_id) : null;
+        const pName = String(tx.pool_name || '').trim().toLowerCase();
+
+        if (type === 'Expense') {
+          if (pid !== null) spentByPoolId.set(pid, (spentByPoolId.get(pid) || 0) + amt);
+          if (pName) spentByPoolName.set(pName, (spentByPoolName.get(pName) || 0) + amt);
+        } else if (type === 'Income') {
+          if (pid !== null) topupByPoolId.set(pid, (topupByPoolId.get(pid) || 0) + amt);
         }
 
         const catKey = `${tx.category || 'Uncategorized'}||${type}`;
@@ -1770,19 +1759,27 @@
         catMap.get(catKey).total_mmk += amt;
       }
 
-      const yearlyPools = basePools.map((p) => {
+      const computedPools = (basePools || []).map((p) => {
         const pid = Number(p.id);
-        const defAmt = Number(p.default_amount || 0);
-        const allocated = defAmt * 12;
-        const spent = Number(spentByPool.get(pid) || 0);
-        const topup = Number(topupByPool.get(pid) || 0);
-        const available = allocated + topup;
+        const pName = String(p.pool_name || '').trim().toLowerCase();
+        const baseAlloc = multiplier === 1
+          ? Number(p.allocated_amount ?? p.default_amount ?? 0)
+          : Number(p.default_amount ?? p.allocated_amount ?? 0) * multiplier;
+
+        const txSpent = spentByPoolId.has(pid)
+          ? spentByPoolId.get(pid)
+          : (spentByPoolName.get(pName) || 0);
+
+        const spent = (txList && txList.length > 0) ? txSpent : Number(p.spent_amount || 0);
+        const topup = (txList && txList.length > 0) ? Number(topupByPoolId.get(pid) || 0) : Number(p.topup_amount || 0);
+        const available = baseAlloc + topup;
         const remaining = available - spent;
         const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : 0;
         const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
+
         return {
           ...p,
-          allocated_amount: allocated,
+          allocated_amount: baseAlloc,
           spent_amount: spent,
           topup_amount: topup,
           available_budget: available,
@@ -1792,21 +1789,91 @@
         };
       });
 
-      const totalAllocated = yearlyPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
-      const totalRemaining = yearlyPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
+      const totalAllocated = computedPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
+      const totalRemaining = computedPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
       const cats = [...catMap.values()].sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
 
       return {
-        isYearly: true,
-        periodLabel: `${year} (Yearly)`,
         totalIncome,
         totalExpense,
         totalSaving,
         totalAllocated,
         totalRemaining,
         unalloc: totalIncome - totalAllocated,
-        pools: yearlyPools,
-        cats,
+        pools: computedPools,
+        cats
+      };
+    }
+
+    function buildActiveDashboardViewModel() {
+      const isYearly = state.periodMode === 'yearly';
+      const { year } = getYearMonths(state.month);
+      const basePools = state.pools || [];
+
+      if (!isYearly) {
+        const txList = state.transactions || [];
+        const sum = state.summary || {};
+        if (txList.length > 0) {
+          const agg = aggregateTransactions(txList, basePools, 1);
+          return {
+            isYearly: false,
+            periodLabel: state.month,
+            totalIncome: agg.totalIncome,
+            totalExpense: agg.totalExpense,
+            totalSaving: agg.totalSaving,
+            totalAllocated: agg.totalAllocated,
+            totalRemaining: agg.totalRemaining,
+            unalloc: agg.unalloc,
+            pools: agg.pools,
+            cats: agg.cats,
+            txList
+          };
+        }
+
+        const fallbackPools = basePools.map((p) => {
+          const available = Number(p.available_budget ?? p.allocated_amount ?? p.default_amount ?? 0);
+          const spent = Number(p.spent_amount || 0);
+          const remaining = available - spent;
+          const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : 0;
+          const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
+          return { ...p, available_budget: available, spent_amount: spent, remaining_balance: remaining, utilization_pct: util, status };
+        });
+
+        const totalIncome = Number(sum.total_income || 0);
+        const totalExpense = Number(sum.total_expense || 0);
+        const totalSaving = Number(sum.total_saving || 0);
+        const totalAllocated = fallbackPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
+        const totalRemaining = fallbackPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
+
+        return {
+          isYearly: false,
+          periodLabel: state.month,
+          totalIncome,
+          totalExpense,
+          totalSaving,
+          totalAllocated,
+          totalRemaining,
+          unalloc: totalIncome - totalAllocated,
+          pools: fallbackPools,
+          cats: state.categorySummary || [],
+          txList
+        };
+      }
+
+      const yTx = state.yearlyTransactions || [];
+      const agg = aggregateTransactions(yTx, basePools, 12);
+
+      return {
+        isYearly: true,
+        periodLabel: `${year} (Yearly)`,
+        totalIncome: agg.totalIncome,
+        totalExpense: agg.totalExpense,
+        totalSaving: agg.totalSaving,
+        totalAllocated: agg.totalAllocated,
+        totalRemaining: agg.totalRemaining,
+        unalloc: agg.unalloc,
+        pools: agg.pools,
+        cats: agg.cats,
         txList: yTx
       };
     }
