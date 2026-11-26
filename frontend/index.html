@@ -601,6 +601,11 @@
             <div class="val inc" id="kpiPoolRemaining">0</div>
             <div class="sub" id="kpiPoolRemSub">Available in pools</div>
           </div>
+          <div class="kpi inc-border">
+            <div class="label" id="kpiNetBalanceLabel">Net Balance (Income - Expense)</div>
+            <div class="val inc" id="kpiNetBalance">0</div>
+            <div class="sub" id="kpiNetBalanceSub">Total Income − Total Expense</div>
+          </div>
         </div>
 
         <div class="card">
@@ -2352,6 +2357,23 @@
       $('kpiExpense').textContent = `${fmtNum(totalExpense)} ${cur}`;
       $('kpiPoolRemaining').textContent = `${fmtNum(totalRemaining)} ${cur}`;
       $('kpiPoolRemaining').className = `val ${totalRemaining < 0 ? 'exp' : totalRemaining === 0 ? 'warn' : 'inc'}`;
+
+      const netCashflowBalance = Number(totalIncome || 0) - Number(totalExpense || 0);
+      if ($('kpiNetBalanceLabel')) {
+        $('kpiNetBalanceLabel').textContent = isYearly
+          ? 'Net Balance (Income − Expense · Year)'
+          : 'Net Balance (Income − Expense)';
+      }
+      if ($('kpiNetBalance')) {
+        $('kpiNetBalance').textContent = `${fmtNum(netCashflowBalance)} ${cur}`;
+        $('kpiNetBalance').className = `val ${netCashflowBalance < 0 ? 'exp' : netCashflowBalance === 0 ? 'warn' : 'inc'}`;
+      }
+      if ($('kpiNetBalanceSub')) {
+        const afterSaving = netCashflowBalance - Number(totalSaving || 0);
+        $('kpiNetBalanceSub').textContent = Number(totalSaving || 0) > 0
+          ? `After Saving (${fmtNum(totalSaving)}): ${fmtNum(afterSaving)} ${cur}`
+          : 'Total Income − Total Expense';
+      }
 
       if ($('kpiPoolAllocSub')) {
         $('kpiPoolAllocSub').textContent = unalloc >= 0
