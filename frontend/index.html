@@ -1218,9 +1218,14 @@
         headers.set('Content-Type', 'application/json');
       }
 
+      const method = (options.method || 'GET').toUpperCase();
       let res;
       try {
-        res = await fetch(getApiUrl(path), { ...options, headers });
+        res = await fetch(getApiUrl(path), {
+          ...options,
+          headers,
+          cache: method === 'GET' ? 'no-store' : options.cache
+        });
       } catch {
         throw new Error('Cannot reach API server. Check Worker URL / network.');
       }
@@ -2540,7 +2545,12 @@
           await apiFetch(`/api/workspaces/${encodeURIComponent(wsId)}/transactions/${id}`, { method: 'DELETE' });
           adminSelectedTxKeys.delete(key);
           okCount++;
-          if (wsId === state.wsId) touchedCurrentWs = true;
+          if (String(wsId) === String(state.wsId)) {
+            touchedCurrentWs = true;
+            selectedTxIds.delete(id);
+            state.transactions = (state.transactions || []).filter((r) => Number(r.id) !== id);
+            state.yearlyTransactions = (state.yearlyTransactions || []).filter((r) => Number(r.id) !== id);
+          }
         } catch {
           failCount++;
         }
@@ -2554,6 +2564,10 @@
           : `Deleted ${okCount} selected transaction(s)`,
         failCount > 0 ? 'error' : 'success'
       );
+      if (touchedCurrentWs) {
+        renderTransactions();
+        renderDashboard();
+      }
       await loadAdminInspectorTransactions();
       if (touchedCurrentWs) await loadWorkspaceDetails();
     });
@@ -2563,9 +2577,20 @@
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(wsId)}/transactions/${txId}`, { method: 'DELETE' });
         adminSelectedTxKeys.delete(getAdminTxKey(wsId, txId));
+        state.adminTransactions = (state.adminTransactions || []).filter(
+          (r) => !(String(r.workspace_id) === String(wsId) && Number(r.id) === Number(txId))
+        );
+        renderAdminInspectorTable();
+        if (String(wsId) === String(state.wsId)) {
+          selectedTxIds.delete(Number(txId));
+          state.transactions = (state.transactions || []).filter((r) => Number(r.id) !== Number(txId));
+          state.yearlyTransactions = (state.yearlyTransactions || []).filter((r) => Number(r.id) !== Number(txId));
+          renderTransactions();
+          renderDashboard();
+        }
         toast(`Deleted transaction #${txId}`, 'success');
         await loadAdminInspectorTransactions();
-        if (wsId === state.wsId) await loadWorkspaceDetails();
+        if (String(wsId) === String(state.wsId)) await loadWorkspaceDetails();
       } catch (err) {
         toast(err.message, 'error');
       }
@@ -2657,6 +2682,108 @@
       } catch (err) {
         toast(err.message, 'error');
       }
+    }
+
+    
+    function renderAdminUsersTable() {
+      const tbody = $('adminUsersTableBody');
+      if (!tbody) return;
+      const q = ($('adminUserSearch')?.value || '').trim().toLowerCase();
+      const users = (state.adminUsers || []).filter((u) => {
+        if (!q) return true;
+        const hay = `${u.id || ''} ${u.display_name || ''} ${u.email || ''} ${u.role || ''}`.toLowerCase();
+        return hay.includes(q);
+      });
+
+      const adminSet = new Set((state.adminAdmins || []).map((a) => normalizeEmail(a.email)));
+      adminSet.add(normalizeEmail(GLOBAL_ADMIN_EMAIL));
+
+      tbody.innerHTML = users.length
+        ? users.map((u) => {
+            const em = normalizeEmail(u.email);
+            const isGlobal = em === normalizeEmail(GLOBAL_ADMIN_EMAIL);
+            const hasAdmin = adminSet.has(em);
+            const safeEmail = escapeHtml(u.email).replace(/'/g, "\'");
+            const wsList = Array.isArray(u.workspaces)
+              ? u.workspaces.map((w) => escapeHtml(typeof w === 'string' ? w : (w.workspace_name || w.workspace_id || ''))).filter(Boolean).join(', ')
+              : escapeHtml(u.workspace_count ?? u.workspaces ?? '-');
+
+            let actionHtml = '<span class="muted">-</span>';
+            if (isGlobalAdmin() && !isGlobal) {
+              actionHtml = hasAdmin
+                ? `<button type="button" class="small danger" onclick="removeExtraAdmin('${safeEmail}')">Revoke Admin</button>`
+                : `<button type="button" class="small primary" onclick="grantAdminFromUserRow('${safeEmail}')">Make Admin</button>`;
+            }
+
+            return `
+              <tr>
+                <td>${escapeHtml(u.id ?? '-')}</td>
+                <td><strong>${escapeHtml(u.display_name || '-')}</strong></td>
+                <td>${escapeHtml(u.email || '-')}</td>
+                <td>${wsList || '-'}</td>
+                <td>${escapeHtml(u.created_at ? String(u.created_at).slice(0, 10) : '-')}</td>
+                <td><span class="pill ${hasAdmin ? 'Income' : 'Pool'}">${isGlobal ? 'Global Admin' : (hasAdmin ? 'Admin' : escapeHtml(u.role || 'Member'))}</span></td>
+                <td>${actionHtml}</td>
+              </tr>
+            `;
+          }).join('')
+        : '<tr><td colspan="7" class="muted">No users found.</td></tr>';
+    }
+
+    function renderAdminAccessTable() {
+      const tbody = $('adminListBody');
+      if (!tbody) return;
+      const list = [...(state.adminAdmins || [])];
+      if (!list.some((a) => normalizeEmail(a.email) === normalizeEmail(GLOBAL_ADMIN_EMAIL))) {
+        list.unshift({ email: GLOBAL_ADMIN_EMAIL, level: 'Global Admin', added_by: 'System' });
+      }
+
+      tbody.innerHTML = list.length
+        ? list.map((a) => {
+            const em = normalizeEmail(a.email);
+            const isGlobal = em === normalizeEmail(GLOBAL_ADMIN_EMAIL);
+            const safeEmail = escapeHtml(a.email).replace(/'/g, "\'");
+            return `
+              <tr>
+                <td><strong>${escapeHtml(a.email)}</strong></td>
+                <td><span class="pill ${isGlobal ? 'Income' : 'Saving'}">${escapeHtml(a.level || (isGlobal ? 'Global Admin' : 'Portal Admin'))}</span></td>
+                <td>${escapeHtml(a.added_by || '-')}</td>
+                <td>${(!isGlobal && isGlobalAdmin()) ? `<button type="button" class="small danger" onclick="removeExtraAdmin('${safeEmail}')">Remove</button>` : '<span class="muted">Protected</span>'}</td>
+              </tr>
+            `;
+          }).join('')
+        : '<tr><td colspan="4" class="muted">No admin records.</td></tr>';
+    }
+
+    function renderAdminWorkspacesTable() {
+      const tbody = $('adminWorkspaceTableBody');
+      if (!tbody) return;
+      const rows = state.adminWorkspaces || [];
+
+      tbody.innerHTML = rows.length
+        ? rows.map((w) => {
+            const safeWsId = escapeHtml(w.workspace_id).replace(/'/g, "\'");
+            const ownerText = w.owner_name || w.owner_email
+              ? `${escapeHtml(w.owner_name || '')}${w.owner_email ? ` <span class="muted">(${escapeHtml(w.owner_email)})</span>` : ''}`
+              : '<span class="muted">- (-)</span>';
+            return `
+              <tr>
+                <td><strong>${escapeHtml(w.workspace_name || w.workspace_id)}</strong></td>
+                <td><code>${escapeHtml(w.workspace_id)}</code></td>
+                <td>${ownerText}</td>
+                <td>${escapeHtml(w.member_count ?? 0)}</td>
+                <td>${escapeHtml(w.transaction_count ?? 0)}</td>
+                <td>${escapeHtml(w.currency || 'MMK')}</td>
+                <td>
+                  <div class="row-actions">
+                    <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${safeWsId}', 'dashboard')">View</button>
+                    <button type="button" class="small primary" onclick="switchToWorkspaceFromAdmin('${safeWsId}', 'workspace')">Pools & Settings</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('')
+        : '<tr><td colspan="7" class="muted">No workspaces found.</td></tr>';
     }
 
     // 5 Merged Budget Pools (Income -> pool_id = null; Expenses -> 5 clean pools)
@@ -3260,6 +3387,15 @@
               toast(err.message, 'error');
             }
           }
+        } else if (target === 'transactions') {
+          renderTransactions();
+          if (state.wsId) {
+            try {
+              await loadWorkspaceDetails();
+            } catch (err) {
+              toast(err.message, 'error');
+            }
+          }
         } else if (target === 'admin') {
           await loadFullAdminConsole();
         }
@@ -3463,6 +3599,12 @@
     applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
     syncSlicerButtons();
     $('txDate').value = new Date().toISOString().slice(0, 10);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && state.token && state.wsId) {
+        loadWorkspaceDetails().catch(() => {});
+      }
+    });
 
     (async function boot() {
       if (!state.token) {
