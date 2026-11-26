@@ -1057,6 +1057,7 @@
               <input type="month" id="adminInspectorMonth" style="max-width: 160px;" />
               <input type="search" id="adminTxSearch" placeholder="Search pool, member, category, note..." />
               <button type="button" class="small primary" id="adminLoadTxBtn">Filter</button>
+             <button type="button" class="small danger hidden" id="adminDeleteSelectedTxBtn">Delete Selected (0)</button>
               <button type="button" class="small" id="adminExportTxCsvBtn">Export CSV</button>
             </div>
           </div>
@@ -1064,6 +1065,7 @@
             <table>
               <thead>
                 <tr>
+                  <th style="width:36px;"><input type="checkbox" id="adminSelectAllTxCb" title="Select All" /></th>
                   <th>Date</th>
                   <th>Workspace</th>
                   <th>Member / Creator</th>
@@ -2467,10 +2469,100 @@
       }
     };
 
+    const adminSelectedTxKeys = new Set();
+
+    function getAdminTxKey(wsId, id) {
+      return `${String(wsId || '')}::${Number(id)}`;
+    }
+
+    function updateAdminBulkDeleteUi() {
+      const btn = $('adminDeleteSelectedTxBtn');
+      const selectAllCb = $('adminSelectAllTxCb');
+      const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
+      const visibleRows = (state.adminTransactions || []).filter((r) => {
+        if (!q) return true;
+        const hay = `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase();
+        return hay.includes(q);
+      });
+
+      const visibleKeys = visibleRows.map((r) => getAdminTxKey(r.workspace_id, r.id));
+      const checkedVisibleCount = visibleKeys.filter((k) => adminSelectedTxKeys.has(k)).length;
+
+      if (btn) {
+        btn.classList.toggle('hidden', adminSelectedTxKeys.size === 0);
+        btn.textContent = `Delete Selected (${adminSelectedTxKeys.size})`;
+      }
+      if (selectAllCb) {
+        selectAllCb.checked = visibleKeys.length > 0 && checkedVisibleCount === visibleKeys.length;
+        selectAllCb.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < visibleKeys.length;
+      }
+    }
+
+    window.toggleSelectAdminTx = function(wsId, id, checked) {
+      const key = getAdminTxKey(wsId, id);
+      if (checked) adminSelectedTxKeys.add(key);
+      else adminSelectedTxKeys.delete(key);
+      updateAdminBulkDeleteUi();
+    };
+
+    $('adminSelectAllTxCb')?.addEventListener('change', (e) => {
+      const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
+      const visibleRows = (state.adminTransactions || []).filter((r) => {
+        if (!q) return true;
+        const hay = `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase();
+        return hay.includes(q);
+      });
+      visibleRows.forEach((r) => {
+        const key = getAdminTxKey(r.workspace_id, r.id);
+        if (e.target.checked) adminSelectedTxKeys.add(key);
+        else adminSelectedTxKeys.delete(key);
+      });
+      renderAdminInspectorTable();
+    });
+
+    $('adminDeleteSelectedTxBtn')?.addEventListener('click', async () => {
+      const keys = [...adminSelectedTxKeys];
+      if (!keys.length) return;
+      if (!confirm(`Delete ${keys.length} selected transaction(s) from database?`)) return;
+
+      const btn = $('adminDeleteSelectedTxBtn');
+      btn.disabled = true;
+      btn.textContent = `Deleting (${keys.length})...`;
+
+      let okCount = 0;
+      let failCount = 0;
+      let touchedCurrentWs = false;
+
+      for (const key of keys) {
+        const [wsId, rawId] = key.split('::');
+        const id = Number(rawId);
+        try {
+          await apiFetch(`/api/workspaces/${encodeURIComponent(wsId)}/transactions/${id}`, { method: 'DELETE' });
+          adminSelectedTxKeys.delete(key);
+          okCount++;
+          if (wsId === state.wsId) touchedCurrentWs = true;
+        } catch {
+          failCount++;
+        }
+      }
+
+      btn.disabled = false;
+      updateAdminBulkDeleteUi();
+      toast(
+        failCount > 0
+          ? `Deleted ${okCount}, failed ${failCount}`
+          : `Deleted ${okCount} selected transaction(s)`,
+        failCount > 0 ? 'error' : 'success'
+      );
+      await loadAdminInspectorTransactions();
+      if (touchedCurrentWs) await loadWorkspaceDetails();
+    });
+
     window.adminDeleteTransaction = async function(wsId, txId) {
       if (!confirm(`Delete transaction #${txId} from ${wsId}?`)) return;
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(wsId)}/transactions/${txId}`, { method: 'DELETE' });
+        adminSelectedTxKeys.delete(getAdminTxKey(wsId, txId));
         toast(`Deleted transaction #${txId}`, 'success');
         await loadAdminInspectorTransactions();
         if (wsId === state.wsId) await loadWorkspaceDetails();
@@ -2478,113 +2570,6 @@
         toast(err.message, 'error');
       }
     };
-
-    function renderAdminUsersTable() {
-      const tbody = $('adminUsersTableBody');
-      if (!tbody) return;
-      const q = ($('adminUserSearch')?.value || '').trim().toLowerCase();
-      const canManage = isGlobalAdmin();
-
-      const filtered = (state.adminUsers || []).filter((u) => {
-        if (!q) return true;
-        return `${u.display_name || ''} ${u.email || ''}`.toLowerCase().includes(q);
-      });
-
-      tbody.innerHTML = filtered.length
-        ? filtered.map((u) => {
-            const levelBadge = u.admin_level === 'global_admin'
-              ? '<span class="pill Income">Global Admin</span>'
-              : u.admin_level === 'admin'
-                ? '<span class="pill Saving">Admin</span>'
-                : '<span class="pill Expense">User</span>';
-
-            let actionHtml = '<span class="muted">-</span>';
-            if (canManage && u.admin_level === 'user') {
-              actionHtml = `<button type="button" class="small" onclick="grantAdminFromUserRow('${escapeHtml(u.email).replace(/'/g, "\\'")}')">Make Admin</button>`;
-            } else if (canManage && u.admin_level === 'admin') {
-              actionHtml = `<button type="button" class="small danger" onclick="removeExtraAdmin('${escapeHtml(u.email).replace(/'/g, "\\'")}')">Revoke Admin</button>`;
-            }
-
-            return `
-              <tr>
-                <td>${escapeHtml(u.id)}</td>
-                <td><strong>${escapeHtml(u.display_name)}</strong></td>
-                <td><code>${escapeHtml(u.email)}</code></td>
-                <td>${escapeHtml(u.workspace_count ?? 0)}</td>
-                <td class="muted">${escapeHtml(u.created_at || '-')}</td>
-                <td>${levelBadge}</td>
-                <td>${actionHtml}</td>
-              </tr>
-            `;
-          }).join('')
-        : '<tr><td colspan="7" class="muted">No users found.</td></tr>';
-    }
-
-    function renderAdminAccessTable() {
-      const tbody = $('adminListBody');
-      const form = $('addAdminEmailForm');
-      if (!tbody) return;
-
-      const canManage = isGlobalAdmin();
-      if (form) {
-        form.querySelectorAll('input, button').forEach((el) => {
-          el.disabled = !canManage;
-        });
-      }
-
-      const rows = [
-        `<tr>
-          <td><code>${escapeHtml(GLOBAL_ADMIN_EMAIL)}</code></td>
-          <td><span class="pill Income">Global Admin</span></td>
-          <td class="muted">System Default</td>
-          <td class="muted">Permanent</td>
-        </tr>`
-      ];
-
-      (state.adminAdmins || []).forEach((adm) => {
-        const email = normalizeEmail(adm.email);
-        if (!email || email === GLOBAL_ADMIN_EMAIL) return;
-        const removeBtn = canManage
-          ? `<button type="button" class="small danger" onclick="removeExtraAdmin('${escapeHtml(email).replace(/'/g, "\\'")}')">Remove</button>`
-          : '<span class="muted">Global Admin only</span>';
-
-        rows.push(`
-          <tr>
-            <td><code>${escapeHtml(email)}</code></td>
-            <td><span class="pill Saving">Admin</span></td>
-            <td class="muted">${escapeHtml(adm.added_by || '-')}</td>
-            <td>${removeBtn}</td>
-          </tr>
-        `);
-      });
-
-      tbody.innerHTML = rows.join('');
-    }
-
-    function renderAdminWorkspacesTable() {
-      const tbody = $('adminWorkspaceTableBody');
-      if (!tbody) return;
-      const list = state.adminWorkspaces || [];
-
-      tbody.innerHTML = list.length
-        ? list.map((w) => `
-          <tr>
-            <td><strong>${escapeHtml(w.workspace_name)}</strong></td>
-            <td><code>${escapeHtml(w.workspace_id)}</code></td>
-            <td>${escapeHtml(w.owner_name || '-')} <span class="muted">(${escapeHtml(w.owner_email || '-')})</span></td>
-            <td>${escapeHtml(w.member_count ?? 0)}</td>
-            <td>${escapeHtml(w.tx_count ?? 0)}</td>
-            <td>${escapeHtml(w.currency || 'MMK')}</td>
-            <td>
-              <div class="row-actions">
-                <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${escapeHtml(w.workspace_id).replace(/'/g, "\\'")}', 'dashboard')">View</button>
-                <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${escapeHtml(w.workspace_id).replace(/'/g, "\\'")}', 'workspace')">Pools & Settings</button>
-              </div>
-            </td>
-          </tr>
-        `).join('')
-        : '<tr><td colspan="7" class="muted">No workspaces found.</td></tr>';
-    }
 
     function renderAdminInspectorTable() {
       const tbody = $('adminTxTableBody');
@@ -2598,23 +2583,29 @@
       });
 
       tbody.innerHTML = rows.length
-        ? rows.map((r) => `
-          <tr>
-            <td>${escapeHtml(r.tx_date)}</td>
-            <td><code>${escapeHtml(r.workspace_id)}</code></td>
-            <td>${escapeHtml(r.member_name)} <span class="muted">(${escapeHtml(r.creator_email || '-')})</span></td>
-            <td><span class="pill ${escapeHtml(r.entry_type)}">${escapeHtml(r.entry_type)}</span></td>
-            <td>${r.pool_name ? `<span class="pill Pool">${escapeHtml(r.pool_name)}</span>` : '<span class="muted">General</span>'}</td>
-            <td>${escapeHtml(r.category)}</td>
-            <td><strong>${fmtNum(r.amount_mmk)}</strong></td>
-            <td>${escapeHtml(r.payment_method || '-')}</td>
-            <td>${escapeHtml(r.notes || '-')}</td>
-            <td>
-              <button type="button" class="small danger" onclick="adminDeleteTransaction('${escapeHtml(r.workspace_id).replace(/'/g, "\\'")}', ${r.id})">Delete</button>
-            </td>
-          </tr>
-        `).join('')
-        : '<tr><td colspan="10" class="muted">No transactions found.</td></tr>';
+        ? rows.map((r) => {
+            const checked = adminSelectedTxKeys.has(getAdminTxKey(r.workspace_id, r.id));
+            const safeWs = escapeHtml(r.workspace_id).replace(/'/g, "\\'");
+            return `
+              <tr>
+                <td><input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleSelectAdminTx('${safeWs}', ${r.id}, this.checked)" /></td>
+                <td>${escapeHtml(r.tx_date)}</td>
+                <td><code>${escapeHtml(r.workspace_id)}</code></td>
+                <td>${escapeHtml(r.member_name)} <span class="muted">(${escapeHtml(r.creator_email || '-')})</span></td>
+                <td><span class="pill ${escapeHtml(r.entry_type)}">${escapeHtml(r.entry_type)}</span></td>
+                <td>${r.pool_name ? `<span class="pill Pool">${escapeHtml(r.pool_name)}</span>` : '<span class="muted">General</span>'}</td>
+                <td>${escapeHtml(r.category)}</td>
+                <td><strong>${fmtNum(r.amount_mmk)}</strong></td>
+                <td>${escapeHtml(r.payment_method || '-')}</td>
+                <td>${escapeHtml(r.notes || '-')}</td>
+                <td>
+                  <button type="button" class="small danger" onclick="adminDeleteTransaction('${safeWs}', ${r.id})">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('')
+        : '<tr><td colspan="11" class="muted">No transactions found.</td></tr>';
+      updateAdminBulkDeleteUi();
     }
 
     async function loadAdminInspectorTransactions() {
