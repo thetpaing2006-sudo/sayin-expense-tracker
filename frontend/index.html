@@ -291,6 +291,18 @@
       height: 260px;
       width: 100%;
     }
+    .chart-canvas-wrap canvas {
+      cursor: pointer;
+    }
+    .drilldown-card {
+      border: 1px solid rgba(16, 185, 129, 0.48);
+      background: linear-gradient(155deg, var(--surface), rgba(16, 185, 129, 0.08));
+      animation: drillSlideIn 0.2s ease-out;
+    }
+    @keyframes drillSlideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     .preview-box {
       margin-top: 12px;
@@ -646,6 +658,38 @@
               <canvas id="cashflowBarCanvas"></canvas>
             </div>
             <div id="cashflowBars" style="margin-top: 10px;"></div>
+          </div>
+        </div>
+
+        <!-- Interactive Chart Drill-Down Panel -->
+        <div class="card drilldown-card hidden" id="dashDrilldownCard">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+            <div>
+              <h3 style="margin: 0;" id="drilldownTitle">Filtered Transactions</h3>
+              <div class="muted" id="drilldownSubtitle">Click any bar or slice on a chart to inspect matching records</div>
+            </div>
+            <div class="inline-form">
+              <span class="pill Income" id="drilldownTotalBadge">0</span>
+              <button type="button" class="small" id="drilldownOpenTxTabBtn">Open in Transactions Tab</button>
+              <button type="button" class="small danger" id="drilldownCloseBtn">Close ✕</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Member</th>
+                  <th>Type</th>
+                  <th>Budget Pool</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Payment</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="drilldownTableBody"></tbody>
+            </table>
           </div>
         </div>
 
@@ -1312,26 +1356,25 @@
     }
 
     function normalizeSheetDate(rawDate) {
-  const s = String(rawDate || '').trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-  const m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
-  if (m) {
-    const p1 = Number(m[1]);
-    const p2 = Number(m[2]);
-    const yr = m[3];
-
-    // Strict DD/MM/YYYY: p1 = Day, p2 = Month
-    if (p2 >= 1 && p2 <= 12 && p1 >= 1 && p1 <= 31) {
-      return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
+      const s = String(rawDate || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      const m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+      if (m) {
+        const p1 = Number(m[1]);
+        const p2 = Number(m[2]);
+        const yr = m[3];
+        // Spreadsheet dates in this sheet use DD/MM/YYYY (day first, month second)
+        if (p2 >= 1 && p2 <= 12 && p1 >= 1 && p1 <= 31) {
+          return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
+        }
+        if (p1 > 12 && p2 <= 12) {
+          return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
+        }
+        return `${yr}-${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}`;
+      }
+      return '';
     }
 
-    // Fallback only if second part > 12 (e.g. accidental MM/DD/YYYY entry)
-    if (p2 > 12 && p1 >= 1 && p1 <= 12 && p2 <= 31) {
-      return `${yr}-${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}`;
-    }
-  }
-  return '';
-}
     function normalizeSheetType(rawType) {
       const s = String(rawType || '').toLowerCase();
       if (s.includes('income') || s.includes('ဝင်ငွေ')) return 'Income';
@@ -1900,11 +1943,91 @@
       }
     }
 
+    let lastDrilldownFilter = null;
+
+    function closeDashboardDrilldown() {
+      lastDrilldownFilter = null;
+      $('dashDrilldownCard')?.classList.add('hidden');
+    }
+
+    async function showDashboardDrilldown(filter) {
+      const card = $('dashDrilldownCard');
+      const tbody = $('drilldownTableBody');
+      if (!card || !tbody) return;
+
+      lastDrilldownFilter = filter;
+      const cur = state.settings?.currency || 'MMK';
+      const vm = buildActiveDashboardViewModel();
+      let baseList = vm.txList || [];
+
+      if (filter.month && filter.month !== state.month) {
+        try {
+          const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions?month=${encodeURIComponent(filter.month)}`);
+          baseList = res.data || [];
+        } catch {
+          baseList = [];
+        }
+      }
+
+      const matched = baseList.filter((tx) => {
+        if (filter.entryType && tx.entry_type !== filter.entryType) return false;
+        if (filter.poolId !== undefined && filter.poolId !== null) {
+          const txPid = tx.pool_id !== null && tx.pool_id !== undefined && tx.pool_id !== '' ? Number(tx.pool_id) : null;
+          const sameId = txPid === Number(filter.poolId);
+          const sameName = filter.poolName && String(tx.pool_name || '').trim().toLowerCase() === String(filter.poolName).trim().toLowerCase();
+          if (!sameId && !sameName) return false;
+        }
+        if (filter.category && String(tx.category || '').trim().toLowerCase() !== String(filter.category).trim().toLowerCase()) {
+          return false;
+        }
+        return true;
+      });
+
+      const totalAmt = matched.reduce((acc, r) => acc + Number(r.amount_mmk || 0), 0);
+      $('drilldownTitle').textContent = filter.title || 'Filtered Transactions';
+      $('drilldownSubtitle').textContent = `${matched.length} record(s) · Period: ${filter.month || vm.periodLabel}`;
+      $('drilldownTotalBadge').textContent = `Total: ${fmtNum(totalAmt)} ${cur}`;
+
+      tbody.innerHTML = matched.length
+        ? matched.map((r) => `
+          <tr>
+            <td>${escapeHtml(r.tx_date)}</td>
+            <td>${escapeHtml(r.member_name)}</td>
+            <td><span class="pill ${escapeHtml(r.entry_type)}">${escapeHtml(r.entry_type)}</span></td>
+            <td>${r.pool_name ? `<span class="pill Pool">${escapeHtml(r.pool_name)}</span>` : '<span class="muted">General</span>'}</td>
+            <td>${escapeHtml(r.category)}</td>
+            <td><strong>${fmtNum(r.amount_mmk)}</strong> ${escapeHtml(cur)}</td>
+            <td>${escapeHtml(r.payment_method || '-')}</td>
+            <td>${escapeHtml(r.notes || '-')}</td>
+          </tr>
+        `).join('')
+        : '<tr><td colspan="8" class="muted">No matching transactions found for this selection.</td></tr>';
+
+      card.classList.remove('hidden');
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    $('drilldownCloseBtn')?.addEventListener('click', closeDashboardDrilldown);
+    $('drilldownOpenTxTabBtn')?.addEventListener('click', () => {
+      if (!lastDrilldownFilter) return;
+      document.querySelector('.nav-tabs button[data-tab="transactions"]')?.click();
+      if ($('txTypeFilter')) $('txTypeFilter').value = lastDrilldownFilter.entryType || '';
+      if ($('txSearch')) {
+        $('txSearch').value = lastDrilldownFilter.category || lastDrilldownFilter.poolName || '';
+      }
+      renderTransactions();
+    });
+
     function renderPowerBiCharts(pools, cats, sum, cur) {
       if (typeof Chart === 'undefined') return;
       const textCol = getChartTextColor();
       const gridCol = getChartGridColor();
       const legendPos = getDoughnutLegendPosition();
+      const commonHover = (evt, elements) => {
+        if (evt?.native?.target) {
+          evt.native.target.style.cursor = elements && elements.length ? 'pointer' : 'default';
+        }
+      };
 
       destroyChart('sixMonthTrend');
       const trendCtx = $('sixMonthTrendCanvas')?.getContext('2d');
@@ -1927,7 +2050,8 @@
                 borderWidth: 2.5,
                 tension: 0.3,
                 fill: false,
-                pointRadius: 4
+                pointRadius: 5,
+                pointHoverRadius: 7
               },
               {
                 type: 'bar',
@@ -1948,6 +2072,20 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            onHover: commonHover,
+            onClick: (_evt, elements) => {
+              if (!elements || !elements.length) return;
+              const { datasetIndex, index } = elements[0];
+              const mItem = trendData[index];
+              if (!mItem) return;
+              const typeMap = ['Income', 'Expense', 'Saving'];
+              const entryType = typeMap[datasetIndex] || '';
+              showDashboardDrilldown({
+                title: `${mItem.month} · ${entryType} Transactions`,
+                month: mItem.month,
+                entryType
+              });
+            },
             plugins: {
               legend: { labels: { color: textCol, boxWidth: 12 } }
             },
@@ -1985,6 +2123,19 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            onHover: commonHover,
+            onClick: (_evt, elements) => {
+              if (!elements || !elements.length) return;
+              const { index } = elements[0];
+              const p = poolList[index];
+              if (!p) return;
+              showDashboardDrilldown({
+                title: `${p.pool_name} · Expense Transactions`,
+                entryType: 'Expense',
+                poolId: p.id,
+                poolName: p.pool_name
+              });
+            },
             plugins: {
               legend: { labels: { color: textCol, boxWidth: 12 } }
             },
@@ -2019,6 +2170,19 @@
             responsive: true,
             maintainAspectRatio: false,
             cutout: '62%',
+            onHover: commonHover,
+            onClick: (_evt, elements) => {
+              if (!elements || !elements.length || !activePools.length) return;
+              const { index } = elements[0];
+              const p = activePools[index];
+              if (!p) return;
+              showDashboardDrilldown({
+                title: `${p.pool_name} · Expense Transactions`,
+                entryType: 'Expense',
+                poolId: p.id,
+                poolName: p.pool_name
+              });
+            },
             plugins: {
               legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } }
             }
@@ -2049,6 +2213,18 @@
             responsive: true,
             maintainAspectRatio: false,
             cutout: '62%',
+            onHover: commonHover,
+            onClick: (_evt, elements) => {
+              if (!elements || !elements.length || !expCats.length) return;
+              const { index } = elements[0];
+              const cat = expCats[index];
+              if (!cat) return;
+              showDashboardDrilldown({
+                title: `Category: ${cat.category} · Expense Transactions`,
+                entryType: 'Expense',
+                category: cat.category
+              });
+            },
             plugins: {
               legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } }
             }
@@ -2059,10 +2235,11 @@
       destroyChart('cashflowBar');
       const cfCtx = $('cashflowBarCanvas')?.getContext('2d');
       if (cfCtx) {
+        const flowTypes = ['Income', 'Expense', 'Saving'];
         charts.cashflowBar = new Chart(cfCtx, {
           type: 'bar',
           data: {
-            labels: ['Income', 'Expense', 'Saving'],
+            labels: flowTypes,
             datasets: [{
               label: `Amount (${cur})`,
               data: [
@@ -2077,6 +2254,17 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            onHover: commonHover,
+            onClick: (_evt, elements) => {
+              if (!elements || !elements.length) return;
+              const { index } = elements[0];
+              const entryType = flowTypes[index];
+              if (!entryType) return;
+              showDashboardDrilldown({
+                title: `${entryType} Transactions`,
+                entryType
+              });
+            },
             plugins: { legend: { display: false } },
             scales: {
               x: { ticks: { color: textCol }, grid: { display: false } },
