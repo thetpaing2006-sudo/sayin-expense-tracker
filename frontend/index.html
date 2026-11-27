@@ -267,6 +267,16 @@
       border: 1px solid var(--border-soft);
       border-radius: 13px;
       padding: 14px;
+      cursor: pointer;
+      transition: transform 0.14s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .pool-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(16, 185, 129, 0.55);
+      box-shadow: 0 10px 24px rgba(2, 6, 23, 0.35);
+    }
+    .pool-card:active {
+      transform: translateY(0);
     }
     .pool-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
     .pool-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
@@ -2508,7 +2518,7 @@
             const barCls = p.status === 'over_budget' ? 'exp' : p.status === 'warning' ? 'warn' : 'inc';
             const remCls = p.status === 'over_budget' ? 'rem-over' : p.status === 'warning' ? 'rem-warn' : 'rem-ok';
             return `
-              <div class="pool-card">
+              <div class="pool-card" role="button" tabindex="0" data-pool-id="${escapeHtml(p.id)}" data-pool-name="${escapeHtml(p.pool_name)}" title="Click to inspect ${escapeHtml(p.pool_name)} transactions">
                 <div class="pool-header">
                   <div class="pool-title">
                     <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#10b981')}"></span>
@@ -2525,6 +2535,26 @@
             `;
           }).join('')
         : '<div class="muted">No budget pools found for this workspace.</div>';
+
+      poolCardsEl.querySelectorAll('.pool-card[data-pool-id]').forEach((cardEl) => {
+        const openPoolList = () => {
+          const pid = Number(cardEl.dataset.poolId);
+          const pname = cardEl.dataset.poolName || 'Budget Pool';
+          showDashboardDrilldown({
+            title: `${pname} · Expense Transactions`,
+            entryType: 'Expense',
+            poolId: pid,
+            poolName: pname
+          });
+        };
+        cardEl.addEventListener('click', openPoolList);
+        cardEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openPoolList();
+          }
+        });
+      });
 
       const maxFlow = Math.max(totalIncome, totalExpense, totalSaving, 1);
       $('cashflowBars').innerHTML = [
