@@ -827,7 +827,40 @@
         gap: 6px;
         box-sizing: border-box;
       }
+.card-head,
+      .section-head,
+      .kpi-header-row,
+      .card-head > *,
+      .section-head > *,
+      .kpi-header-row > * {
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
 
+      .slicer-group {
+        margin-left: 0 !important;
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+        box-sizing: border-box !important;
+      }
+
+      .slicer-group .slicer-btn,
+      .slicer-group button {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        padding: 7px 8px;
+        box-sizing: border-box;
+      }
       .slicer-group .slicer-btn,
       .slicer-group button {
         min-width: 0;
