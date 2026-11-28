@@ -879,6 +879,70 @@
       .muted, .label, .sub, .m-lbl, th { color: #475569 !important; }
       .chart-canvas-wrap { height: 220px !important; }
     }
+    /* ၁။ Slicer ခလုပ်တွေ ညာဘက်အစွန်မှာ ငြိမ်နေအောင် ညှိခြင်း */
+    .card-head,
+    .section-head,
+    .kpi-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .slicer-group {
+      margin-left: auto;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ၂။ KPI Card ၅ ခုထဲက Amount တွေ တစ်တန်းတည်း ညီနေအောင် ညှိခြင်း */
+    .kpi-grid,
+    .central-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .kpi-grid > .kpi,
+    .central-kpi-grid > .kpi,
+    .kpi-grid > .card,
+    .central-kpi-grid > .card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .kpi .kpi-value,
+    .kpi .kpi-amount,
+    .kpi .amount,
+    .kpi h2,
+    .kpi h3 {
+      margin-top: auto;
+    }
+
+    @media (max-width: 900px) {
+      .kpi-grid,
+      .central-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .slicer-group {
+        margin-left: 0;
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .kpi-grid,
+      .central-kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
