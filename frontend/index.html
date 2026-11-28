@@ -2214,8 +2214,9 @@
         const sixMonths = getLastSixMonths(state.month);
         const prevFiveMonths = sixMonths.slice(0, 5);
         const { months: yearMonths } = getYearMonths(state.month);
-        const otherYearMonths = yearMonths.filter((ym) => ym !== state.month);
-
+        const otherYearMonths = state.periodMode === 'yearly'
+  ? yearMonths.filter((ym) => ym !== state.month)
+  : [];
         const [setRes, catRes, txRes, sumRes, memRes, poolRes, ...restResults] = await Promise.all([
           apiFetch(`/api/workspaces/${ws}/settings${bust ? '?' + bust.slice(1) : ''}`),
           apiFetch(`/api/workspaces/${ws}/categories${bust ? '?' + bust.slice(1) : ''}`),
