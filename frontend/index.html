@@ -2512,10 +2512,75 @@
 
     function renderCategories() {
       $('categoryChips').innerHTML = state.categories.length
-        ? state.categories.map((c) => `<span class="pill ${escapeHtml(c.entry_type)}">${escapeHtml(c.name)} · ${escapeHtml(c.entry_type)}</span>`).join('')
+        ? state.categories.map((c) => {
+            const safeId = Number(c.id);
+            const safeName = escapeHtml(c.name);
+            const safeType = escapeHtml(c.entry_type);
+            const encodedName = encodeURIComponent(c.name);
+            const encodedType = encodeURIComponent(c.entry_type);
+            return `
+              <span class="pill ${safeType}" style="display:inline-flex;align-items:center;gap:6px;">
+                <span>${safeName} · ${safeType}</span>
+                <button type="button" title="Edit category"
+                  onclick="editCategory(${safeId}, '${encodedName}', '${encodedType}')"
+                  style="border:none;background:transparent;cursor:pointer;padding:0 2px;font-size:12px;line-height:1;color:inherit;">✎</button>
+                <button type="button" title="Delete category"
+                  onclick="deleteCategory(${safeId}, '${encodedName}')"
+                  style="border:none;background:transparent;cursor:pointer;padding:0 2px;font-size:12px;line-height:1;color:var(--expense);">✕</button>
+              </span>
+            `;
+          }).join('')
         : '<span class="muted">No categories</span>';
     }
+    window.editCategory = async function(id, encodedName, encodedType) {
+      const currentName = decodeURIComponent(encodedName);
+      const currentType = decodeURIComponent(encodedType);
 
+      const newName = prompt('Edit category name:', currentName);
+      if (newName === null) return;
+      const trimmedName = newName.trim();
+      if (!trimmedName) {
+        toast('Category name cannot be empty', 'error');
+        return;
+      }
+
+      const typeInput = prompt('Entry type (Expense, Income, Saving):', currentType);
+      if (typeInput === null) return;
+      const trimmedType = typeInput.trim();
+      if (!['Expense', 'Income', 'Saving'].includes(trimmedType)) {
+        toast('Invalid entry type. Use Expense, Income, or Saving.', 'error');
+        return;
+      }
+
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            name: trimmedName,
+            entry_type: trimmedType
+          })
+        });
+        toast('Category updated', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
+    window.deleteCategory = async function(id, encodedName) {
+      const catName = decodeURIComponent(encodedName);
+      if (!confirm(`Delete category "${catName}"?`)) return;
+
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories/${id}`, {
+          method: 'DELETE'
+        });
+        toast('Category deleted', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
     let isPoolBulkEditMode = false;
     const dirtyPoolIds = new Set();
 
