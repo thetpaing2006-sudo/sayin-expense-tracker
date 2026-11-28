@@ -141,8 +141,16 @@
       outline: none;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    input[type="month"], input[type="date"] {
+    input[type="month"], input[type="date"], input[type="file"] {
       display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      inline-size: 100%;
+      max-inline-size: 100%;
+      min-inline-size: 0;
+    }
+    .grid-4 > div, .grid-2 > div, .pool-grid > div {
       min-width: 0;
       max-width: 100%;
     }
@@ -404,7 +412,17 @@
       .kpi { padding: 12px; }
       .kpi .val { font-size: 18px; }
 
-      .grid-2, .grid-4, .pool-grid { grid-template-columns: 1fr; }
+      .grid-2, .grid-4, .pool-grid { grid-template-columns: minmax(0, 1fr); width: 100%; max-width: 100%; }
+      .grid-4 > div input[type="date"],
+      .grid-4 > div input[type="number"],
+      .grid-4 > div input[type="text"],
+      .grid-4 > div select,
+      .grid-4 > div input[type="file"] {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        font-size: 13px;
+      }
       .chart-canvas-wrap { height: 210px; max-width: 100%; }
 
       .inline-form button[type="submit"] { width: 100%; }
