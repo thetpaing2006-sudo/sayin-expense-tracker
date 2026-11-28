@@ -1194,6 +1194,70 @@
       .grid-2, .grid-4, .pool-grid { grid-template-columns: minmax(0, 1fr); width: 100%; max-width: 100%; }
       .chart-canvas-wrap { height: 210px; max-width: 100%; }
       .inline-form button[type="submit"] { width: 100%; }
+      .tx-filter-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        align-items: end;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--border-soft);
+      }
+      [data-theme="light"] .tx-filter-bar {
+        background: rgba(15, 23, 42, 0.02);
+      }
+      .tx-filter-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+      }
+      .tx-filter-field label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+        letter-spacing: 0.02em;
+      }
+      .tx-filter-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .tx-summary-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .tx-summary-card {
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border-soft);
+        background: rgba(255, 255, 255, 0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      [data-theme="light"] .tx-summary-card {
+        background: #ffffff;
+      }
+      .tx-summary-card .sum-label {
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .tx-summary-card .sum-val {
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .tx-summary-card .sum-sub {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
       .pool-amt-input { width: 100px; min-width: 76px; }
       .table-wrap { max-width: 100%; }
       th, td { padding: 7px 6px; font-size: 11px; }
@@ -1700,6 +1764,61 @@
                   </select>
                   <button type="button" id="deleteSelectedTxBtn" class="danger hidden">Delete Selected (0)</button>
                   <button type="button" id="exportCsvBtn">Export CSV</button>
+                </div>
+              </div>
+
+              <div class="tx-filter-bar" id="txFilterBar">
+                <div class="tx-filter-field">
+                  <label for="txExactDate">Exact Date (နေ့တိကျ)</label>
+                  <input type="date" id="txExactDate" />
+                </div>
+                <div class="tx-filter-field">
+                  <label for="txFromDate">From Date (မှ)</label>
+                  <input type="date" id="txFromDate" />
+                </div>
+                <div class="tx-filter-field">
+                  <label for="txToDate">To Date (ထိ)</label>
+                  <input type="date" id="txToDate" />
+                </div>
+                <div class="tx-filter-field">
+                  <label for="txCategoryFilter">Category</label>
+                  <select id="txCategoryFilter">
+                    <option value="">All Categories</option>
+                  </select>
+                </div>
+                <div class="tx-filter-field">
+                  <label for="txPoolFilter">Budget Pool</label>
+                  <select id="txPoolFilter">
+                    <option value="">All Pools</option>
+                    <option value="__NO_POOL__">General / No Pool</option>
+                  </select>
+                </div>
+                <div class="tx-filter-field">
+                  <label for="txMemberFilter">Member (လူအလိုက်)</label>
+                  <select id="txMemberFilter">
+                    <option value="">All Members</option>
+                  </select>
+                </div>
+                <div class="tx-filter-actions">
+                  <button type="button" class="small" id="txResetFiltersBtn">Reset Filters</button>
+                </div>
+              </div>
+
+              <div class="tx-summary-bar" id="txSummaryBar">
+                <div class="tx-summary-card">
+                  <span class="sum-label">Filtered Income</span>
+                  <span class="sum-val inc" id="txSumIncome">0</span>
+                  <span class="sum-sub" id="txSumIncomeCount">0 items</span>
+                </div>
+                <div class="tx-summary-card">
+                  <span class="sum-label">Filtered Expense</span>
+                  <span class="sum-val exp" id="txSumExpense">0</span>
+                  <span class="sum-sub" id="txSumExpenseCount">0 items</span>
+                </div>
+                <div class="tx-summary-card">
+                  <span class="sum-label">Net (Income − Expense)</span>
+                  <span class="sum-val" id="txSumNet">0</span>
+                  <span class="sum-sub" id="txSumTotalCount">0 total matched</span>
                 </div>
               </div>
 
@@ -4423,18 +4542,208 @@
       window.print();
     });
 
+    function syncTransactionFilterOptions() {
+      const catSel = $('txCategoryFilter');
+      const poolSel = $('txPoolFilter');
+      const memberSel = $('txMemberFilter');
+      const txList = Array.isArray(state.transactions) ? state.transactions : [];
+
+      if (catSel) {
+        const prevCat = catSel.value;
+        const catSet = new Set(
+          (state.categories || [])
+            .map((c) => String(c?.name ?? c ?? '').trim())
+            .filter(Boolean)
+        );
+        txList.forEach((r) => {
+          const c = String(r?.category || '').trim();
+          if (c) catSet.add(c);
+        });
+        const sortedCats = [...catSet].sort((a, b) => a.localeCompare(b));
+        catSel.innerHTML =
+          '<option value="">All Categories</option>' +
+          sortedCats.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+        if (prevCat && [...catSel.options].some((o) => o.value === prevCat)) {
+          catSel.value = prevCat;
+        } else {
+          catSel.value = '';
+        }
+      }
+
+      if (poolSel) {
+        const prevPool = poolSel.value;
+        const poolMap = new Map();
+        (state.pools || []).forEach((p) => {
+          const idStr = String(p?.id ?? '').trim();
+          if (idStr) {
+            poolMap.set(idStr, String(p?.pool_name || `Pool #${idStr}`).trim());
+          }
+        });
+        txList.forEach((r) => {
+          const idStr = r?.pool_id !== null && r?.pool_id !== undefined && String(r.pool_id).trim() !== ''
+            ? String(r.pool_id).trim()
+            : '';
+          if (idStr && !poolMap.has(idStr)) {
+            poolMap.set(idStr, String(r?.pool_name || `Pool #${idStr}`).trim());
+          }
+        });
+        const poolOptions = [...poolMap.entries()]
+          .sort((a, b) => a[1].localeCompare(b[1]))
+          .map(([idStr, name]) => `<option value="pool:${escapeHtml(idStr)}">${escapeHtml(name)}</option>`);
+        poolSel.innerHTML =
+          '<option value="">All Pools</option>' +
+          '<option value="__NO_POOL__">General / No Pool</option>' +
+          poolOptions.join('');
+        if (prevPool && [...poolSel.options].some((o) => o.value === prevPool)) {
+          poolSel.value = prevPool;
+        } else {
+          poolSel.value = '';
+        }
+      }
+
+      if (memberSel) {
+        const prevMember = memberSel.value;
+        const memberSet = new Set(
+          (Array.isArray(state.settings?.members) ? state.settings.members : [])
+            .map((m) => String(m || '').trim())
+            .filter(Boolean)
+        );
+        txList.forEach((r) => {
+          const m = String(r?.member_name || '').trim();
+          if (m) memberSet.add(m);
+        });
+        const sortedMembers = [...memberSet].sort((a, b) => a.localeCompare(b));
+        memberSel.innerHTML =
+          '<option value="">All Members</option>' +
+          sortedMembers.map((m) => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+        if (prevMember && [...memberSel.options].some((o) => o.value === prevMember)) {
+          memberSel.value = prevMember;
+        } else {
+          memberSel.value = '';
+        }
+      }
+    }
+
     function getFilteredTransactions() {
-      const q = ($('txSearch').value || '').trim().toLowerCase();
-      const t = $('txTypeFilter').value;
-      return state.transactions.filter((row) => {
+      const q = ($('txSearch')?.value || '').trim().toLowerCase();
+      const t = $('txTypeFilter')?.value || '';
+      const exactDate = ($('txExactDate')?.value || '').trim();
+      const fromDate = ($('txFromDate')?.value || '').trim();
+      const toDate = ($('txToDate')?.value || '').trim();
+      const catFilter = $('txCategoryFilter')?.value || '';
+      const poolFilter = $('txPoolFilter')?.value || '';
+      const memberFilter = $('txMemberFilter')?.value || '';
+
+      return (state.transactions || []).filter((row) => {
         if (t && row.entry_type !== t) return false;
+
+        const rowDate = normalizeIsoDate(row.tx_date) || String(row.tx_date || '').slice(0, 10);
+        if (exactDate) {
+          if (rowDate !== exactDate) return false;
+        } else {
+          if (fromDate && (!rowDate || rowDate < fromDate)) return false;
+          if (toDate && (!rowDate || rowDate > toDate)) return false;
+        }
+
+        if (catFilter && String(row.category || '').trim() !== catFilter) return false;
+
+        if (poolFilter) {
+          const hasPoolId = row.pool_id !== null && row.pool_id !== undefined && String(row.pool_id).trim() !== '';
+          if (poolFilter === '__NO_POOL__') {
+            if (hasPoolId) return false;
+          } else if (poolFilter.startsWith('pool:')) {
+            const targetPoolId = poolFilter.slice(5);
+            if (!hasPoolId || String(row.pool_id).trim() !== targetPoolId) return false;
+          }
+        }
+
+        if (memberFilter && String(row.member_name || '').trim() !== memberFilter) return false;
+
         if (q) {
-          const hay = `${row.pool_name || ''} ${row.category || ''} ${row.member_name || ''} ${row.notes || ''} ${row.payment_method || ''}`.toLowerCase();
+          const poolLabel = (row.pool_id !== null && row.pool_id !== undefined && String(row.pool_id).trim() !== '')
+            ? (row.pool_name || '')
+            : `${row.pool_name || ''} general no pool`;
+          const hay = `${poolLabel} ${row.category || ''} ${row.member_name || ''} ${row.notes || ''} ${row.payment_method || ''}`.toLowerCase();
           if (!hay.includes(q)) return false;
         }
         return true;
       });
     }
+
+    function renderFilteredTransactionsSummary(rows) {
+      const cur = state.settings?.currency || 'MMK';
+      const list = Array.isArray(rows) ? rows : [];
+      let incTotal = 0, incCount = 0;
+      let expTotal = 0, expCount = 0;
+
+      list.forEach((r) => {
+        const amt = Number(r.amount_mmk) || 0;
+        if (r.entry_type === 'Income') {
+          incTotal += amt;
+          incCount++;
+        } else if (r.entry_type === 'Expense') {
+          expTotal += amt;
+          expCount++;
+        }
+      });
+
+      const net = incTotal - expTotal;
+      if ($('txSumIncome')) $('txSumIncome').textContent = `${fmtNum(incTotal)} ${cur}`;
+      if ($('txSumIncomeCount')) $('txSumIncomeCount').textContent = `${incCount} item${incCount === 1 ? '' : 's'}`;
+      if ($('txSumExpense')) $('txSumExpense').textContent = `${fmtNum(expTotal)} ${cur}`;
+      if ($('txSumExpenseCount')) $('txSumExpenseCount').textContent = `${expCount} item${expCount === 1 ? '' : 's'}`;
+
+      const netEl = $('txSumNet');
+      if (netEl) {
+        const sign = net > 0 ? '+' : '';
+        netEl.textContent = `${sign}${fmtNum(net)} ${cur}`;
+        netEl.classList.remove('inc', 'exp');
+        if (net > 0) netEl.classList.add('inc');
+        else if (net < 0) netEl.classList.add('exp');
+      }
+      if ($('txSumTotalCount')) $('txSumTotalCount').textContent = `${list.length} matched transaction${list.length === 1 ? '' : 's'}`;
+    }
+
+    function resetTransactionFilters() {
+      if ($('txSearch')) $('txSearch').value = '';
+      if ($('txTypeFilter')) $('txTypeFilter').value = '';
+      if ($('txExactDate')) $('txExactDate').value = '';
+      if ($('txFromDate')) $('txFromDate').value = '';
+      if ($('txToDate')) $('txToDate').value = '';
+      if ($('txCategoryFilter')) $('txCategoryFilter').value = '';
+      if ($('txPoolFilter')) $('txPoolFilter').value = '';
+      if ($('txMemberFilter')) $('txMemberFilter').value = '';
+      renderTransactions();
+    }
+
+    function bindTransactionFilterEvents() {
+      const onFilterChange = () => renderTransactions();
+      $('txSearch')?.addEventListener('input', onFilterChange);
+      $('txTypeFilter')?.addEventListener('change', onFilterChange);
+      $('txCategoryFilter')?.addEventListener('change', onFilterChange);
+      $('txPoolFilter')?.addEventListener('change', onFilterChange);
+      $('txMemberFilter')?.addEventListener('change', onFilterChange);
+
+      $('txExactDate')?.addEventListener('change', () => {
+        if ($('txExactDate').value) {
+          if ($('txFromDate')) $('txFromDate').value = '';
+          if ($('txToDate')) $('txToDate').value = '';
+        }
+        renderTransactions();
+      });
+
+      const onRangeChange = () => {
+        if (($('txFromDate')?.value || $('txToDate')?.value) && $('txExactDate')?.value) {
+          $('txExactDate').value = '';
+        }
+        renderTransactions();
+      };
+      $('txFromDate')?.addEventListener('change', onRangeChange);
+      $('txToDate')?.addEventListener('change', onRangeChange);
+
+      $('txResetFiltersBtn')?.addEventListener('click', resetTransactionFilters);
+    }
+    bindTransactionFilterEvents();
 
     async function openReceipt(key) {
       let url = '';
@@ -4574,11 +4883,13 @@
     };
 
     function renderTransactions() {
+      syncTransactionFilterOptions();
       const cur = state.settings?.currency || 'MMK';
       const s = state.settings || {};
       const members = Array.isArray(s.members) && s.members.length ? s.members : [state.user?.display_name || 'Member'];
       const payments = Array.isArray(s.payment_methods) && s.payment_methods.length ? s.payment_methods : ['Cash'];
       const rows = getFilteredTransactions();
+      renderFilteredTransactionsSummary(rows);
       const tbody = $('txTableBody');
       tbody.innerHTML = rows.length
         ? rows.map((r) => {
