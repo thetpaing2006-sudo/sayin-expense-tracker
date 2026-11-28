@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b192c" />
-  <link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sayin%20%E2%80%94%20Budget%20Pool%20Portal%22%2C%22short_name%22%3A%22Sayin%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22background_color%22%3A%22%23060d1a%22%2C%22theme_color%22%3A%22%230b192c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22.%2Fsayin-logo-cropped-transparent.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%5D%7D" />
+  <meta name="theme-color" content="#071b2e" />
+  <link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sayin%20%E2%80%94%20Budget%20Pool%20Portal%22%2C%22short_name%22%3A%22Sayin%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22background_color%22%3A%22%23051221%22%2C%22theme_color%22%3A%22%23071b2e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22.%2Fsayin-logo-cropped-transparent.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%5D%7D" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -14,50 +14,61 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg: #060d1a;
-      --bg-glow-1: rgba(16, 185, 129, 0.16);
-      --bg-glow-2: rgba(212, 175, 55, 0.13);
-      --bg-glow-3: rgba(15, 52, 96, 0.34);
-      --surface: rgba(13, 24, 42, 0.72);
-      --surface-solid: #0d182a;
-      --surface-2: rgba(22, 37, 62, 0.62);
-      --border: rgba(212, 175, 55, 0.20);
+      --bg: #051221;
+      --bg-glow-1: rgba(34, 211, 238, 0.18);
+      --bg-glow-2: rgba(16, 185, 129, 0.16);
+      --bg-glow-3: rgba(56, 189, 248, 0.22);
+      --surface: rgba(10, 29, 49, 0.62);
+      --surface-solid: #0a1e33;
+      --surface-2: rgba(16, 44, 72, 0.56);
+      --border: rgba(125, 211, 252, 0.24);
       --border-soft: rgba(148, 163, 184, 0.16);
+      --aqua-shine: rgba(255, 255, 255, 0.16);
       --text: #f8fafc;
-      --muted: #9fb0c7;
-      --primary: #10b981;
+      --muted: #9ec0d8;
+      --primary: #06b6d4;
+      --aqua: #22d3ee;
+      --emerald: #10b981;
       --gold: #eab308;
-      --navy: #1e3a8a;
-      --primary-ink: #041610;
+      --navy: #0f3460;
+      --primary-ink: #031521;
       --income: #10b981;
       --expense: #f43f5e;
       --saving: #a855f7;
       --warn: #eab308;
-      --radius: 16px;
-      --shadow: 0 16px 36px rgba(2, 6, 23, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      --radius: 18px;
+      --shadow:
+        0 18px 40px rgba(2, 10, 22, 0.48),
+        inset 0 1px 0 var(--aqua-shine),
+        inset 0 -1px 0 rgba(34, 211, 238, 0.08);
     }
 
     [data-theme="light"] {
-      --bg: #eef4f8;
-      --bg-glow-1: rgba(16, 185, 129, 0.14);
-      --bg-glow-2: rgba(212, 175, 55, 0.16);
-      --bg-glow-3: rgba(30, 58, 138, 0.10);
-      --surface: rgba(255, 255, 255, 0.82);
+      --bg: #e7f5fb;
+      --bg-glow-1: rgba(6, 182, 212, 0.18);
+      --bg-glow-2: rgba(16, 185, 129, 0.14);
+      --bg-glow-3: rgba(212, 175, 55, 0.14);
+      --surface: rgba(255, 255, 255, 0.72);
       --surface-solid: #ffffff;
-      --surface-2: rgba(241, 246, 250, 0.88);
-      --border: rgba(15, 41, 74, 0.16);
-      --border-soft: rgba(15, 23, 42, 0.12);
+      --surface-2: rgba(236, 249, 255, 0.84);
+      --border: rgba(8, 145, 178, 0.22);
+      --border-soft: rgba(15, 23, 42, 0.11);
+      --aqua-shine: rgba(255, 255, 255, 0.88);
       --text: #0f172a;
       --muted: #475569;
-      --primary: #059669;
+      --primary: #0891b2;
+      --aqua: #06b6d4;
+      --emerald: #059669;
       --gold: #ca8a04;
-      --navy: #1e3a8a;
+      --navy: #0f3460;
       --primary-ink: #ffffff;
       --income: #059669;
       --expense: #e11d48;
       --saving: #7e22ce;
       --warn: #ca8a04;
-      --shadow: 0 12px 28px rgba(15, 41, 74, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      --shadow:
+        0 14px 32px rgba(8, 145, 178, 0.10),
+        inset 0 1px 0 var(--aqua-shine);
     }
 
     * { box-sizing: border-box; }
@@ -71,17 +82,18 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Myanmar", sans-serif;
       background-color: var(--bg);
       background-image:
-        radial-gradient(circle at 10% 8%, var(--bg-glow-1), transparent 42%),
-        radial-gradient(circle at 88% 14%, var(--bg-glow-2), transparent 38%),
-        radial-gradient(circle at 50% 92%, var(--bg-glow-3), transparent 50%);
+        radial-gradient(circle at 12% 10%, var(--bg-glow-1), transparent 44%),
+        radial-gradient(circle at 86% 14%, var(--bg-glow-2), transparent 40%),
+        radial-gradient(circle at 52% 94%, var(--bg-glow-3), transparent 52%);
       background-attachment: fixed;
       color: var(--text);
       line-height: 1.5;
       transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    .container { max-width: 1280px; width: 100%; margin: 0 auto; padding: 20px 16px 56px; }
+    .container { max-width: 1240px; width: 100%; margin: 0 auto; padding: 20px 16px 56px; }
 
+    /* Aqua Glass Topbar */
     .topbar {
       display: flex;
       flex-wrap: wrap;
@@ -89,13 +101,23 @@
       justify-content: space-between;
       gap: 12px;
       background: var(--surface);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 12px 18px;
       box-shadow: var(--shadow);
-      margin-bottom: 18px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .topbar::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.65), rgba(255, 255, 255, 0.5), transparent);
+      pointer-events: none;
     }
     .brand { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 240px; }
     .brand-logo-box {
@@ -103,16 +125,16 @@
       align-items: center;
       justify-content: center;
       padding: 6px 12px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #0b192c 0%, #102a43 100%);
-      border: 1px solid rgba(212, 175, 55, 0.45);
-      box-shadow: 0 6px 18px rgba(11, 25, 44, 0.25);
+      border-radius: 13px;
+      background: linear-gradient(145deg, rgba(14, 116, 144, 0.45), rgba(11, 25, 44, 0.85));
+      border: 1px solid rgba(103, 232, 249, 0.45);
+      box-shadow: 0 6px 18px rgba(6, 182, 212, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.35);
       flex-shrink: 0;
     }
     .brand-logo-box img {
-      height: 32px;
+      height: 30px;
       width: auto;
-      max-width: 132px;
+      max-width: 128px;
       object-fit: contain;
       display: block;
     }
@@ -123,7 +145,7 @@
       letter-spacing: 0.4px;
       color: #f8fafc;
     }
-    .brand h1 { margin: 0; font-size: 17px; font-weight: 700; }
+    .brand h1 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: 0.2px; }
     .brand p { margin: 0; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
     .topbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
     .topbar-btn-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -133,14 +155,16 @@
       max-width: 100%;
       min-width: 0;
       padding: 10px 12px;
-      border-radius: 11px;
+      border-radius: 12px;
       border: 1px solid var(--border-soft);
       background: var(--surface-2);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       color: var(--text);
       font-size: 14px;
       outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
     input[type="month"], input[type="date"], input[type="file"] {
       display: block;
@@ -160,52 +184,62 @@
       max-width: 100%;
     }
     input:focus, select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+      border-color: var(--aqua);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.22);
     }
     label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
 
+    /* Aqua / Glass Buttons */
     button {
-      border: 1px solid var(--border-soft);
-      background: var(--surface-2);
-      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, var(--surface-2) 48%, rgba(6, 182, 212, 0.08) 100%);
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
       color: var(--text);
       padding: 9px 14px;
-      border-radius: 11px;
+      border-radius: 12px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 650;
       cursor: pointer;
       white-space: nowrap;
-      transition: transform 0.12s ease, opacity 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 14px rgba(2, 10, 22, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+      transition: transform 0.13s ease, opacity 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease, filter 0.15s ease;
     }
     button:hover:not(:disabled) {
-      border-color: rgba(212, 175, 55, 0.45);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+      border-color: var(--aqua);
+      box-shadow: 0 8px 20px rgba(6, 182, 212, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.42);
+      filter: brightness(1.05);
     }
-    button:active:not(:disabled) { transform: scale(0.98); }
+    button:active:not(:disabled) {
+      transform: scale(0.97);
+    }
     button:disabled { opacity: 0.55; cursor: not-allowed; }
     button.primary {
-      background: linear-gradient(135deg, #10b981 0%, #059669 65%, #ca8a04 140%);
+      background: linear-gradient(165deg, rgba(103, 232, 249, 0.42) 0%, rgba(6, 182, 212, 0.85) 42%, rgba(16, 185, 129, 0.9) 100%);
       color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.16);
-      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+      border-color: rgba(165, 243, 252, 0.55);
+      text-shadow: 0 1px 2px rgba(2, 12, 24, 0.45);
+      box-shadow: 0 10px 24px rgba(6, 182, 212, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.52);
     }
     button.danger {
-      background: rgba(244, 63, 94, 0.15);
+      background: linear-gradient(180deg, rgba(251, 113, 133, 0.22), rgba(244, 63, 94, 0.14));
       color: var(--expense);
-      border-color: rgba(244, 63, 94, 0.34);
+      border-color: rgba(244, 63, 94, 0.38);
     }
-    button.small { padding: 6px 10px; font-size: 12px; }
+    button.small { padding: 6px 10px; font-size: 12px; border-radius: 10px; }
     button.link-btn {
-      background: none; border: none; padding: 0; color: var(--primary);
+      background: none; border: none; padding: 0; color: var(--aqua);
       font-size: 12px; font-weight: 600; text-decoration: underline; box-shadow: none;
     }
 
     .slicer-group {
       display: inline-flex;
       padding: 4px;
-      border-radius: 12px;
+      border-radius: 13px;
       background: var(--surface-2);
+      backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       gap: 4px;
     }
@@ -220,33 +254,105 @@
       box-shadow: none;
     }
     .slicer-btn.active {
-      background: linear-gradient(135deg, #10b981 0%, #059669 75%, #ca8a04 145%);
+      background: linear-gradient(165deg, rgba(103, 232, 249, 0.38), rgba(6, 182, 212, 0.82), rgba(16, 185, 129, 0.85));
       color: #ffffff;
-      border-color: rgba(234, 179, 8, 0.45);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      border-color: rgba(165, 243, 252, 0.5);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45);
     }
 
     .auth-wrap { max-width: 440px; margin: 36px auto; }
     .auth-logo-header { display: flex; justify-content: center; margin-bottom: 14px; }
     .auth-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
     .auth-tabs button.active {
-      background: linear-gradient(135deg, #10b981, #059669);
+      background: linear-gradient(165deg, rgba(103, 232, 249, 0.38), rgba(6, 182, 212, 0.85), rgba(16, 185, 129, 0.88));
       color: #ffffff;
-      border-color: transparent;
+      border-color: rgba(165, 243, 252, 0.5);
     }
 
-    .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-    .nav-tabs button.active {
-      background: linear-gradient(135deg, #10b981 0%, #0f766e 75%, #b45309 145%);
-      color: #ffffff;
-      border-color: rgba(234, 179, 8, 0.45);
-      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.22);
-    }
-
-    .card {
+    /* Clean Top Navigation Bar (Home Hub + 4 Main Modules) */
+    .nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
       background: var(--surface);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+    .nav-tabs { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+    .nav-tabs button.active {
+      background: linear-gradient(165deg, rgba(103, 232, 249, 0.42) 0%, rgba(6, 182, 212, 0.88) 50%, rgba(16, 185, 129, 0.9) 100%);
+      color: #ffffff;
+      border-color: rgba(165, 243, 252, 0.6);
+      box-shadow: 0 8px 20px rgba(6, 182, 212, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    /* Homepage Launcher Grid */
+    .home-hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 20px 22px;
+    }
+    .home-hero h2 { margin: 0 0 4px; font-size: 20px; }
+    .home-hero p { margin: 0; font-size: 13px; color: var(--muted); }
+    .home-launcher-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .launcher-card {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.12) 0%, var(--surface) 42%, rgba(6, 182, 212, 0.10) 100%);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .launcher-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--aqua);
+      box-shadow: 0 18px 34px rgba(6, 182, 212, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.38);
+    }
+    .launcher-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .launcher-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      background: linear-gradient(145deg, rgba(34, 211, 238, 0.24), rgba(16, 185, 129, 0.2));
+      border: 1px solid rgba(125, 211, 252, 0.42);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .launcher-title { font-size: 16px; font-weight: 800; margin: 0 0 4px; }
+    .launcher-desc { font-size: 12px; color: var(--muted); margin: 0; }
+    .launcher-meta { font-size: 12px; font-weight: 700; color: var(--aqua); }
+
+    /* Aqua Glass Cards */
+    .card {
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.09) 0%, var(--surface) 38%, rgba(6, 182, 212, 0.06) 100%);
+      backdrop-filter: blur(18px) saturate(145%);
+      -webkit-backdrop-filter: blur(18px) saturate(145%);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 20px;
@@ -256,13 +362,55 @@
     }
     .card h2, .card h3 { margin: 0 0 10px; font-size: 17px; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 16px; }
+    /* Modal Dialog for Add Transaction Userform */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: rgba(2, 10, 22, 0.68);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .modal-dialog {
+      width: 100%;
+      max-width: 820px;
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.14) 0%, var(--surface-solid) 35%, rgba(8, 145, 178, 0.16) 100%);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border: 1px solid rgba(125, 211, 252, 0.38);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 26px 60px rgba(2, 8, 20, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      animation: modalPopIn 0.18s ease-out;
+    }
+    @keyframes modalPopIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); gap: 14px; margin-bottom: 16px; }
     .kpi {
-      background: linear-gradient(145deg, var(--surface), rgba(16, 185, 129, 0.05));
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: linear-gradient(155deg, rgba(255, 255, 255, 0.10) 0%, var(--surface) 45%, rgba(34, 211, 238, 0.08) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border-soft);
-      border-top: 3px solid rgba(212, 175, 55, 0.65);
+      border-top: 3px solid var(--aqua);
       border-radius: var(--radius);
       padding: 16px;
       box-shadow: var(--shadow);
@@ -284,22 +432,21 @@
     .pool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
 
     .pool-card {
-      background: linear-gradient(150deg, var(--surface-2), rgba(16, 185, 129, 0.06));
-      backdrop-filter: blur(10px);
+      background: linear-gradient(155deg, rgba(255, 255, 255, 0.10) 0%, var(--surface-2) 50%, rgba(34, 211, 238, 0.08) 100%);
+      backdrop-filter: blur(14px);
       border: 1px solid var(--border-soft);
-      border-radius: 13px;
+      border-radius: 15px;
       padding: 14px;
       cursor: pointer;
+      box-shadow: 0 8px 20px rgba(2, 10, 22, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.22);
       transition: transform 0.14s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .pool-card:hover {
       transform: translateY(-2px);
-      border-color: rgba(16, 185, 129, 0.55);
-      box-shadow: 0 10px 24px rgba(2, 6, 23, 0.35);
+      border-color: var(--aqua);
+      box-shadow: 0 12px 26px rgba(6, 182, 212, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
     }
-    .pool-card:active {
-      transform: translateY(0);
-    }
+    .pool-card:active { transform: translateY(0); }
     .pool-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
     .pool-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
     .pool-dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; flex-shrink: 0; }
@@ -311,8 +458,8 @@
 
     .bar-row { margin-bottom: 12px; }
     .bar-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; margin-bottom: 5px; }
-    .bar-track { height: 10px; border-radius: 999px; background: rgba(148, 163, 184, 0.16); overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 999px; background: var(--primary); transition: width 0.25s ease; }
+    .bar-track { height: 10px; border-radius: 999px; background: rgba(148, 163, 184, 0.18); overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #06b6d4, #22d3ee); transition: width 0.25s ease; }
     .bar-fill.inc { background: linear-gradient(90deg, #059669, #10b981); }
     .bar-fill.exp { background: linear-gradient(90deg, #e11d48, #f43f5e); }
     .bar-fill.sav { background: linear-gradient(90deg, #7e22ce, #a855f7); }
@@ -323,12 +470,10 @@
       height: 260px;
       width: 100%;
     }
-    .chart-canvas-wrap canvas {
-      cursor: pointer;
-    }
+    .chart-canvas-wrap canvas { cursor: pointer; }
     .drilldown-card {
-      border: 1px solid rgba(16, 185, 129, 0.48);
-      background: linear-gradient(155deg, var(--surface), rgba(16, 185, 129, 0.08));
+      border: 1px solid rgba(34, 211, 238, 0.5);
+      background: linear-gradient(155deg, var(--surface), rgba(34, 211, 238, 0.10));
       animation: drillSlideIn 0.2s ease-out;
     }
     @keyframes drillSlideIn {
@@ -339,8 +484,9 @@
     .preview-box {
       margin-top: 12px;
       padding: 12px 14px;
-      border-radius: 12px;
+      border-radius: 13px;
       background: var(--surface-2);
+      backdrop-filter: blur(10px);
       border: 1px solid var(--border-soft);
       font-size: 12px;
     }
@@ -357,33 +503,14 @@
     }
 
     .pool-amt-input { width: 112px; min-width: 84px; padding: 5px 8px; height: 32px; font-size: 13px; }
-    .pool-mgr-table {
-      table-layout: fixed;
-      width: 100%;
-      min-width: 900px;
-    }
+    .pool-mgr-table { table-layout: fixed; width: 100%; min-width: 900px; }
     .pool-mgr-table tr { height: 54px; }
-    .pool-mgr-table tr.is-dirty-pool { background: rgba(16, 185, 129, 0.08); }
-    .tx-table {
-      table-layout: fixed;
-      width: 100%;
-      min-width: 1040px;
-    }
-    .tx-table th, .tx-table td {
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .tx-table td.tx-edit-cell {
-      padding: 4px 5px;
-      overflow: visible;
-    }
-    .tx-table tr {
-      height: 52px;
-      transition: background-color 0.16s ease;
-    }
-    .tx-table tr.is-editing-row {
-      background: rgba(16, 185, 129, 0.09);
-    }
+    .pool-mgr-table tr.is-dirty-pool { background: rgba(34, 211, 238, 0.10); }
+    .tx-table { table-layout: fixed; width: 100%; min-width: 1040px; }
+    .tx-table th, .tx-table td { overflow: hidden; text-overflow: ellipsis; }
+    .tx-table td.tx-edit-cell { padding: 4px 5px; overflow: visible; }
+    .tx-table tr { height: 52px; transition: background-color 0.16s ease; }
+    .tx-table tr.is-editing-row { background: rgba(34, 211, 238, 0.10); }
     .inline-tx-input {
       display: block;
       width: 100%;
@@ -404,10 +531,10 @@
     th { color: var(--muted); font-weight: 700; font-size: 12px; white-space: nowrap; }
     td input[type="checkbox"], th input[type="checkbox"] { width: auto; padding: 0; cursor: pointer; }
     .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-    .pill.Income { background: rgba(16, 185, 129, 0.18); color: var(--income); border: 1px solid rgba(16, 185, 129, 0.28); }
-    .pill.Expense { background: rgba(244, 63, 94, 0.18); color: var(--expense); border: 1px solid rgba(244, 63, 94, 0.28); }
-    .pill.Saving { background: rgba(168, 85, 247, 0.18); color: var(--saving); border: 1px solid rgba(168, 85, 247, 0.28); }
-    .pill.Pool { background: rgba(212, 175, 55, 0.16); color: var(--gold); border: 1px solid rgba(212, 175, 55, 0.30); }
+    .pill.Income { background: rgba(16, 185, 129, 0.18); color: var(--income); border: 1px solid rgba(16, 185, 129, 0.30); }
+    .pill.Expense { background: rgba(244, 63, 94, 0.18); color: var(--expense); border: 1px solid rgba(244, 63, 94, 0.30); }
+    .pill.Saving { background: rgba(168, 85, 247, 0.18); color: var(--saving); border: 1px solid rgba(168, 85, 247, 0.30); }
+    .pill.Pool { background: rgba(34, 211, 238, 0.16); color: var(--aqua); border: 1px solid rgba(34, 211, 238, 0.34); }
 
     .row-actions { display: flex; gap: 6px; flex-wrap: nowrap; }
     .muted { color: var(--muted); font-size: 12px; }
@@ -421,8 +548,9 @@
       right: calc(18px + env(safe-area-inset-right, 0px));
       bottom: calc(18px + env(safe-area-inset-bottom, 0px));
       z-index: 9999;
-      max-width: 360px; padding: 12px 16px; border-radius: 12px;
+      max-width: 360px; padding: 12px 16px; border-radius: 14px;
       background: var(--surface-solid); border: 1px solid var(--border);
+      backdrop-filter: blur(18px);
       box-shadow: var(--shadow); font-size: 13px; font-weight: 600;
       opacity: 0; transform: translateY(10px); pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
@@ -435,26 +563,26 @@
 
     @media (max-width: 640px) {
       .container { padding: 10px 8px 44px; width: 100%; max-width: 100vw; overflow-x: clip; }
-      .topbar { padding: 10px 12px; gap: 8px; }
+      .topbar { padding: 10px 12px; gap: 8px; overflow: hidden; }
       .brand { flex: 1 1 100%; }
       .brand-logo-box img { height: 26px; max-width: 96px; }
       .brand h1 { font-size: 15px; }
-      .topbar { overflow: hidden; }
       .topbar-actions { width: 100%; max-width: 100%; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
-      #wsSelectorWrap { width: 100%; max-width: 100%; min-width: 0 !important; overflow: hidden; }
-      #wsSelectorWrap select { width: 100%; max-width: 100%; min-width: 0; font-size: 13px; padding: 9px 10px; }
-      #monthWrap { width: 100%; max-width: 100%; min-width: 0 !important; overflow: hidden; }
-      #monthWrap input[type="month"] { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; font-size: 13px; padding: 8px 10px; }
-      .topbar-btn-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 6px; width: 100%; }
-      .topbar-btn-row > button { width: 100%; padding: 9px 8px; font-size: 12px; text-align: center; }
+      #wsSelectorWrap, #monthWrap { width: 100%; max-width: 100%; min-width: 0 !important; overflow: hidden; }
+      #wsSelectorWrap select, #monthWrap input[type="month"] { width: 100%; max-width: 100%; min-width: 0; font-size: 13px; padding: 8px 10px; }
+      .topbar-btn-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px; width: 100%; }
+      .topbar-btn-row > button { width: 100%; padding: 8px 7px; font-size: 11px; text-align: center; }
 
       .slicer-group { width: 100%; }
       .slicer-btn { flex: 1 1 50%; padding: 6px 8px; font-size: 11px; text-align: center; }
 
-      .nav-tabs { gap: 6px; }
-      .nav-tabs button { flex: 1 1 calc(50% - 6px); min-width: 0; text-align: center; padding: 8px 8px; font-size: 12px; }
+      .nav-bar { padding: 8px; }
+      .nav-tabs { width: 100%; gap: 6px; }
+      .nav-tabs button { flex: 1 1 calc(33.3% - 6px); min-width: 0; text-align: center; padding: 8px 6px; font-size: 11px; }
 
-      .card { padding: 12px; border-radius: 13px; max-width: 100%; }
+      .home-launcher-grid { grid-template-columns: 1fr; gap: 10px; }
+      .card { padding: 12px; border-radius: 14px; max-width: 100%; }
+      .modal-dialog { padding: 14px; border-radius: 16px; }
       .kpi-grid { grid-template-columns: 1fr; gap: 10px; }
       .kpi { padding: 12px; }
       .kpi .val { font-size: 18px; }
@@ -465,10 +593,7 @@
       .grid-4 > div input[type="text"],
       .grid-4 > div select,
       .grid-4 > div input[type="file"] {
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-        font-size: 13px;
+        width: 100%; max-width: 100%; min-width: 0; font-size: 13px;
       }
       .chart-canvas-wrap { height: 210px; max-width: 100%; }
 
@@ -483,12 +608,10 @@
     @media print {
       body { background: #ffffff !important; color: #0f172a !important; }
       .container { max-width: 100% !important; padding: 0 !important; }
-      .topbar, .nav-tabs, button, .slicer-group, #toast, #authSection, #tab-transactions, #tab-workspace, #tab-admin {
+      .topbar, .nav-bar, button, .slicer-group, #toast, #authSection, #tab-home, #tab-transactions, #tab-workspace, #tab-admin, #txModalBackdrop {
         display: none !important;
       }
-      #appSection, #tab-dashboard {
-        display: block !important;
-      }
+      #appSection, #tab-dashboard { display: block !important; }
       .print-header {
         display: flex !important;
         justify-content: space-between;
@@ -498,20 +621,12 @@
         margin-bottom: 16px;
       }
       .card, .kpi, .pool-card {
-        background: #ffffff !important;
-        color: #0f172a !important;
-        border: 1px solid #cbd5e1 !important;
-        box-shadow: none !important;
-        backdrop-filter: none !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
+        background: #ffffff !important; color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important; box-shadow: none !important;
+        backdrop-filter: none !important; break-inside: avoid; page-break-inside: avoid;
       }
-      .muted, .label, .sub, .m-lbl, th {
-        color: #475569 !important;
-      }
-      .chart-canvas-wrap {
-        height: 220px !important;
-      }
+      .muted, .label, .sub, .m-lbl, th { color: #475569 !important; }
+      .chart-canvas-wrap { height: 220px !important; }
     }
   </style>
 </head>
@@ -526,7 +641,7 @@
         </div>
         <div>
           <h1>Sayin စာရင်း</h1>
-          <p id="userSubtitle">Power BI Style Expense & Budget Pool Analytics</p>
+          <p id="userSubtitle">Aqua Glass Budget Pool & Expense Portal</p>
         </div>
       </div>
 
@@ -538,8 +653,9 @@
           <input type="month" id="monthFilter" />
         </div>
         <div class="topbar-btn-row">
-          <button type="button" id="globalRefreshBtn" class="hidden" title="Reload fresh data from server">↻ Data Refresh</button>
-          <button type="button" id="themeToggleBtn">Light / Dark</button>
+          <button type="button" id="soundToggleBtn" title="Toggle UI Sound Effects">🔊 Sound: On</button>
+          <button type="button" id="globalRefreshBtn" class="hidden" title="Reload fresh data from server">↻ Refresh</button>
+          <button type="button" id="themeToggleBtn">◐ Theme</button>
           <button type="button" id="logoutBtn" class="danger hidden">Logout</button>
         </div>
       </div>
@@ -557,7 +673,7 @@
         </div>
         <h2 style="text-align:center;">Sayin Sign In</h2>
         <p class="muted" style="text-align:center; margin-bottom: 16px;">
-          သင့် account ဖြင့် ဝင်ရောက်ပြီး ဝင်ငွေ၊ Budget Pool နဲ့ စာရင်းများကို စီမံခန့်ခွဲပါ။
+          သင့် account ဖြင့် ဝင်ရောက်ပြီး Home menu မှတစ်ဆင့် စာရင်းများကို ရှင်းလင်းစွာ စီမံခန့်ခွဲပါ။
         </p>
 
         <div class="auth-tabs">
@@ -638,15 +754,103 @@
 
     <!-- Main App Section -->
     <main id="appSection" class="hidden" style="max-width: 100%; overflow-x: clip;">
-      <nav class="nav-tabs">
-        <button type="button" data-tab="dashboard" class="active">Dashboard</button>
-        <button type="button" data-tab="transactions">Transactions & Add</button>
-        <button type="button" data-tab="workspace">Workspace & Pools</button>
-        <button type="button" data-tab="admin" class="hidden">Admin</button>
-      </nav>
+      <div class="nav-bar">
+        <nav class="nav-tabs" aria-label="Primary Sections">
+          <button type="button" data-tab="home" class="active">⌂ Home</button>
+          <button type="button" data-tab="dashboard">📊 Dashboard</button>
+          <button type="button" data-tab="transactions">💳 Transaction</button>
+          <button type="button" data-tab="workspace">💧 Pool Management</button>
+          <button type="button" data-tab="admin" class="hidden">⚙ Admin</button>
+        </nav>
+        <div class="inline-form">
+          <button type="button" class="small primary" id="topbarQuickAddTxBtn">+ Add Transaction</button>
+        </div>
+      </div>
+
+      <!-- Homepage Hub Tab -->
+      <section id="tab-home">
+        <div class="card home-hero">
+          <div>
+            <h2 id="homeWelcomeHeading">Welcome to Sayin</h2>
+            <p id="homeContextSub">လိုချင်တဲ့ ကဏ္ဍကို တစ်ချက်နှိပ်ပြီး သီးသန့် ရှင်းရှင်းလင်းလင်း ကြည့်ရှုစီမံပါ။</p>
+          </div>
+          <div class="inline-form">
+            <button type="button" class="primary" id="homeAddTxBtn">+ Add Transaction</button>
+          </div>
+        </div>
+
+        <div class="home-launcher-grid">
+          <button type="button" class="launcher-card" data-jump-tab="dashboard">
+            <div>
+              <div class="launcher-top">
+                <span class="launcher-icon">📊</span>
+                <span class="pill Income">Analytics</span>
+              </div>
+              <h3 class="launcher-title" style="margin-top:12px;">Dashboard</h3>
+              <p class="launcher-desc">ဝင်ငွေ၊ အသုံးစရိတ်၊ Pool လက်ကျန်နဲ့ 6-Month / Yearly chart များကို ကြည့်ရန်။</p>
+            </div>
+            <div class="launcher-meta" id="homeMetaDashboard">Open Dashboard →</div>
+          </button>
+
+          <button type="button" class="launcher-card" data-jump-tab="transactions">
+            <div>
+              <div class="launcher-top">
+                <span class="launcher-icon">💳</span>
+                <span class="pill Pool">Records</span>
+              </div>
+              <h3 class="launcher-title" style="margin-top:12px;">Transaction</h3>
+              <p class="launcher-desc">စာရင်းမှတ်တမ်းများ ရှာဖွေရန်၊ ပြင်ရန်၊ ဖျက်ရန် သို့မဟုတ် Userform ဖြင့် စာရင်းသစ်ထည့်ရန်။</p>
+            </div>
+            <div class="launcher-meta" id="homeMetaTx">Open Transactions →</div>
+          </button>
+
+          <button type="button" class="launcher-card" data-jump-tab="workspace">
+            <div>
+              <div class="launcher-top">
+                <span class="launcher-icon">💧</span>
+                <span class="pill Saving">Budgets</span>
+              </div>
+              <h3 class="launcher-title" style="margin-top:12px;">Pool Management</h3>
+              <p class="launcher-desc">Monthly Budget Pool များ ညှိနှိုင်းရန်၊ Pool Transfer လုပ်ရန်နှင့် Workspace ချိန်ညှိရန်။</p>
+            </div>
+            <div class="launcher-meta" id="homeMetaPools">Manage Pools →</div>
+          </button>
+
+          <button type="button" class="launcher-card hidden" id="homeAdminCard" data-jump-tab="admin">
+            <div>
+              <div class="launcher-top">
+                <span class="launcher-icon">⚙</span>
+                <span class="pill Pool">Console</span>
+              </div>
+              <h3 class="launcher-title" style="margin-top:12px;">Admin</h3>
+              <p class="launcher-desc">Users၊ Workspaces၊ CSV Import နဲ့ System-wide transactions များကို စီမံရန်။</p>
+            </div>
+            <div class="launcher-meta">Open Admin Console →</div>
+          </button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi inc-border">
+            <div class="label" id="homeKpiIncomeLbl">Income (Month)</div>
+            <div class="val inc" id="homeKpiIncome">0</div>
+          </div>
+          <div class="kpi exp-border">
+            <div class="label" id="homeKpiExpenseLbl">Expense (Month)</div>
+            <div class="val exp" id="homeKpiExpense">0</div>
+          </div>
+          <div class="kpi inc-border">
+            <div class="label" id="homeKpiPoolRemLbl">Pool Remaining</div>
+            <div class="val inc" id="homeKpiPoolRem">0</div>
+          </div>
+          <div class="kpi">
+            <div class="label" id="homeKpiNetLbl">Net Balance</div>
+            <div class="val" id="homeKpiNet">0</div>
+          </div>
+        </div>
+      </section>
 
       <!-- Power BI Style Dashboard Tab -->
-      <section id="tab-dashboard">
+      <section id="tab-dashboard" class="hidden">
         <div class="print-header">
           <div>
             <h2 style="margin: 0;" id="printTitle">Sayin Financial & Budget Pool Report</h2>
@@ -671,9 +875,9 @@
             </div>
             <div class="inline-form">
               <span class="pill Income" id="dashHealthBadge">Healthy</span>
-              <button type="button" class="small" id="dashRefreshBtn">Refresh Report</button>
+              <button type="button" class="small" id="dashRefreshBtn">Refresh</button>
               <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
-              <button type="button" class="small primary" id="dashPrintBtn">Print / PDF Report</button>
+              <button type="button" class="small primary" id="dashPrintBtn">Print / PDF</button>
             </div>
           </div>
         </div>
@@ -764,7 +968,6 @@
           </div>
         </div>
 
-        <!-- Interactive Chart Drill-Down Panel -->
         <div class="card drilldown-card hidden" id="dashDrilldownCard">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
             <div>
@@ -833,10 +1036,75 @@
         </div>
       </section>
 
-      <!-- Transactions Tab -->
+      <!-- Transactions Tab (Clean List + Modal Userform Trigger) -->
       <section id="tab-transactions" class="hidden">
         <div class="card">
-          <h2 id="txFormTitle">Add New Transaction</h2>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+            <div>
+              <h2 style="margin: 0;">Transactions</h2>
+              <p class="muted" style="margin: 4px 0 0;">စာရင်းအသစ်ထည့်ရန် <strong>+ Add Transaction</strong> ခလုပ်ကို နှိပ်ပြီး Userform ဖြင့် ဖြည့်ပါ။</p>
+            </div>
+            <div class="inline-form" style="flex: 1 1 380px; justify-content: flex-end;">
+              <button type="button" class="primary" id="openAddTxModalBtn">+ Add Transaction</button>
+              <input type="search" id="txSearch" placeholder="Search pool, category, member, note..." />
+              <select id="txTypeFilter" style="max-width: 150px;">
+                <option value="">All Types</option>
+                <option value="Income">Income</option>
+                <option value="Expense">Expense</option>
+                <option value="Saving">Saving</option>
+              </select>
+              <button type="button" id="deleteSelectedTxBtn" class="danger hidden">Delete Selected (0)</button>
+              <button type="button" id="exportCsvBtn">Export CSV</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="tx-table">
+              <colgroup>
+                <col style="width: 34px;" />
+                <col style="width: 118px;" />
+                <col style="width: 115px;" />
+                <col style="width: 88px;" />
+                <col style="width: 145px;" />
+                <col style="width: 145px;" />
+                <col style="width: 105px;" />
+                <col style="width: 96px;" />
+                <col style="width: 130px;" />
+                <col style="width: 64px;" />
+                <col style="width: 118px;" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="selectAllTxCb" title="Select All" /></th>
+                  <th>Date</th>
+                  <th>Member</th>
+                  <th>Type</th>
+                  <th>Budget Pool</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Payment</th>
+                  <th>Notes</th>
+                  <th>Receipt</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="txTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modal Userform for Adding Transaction -->
+      <div id="txModalBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="txFormTitle">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div>
+              <h2 id="txFormTitle" style="margin: 0;">Add New Transaction</h2>
+              <div class="muted">စာရင်းအချက်အလက်များ ဖြည့်သွင်းပြီး Save လုပ်ပါ</div>
+            </div>
+            <button type="button" class="small" id="closeTxModalBtn">✕ Close</button>
+          </div>
+
           <form id="txForm">
             <input type="hidden" id="editingTxId" value="" />
             <div class="grid-4" style="margin-bottom: 12px;">
@@ -882,80 +1150,27 @@
               </div>
             </div>
 
-            <div class="grid-4" style="margin-bottom: 12px;">
+            <div class="grid-4" style="margin-bottom: 16px;">
               <div id="receiptInputWrap">
-                <label for="txReceipt">Receipt Image</label>
+                <label for="txReceipt">Receipt Image / PDF</label>
                 <input type="file" id="txReceipt" accept="image/*,application/pdf" />
               </div>
             </div>
 
-            <div class="inline-form">
+            <div class="inline-form" style="justify-content: flex-end;">
+              <button type="button" id="txCancelEditBtn">Cancel</button>
               <button type="submit" class="primary" id="txSubmitBtn">Save Transaction</button>
-              <button type="button" id="txCancelEditBtn" class="hidden">Cancel Edit</button>
             </div>
           </form>
         </div>
+      </div>
 
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-            <h2 style="margin: 0;">Transactions</h2>
-            <div class="inline-form" style="flex: 1 1 320px;">
-              <input type="search" id="txSearch" placeholder="Search pool, category, member, note..." />
-              <select id="txTypeFilter" style="max-width: 160px;">
-                <option value="">All Types</option>
-                <option value="Income">Income</option>
-                <option value="Expense">Expense</option>
-                <option value="Saving">Saving</option>
-              </select>
-              <!-- [Bulk Delete Button] -->
-              <button type="button" id="deleteSelectedTxBtn" class="danger hidden">Delete Selected (0)</button>
-              <button type="button" id="exportCsvBtn">Export CSV</button>
-            </div>
-          </div>
-
-          <div class="table-wrap">
-            <table class="tx-table">
-              <colgroup>
-                <col style="width: 34px;" />
-                <col style="width: 118px;" />
-                <col style="width: 115px;" />
-                <col style="width: 88px;" />
-                <col style="width: 145px;" />
-                <col style="width: 145px;" />
-                <col style="width: 105px;" />
-                <col style="width: 96px;" />
-                <col style="width: 130px;" />
-                <col style="width: 64px;" />
-                <col style="width: 118px;" />
-              </colgroup>
-              <thead>
-                <tr>
-                  <!-- [Select All Checkbox] -->
-                  <th><input type="checkbox" id="selectAllTxCb" title="Select All" /></th>
-                  <th>Date</th>
-                  <th>Member</th>
-                  <th>Type</th>
-                  <th>Budget Pool</th>
-                  <th>Category</th>
-                  <th>Amount</th>
-                  <th>Payment</th>
-                  <th>Notes</th>
-                  <th>Receipt</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="txTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- Workspace & Budget Pools Tab -->
+      <!-- Pool Management & Workspace Tab -->
       <section id="tab-workspace" class="hidden">
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
             <div>
-              <h2 style="margin: 0;">Monthly Budget Pools (<span id="poolManageMonthLabel">-</span>)</h2>
+              <h2 style="margin: 0;">Pool Management (<span id="poolManageMonthLabel">-</span>)</h2>
               <p class="muted" style="margin: 4px 0 0;">
                 <strong>Edit All Pools</strong> ကိုနှိပ်ပြီး Pool အားလုံးရဲ့ နာမည်၊ အရောင်၊ Monthly Default နဲ့ This Month Budget တွေကို တစ်ခါတည်းပြင်ကာ <strong>Save All Changes</strong> ခလုပ်တစ်ခုတည်းနဲ့ Save လုပ်နိုင်ပါတယ်။
               </p>
@@ -996,8 +1211,8 @@
             <div>
               <label for="newPoolColor">Color Tag</label>
               <select id="newPoolColor">
+                <option value="#22d3ee">Aqua (Cyan)</option>
                 <option value="#10b981">Emerald (Green)</option>
-                <option value="#38bdf8">Sky (Blue)</option>
                 <option value="#f59e0b">Amber (Yellow/Orange)</option>
                 <option value="#a855f7">Purple</option>
                 <option value="#f43f5e">Rose (Red)</option>
@@ -1008,7 +1223,6 @@
             </div>
           </form>
 
-          <!-- Pool-to-Pool Reallocation / Transfer -->
           <div class="preview-box" style="margin-bottom: 16px;">
             <strong style="display:block; margin-bottom:8px;">Pool-to-Pool Budget Transfer (လက်ရှိလအတွင်း ညှိလွှဲရန်)</strong>
             <form id="poolTransferForm" class="grid-4" style="align-items: end;">
@@ -1136,7 +1350,7 @@
             </div>
             <div class="inline-form">
               <button type="button" class="small primary" id="adminReloadBtn">Refresh All Admin Data</button>
-              <button type="button" class="small" id="adminJumpWorkspaceBtn">Workspace & Pools</button>
+              <button type="button" class="small" id="adminJumpWorkspaceBtn">Pool Management</button>
             </div>
           </div>
 
@@ -1156,7 +1370,6 @@
           </div>
         </div>
 
-        <!-- One-Click Google Sheet / CSV Migration with Preview & Duplicate Check -->
         <div class="card">
           <h2 style="margin: 0 0 6px;">One-Time CSV Migration (မှတ်တမ်းများ Sheet)</h2>
           <p class="muted" style="margin: 0 0 12px;">
@@ -1248,7 +1461,7 @@
               <input type="month" id="adminInspectorMonth" style="max-width: 160px;" />
               <input type="search" id="adminTxSearch" placeholder="Search pool, member, category, note..." />
               <button type="button" class="small primary" id="adminLoadTxBtn">Filter</button>
-             <button type="button" class="small danger hidden" id="adminDeleteSelectedTxBtn">Delete Selected (0)</button>
+              <button type="button" class="small danger hidden" id="adminDeleteSelectedTxBtn">Delete Selected (0)</button>
               <button type="button" class="small" id="adminExportTxCsvBtn">Export CSV</button>
             </div>
           </div>
@@ -1287,7 +1500,8 @@
       token: 'sayin_auth_token',
       wsId: 'sayin_active_ws_id',
       theme: 'sayin_theme',
-      period: 'sayin_dashboard_period'
+      period: 'sayin_dashboard_period',
+      sound: 'sayin_sound_enabled'
     };
 
     const state = {
@@ -1299,6 +1513,7 @@
       wsId: localStorage.getItem(STORAGE_KEYS.wsId) || '',
       month: new Date().toISOString().slice(0, 7),
       periodMode: localStorage.getItem(STORAGE_KEYS.period) === 'yearly' ? 'yearly' : 'monthly',
+      soundEnabled: localStorage.getItem(STORAGE_KEYS.sound) !== 'off',
       settings: null,
       categories: [],
       pools: [],
@@ -1326,14 +1541,78 @@
 
     const $ = (id) => document.getElementById(id);
 
-    function normalizeEmail(v) {
-      return String(v || '').trim().toLowerCase();
+    /* Subtle Aqua / Glass Sound Effects (Web Audio API) */
+    const SoundFX = (() => {
+      let ctx = null;
+      function getCtx() {
+        if (!state.soundEnabled) return null;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return null;
+        if (!ctx) ctx = new AudioCtx();
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+        return ctx;
+      }
+
+      function playTone(freqStart, freqEnd, duration = 0.09, type = 'sine', gainPeak = 0.055, delay = 0) {
+        const ac = getCtx();
+        if (!ac) return;
+        const now = ac.currentTime + delay;
+        const osc = ac.createOscillator();
+        const gain = ac.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freqStart, now);
+        if (freqEnd && freqEnd !== freqStart) {
+          osc.frequency.exponentialRampToValueAtTime(Math.max(40, freqEnd), now + duration);
+        }
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(gainPeak, now + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        osc.connect(gain);
+        gain.connect(ac.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      }
+
+      return {
+        tap() { playTone(680, 960, 0.065, 'sine', 0.045); },
+        nav() { playTone(520, 780, 0.085, 'triangle', 0.04); },
+        modalOpen() {
+          playTone(480, 720, 0.08, 'sine', 0.045, 0);
+          playTone(720, 960, 0.09, 'sine', 0.04, 0.045);
+        },
+        modalClose() { playTone(640, 400, 0.08, 'sine', 0.04); },
+        success() {
+          playTone(587.33, 587.33, 0.09, 'sine', 0.05, 0);
+          playTone(880, 880, 0.14, 'sine', 0.05, 0.075);
+        },
+        error() { playTone(260, 185, 0.14, 'triangle', 0.05); }
+      };
+    })();
+
+    function syncSoundButton() {
+      const btn = $('soundToggleBtn');
+      if (!btn) return;
+      btn.textContent = state.soundEnabled ? '🔊 Sound: On' : '🔇 Sound: Off';
     }
 
-    function normalizeNoteKey(v) {
-      return String(v || '').trim().toLowerCase().replace(/\s+/g, ' ');
-    }
+    $('soundToggleBtn')?.addEventListener('click', () => {
+      state.soundEnabled = !state.soundEnabled;
+      localStorage.setItem(STORAGE_KEYS.sound, state.soundEnabled ? 'on' : 'off');
+      syncSoundButton();
+      if (state.soundEnabled) SoundFX.success();
+    });
 
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button, .pool-card');
+      if (!btn || btn.disabled || btn.id === 'soundToggleBtn') return;
+      if (btn.classList.contains('danger')) SoundFX.error();
+      else SoundFX.tap();
+    });
+
+    function normalizeEmail(v) { return String(v || '').trim().toLowerCase(); }
+    function normalizeNoteKey(v) { return String(v || '').trim().toLowerCase().replace(/\s+/g, ' '); }
     function escapeHtml(str) {
       return String(str ?? '')
         .replace(/&/g, '&amp;')
@@ -1343,23 +1622,18 @@
         .replace(/'/g, '&#39;');
     }
 
-    function isGlobalAdmin() {
-      return normalizeEmail(state.user?.email) === GLOBAL_ADMIN_EMAIL;
-    }
-
-    function isAnyAdmin() {
-      return isGlobalAdmin() || Boolean(state.isAdmin);
-    }
+    function isGlobalAdmin() { return normalizeEmail(state.user?.email) === GLOBAL_ADMIN_EMAIL; }
+    function isAnyAdmin() { return isGlobalAdmin() || Boolean(state.isAdmin); }
 
     function updateAdminTabVisibility() {
       const adminBtn = document.querySelector('.nav-tabs button[data-tab="admin"]');
-      if (!adminBtn) return;
-
+      const homeAdminCard = $('homeAdminCard');
       const allowed = isAnyAdmin();
-      adminBtn.classList.toggle('hidden', !allowed);
+      if (adminBtn) adminBtn.classList.toggle('hidden', !allowed);
+      if (homeAdminCard) homeAdminCard.classList.toggle('hidden', !allowed);
 
       if (!allowed && !$('tab-admin')?.classList.contains('hidden')) {
-        document.querySelector('.nav-tabs button[data-tab="dashboard"]')?.click();
+        activateTab('home', false);
       }
     }
 
@@ -1367,6 +1641,8 @@
       const el = $('toast');
       el.textContent = msg;
       el.className = `show ${tone}`;
+      if (tone === 'success') SoundFX.success();
+      else if (tone === 'error') SoundFX.error();
       clearTimeout(toast._t);
       toast._t = setTimeout(() => { el.className = ''; }, 3400);
     }
@@ -1381,7 +1657,10 @@
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem(STORAGE_KEYS.theme, theme);
-      if (state.summary) renderDashboard();
+      if (state.summary || state.pools.length || state.transactions.length) {
+        renderHomeSummary();
+        renderDashboard();
+      }
     }
 
     function syncSlicerButtons() {
@@ -1423,9 +1702,7 @@
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        if (res.status === 401) {
-          handleLogout(false);
-        }
+        if (res.status === 401) handleLogout(false);
         throw new Error(data.error || data.message || `Request failed (${res.status})`);
       }
       return data;
@@ -1467,30 +1744,18 @@
         const ch = clean[i];
         const next = clean[i + 1];
         if (inQuotes) {
-          if (ch === '"' && next === '"') {
-            field += '"';
-            i++;
-          } else if (ch === '"') {
-            inQuotes = false;
-          } else {
-            field += ch;
-          }
+          if (ch === '"' && next === '"') { field += '"'; i++; }
+          else if (ch === '"') { inQuotes = false; }
+          else { field += ch; }
         } else if (ch === '"') {
           inQuotes = true;
         } else if (ch === ',') {
           row.push(field.trim());
           field = '';
         } else if (ch === '\r' && next === '\n') {
-          row.push(field.trim());
-          rows.push(row);
-          row = [];
-          field = '';
-          i++;
+          row.push(field.trim()); rows.push(row); row = []; field = ''; i++;
         } else if (ch === '\n' || ch === '\r') {
-          row.push(field.trim());
-          rows.push(row);
-          row = [];
-          field = '';
+          row.push(field.trim()); rows.push(row); row = []; field = '';
         } else {
           field += ch;
         }
@@ -1510,13 +1775,8 @@
         const p1 = Number(m[1]);
         const p2 = Number(m[2]);
         const yr = m[3];
-        // Spreadsheet dates in this sheet use DD/MM/YYYY (day first, month second)
-        if (p2 >= 1 && p2 <= 12 && p1 >= 1 && p1 <= 31) {
-          return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
-        }
-        if (p1 > 12 && p2 <= 12) {
-          return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
-        }
+        if (p2 >= 1 && p2 <= 12 && p1 >= 1 && p1 <= 31) return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
+        if (p1 > 12 && p2 <= 12) return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
         return `${yr}-${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}`;
       }
       return '';
@@ -1561,7 +1821,7 @@
       $('logoutBtn').classList.toggle('hidden', !loggedIn);
       $('userSubtitle').textContent = loggedIn && state.user
         ? `${state.user.display_name} (${state.user.email})`
-        : 'Power BI Style Expense & Budget Pool Analytics';
+        : 'Aqua Glass Budget Pool & Expense Portal';
       updateAdminTabVisibility();
     }
 
@@ -1573,20 +1833,142 @@
       state.user = null;
       state.isAdmin = false;
       localStorage.removeItem(STORAGE_KEYS.token);
+      closeTxModal(false);
       setAuthUi(false);
     }
 
+    /* Tab Navigation Controller */
+    async function activateTab(target, playSound = true) {
+      if (target === 'admin' && !isAnyAdmin()) {
+        toast('Admin access required', 'error');
+        return;
+      }
+      if (playSound) SoundFX.nav();
+      document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === target));
+      ['home', 'dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => {
+        $('tab-' + t)?.classList.toggle('hidden', t !== target);
+      });
+
+      if (target === 'home') {
+        renderHomeSummary();
+      } else if (target === 'dashboard') {
+        syncSlicerButtons();
+        renderDashboard();
+        if (state.wsId) {
+          try { await loadWorkspaceDetails(); } catch (err) { toast(err.message, 'error'); }
+        }
+      } else if (target === 'transactions') {
+        renderTransactions();
+        if (state.wsId) {
+          try { await loadWorkspaceDetails(); } catch (err) { toast(err.message, 'error'); }
+        }
+      } else if (target === 'workspace') {
+        renderPoolManager();
+      } else if (target === 'admin') {
+        await loadFullAdminConsole();
+      }
+    }
+
+    document.querySelectorAll('.nav-tabs button').forEach((btn) => {
+      btn.addEventListener('click', () => activateTab(btn.dataset.tab, true));
+    });
+
+    document.querySelectorAll('.launcher-card[data-jump-tab]').forEach((card) => {
+      card.addEventListener('click', () => activateTab(card.dataset.jumpTab, true));
+    });
+
+    /* Modal Userform Open / Close */
+    function openTxModal(editRow = null) {
+      const backdrop = $('txModalBackdrop');
+      if (!backdrop) return;
+      if (editRow) {
+        $('editingTxId').value = String(editRow.id);
+        $('txFormTitle').textContent = 'Edit Transaction';
+        $('txDate').value = editRow.tx_date || new Date().toISOString().slice(0, 10);
+        $('txMember').value = editRow.member_name || (state.settings?.members?.[0] || '');
+        $('txType').value = editRow.entry_type || 'Expense';
+        updateCategoryDropdown();
+        $('txCategory').value = editRow.category || '';
+        $('txPool').value = editRow.pool_id ? String(editRow.pool_id) : '';
+        updatePoolBalanceHint();
+        $('txAmount').value = editRow.amount_mmk ?? '';
+        $('txPayment').value = editRow.payment_method || (state.settings?.payment_methods?.[0] || 'Cash');
+        $('txNotes').value = editRow.notes || '';
+        $('receiptInputWrap').classList.add('hidden');
+        $('txSubmitBtn').textContent = 'Update Transaction';
+      } else {
+        $('editingTxId').value = '';
+        $('txFormTitle').textContent = 'Add New Transaction';
+        $('txDate').value = new Date().toISOString().slice(0, 10);
+        $('txType').value = 'Expense';
+        updateCategoryDropdown();
+        $('txPool').value = '';
+        updatePoolBalanceHint();
+        $('txAmount').value = '';
+        $('txNotes').value = '';
+        $('txReceipt').value = '';
+        $('receiptInputWrap').classList.remove('hidden');
+        $('txSubmitBtn').textContent = 'Save Transaction';
+      }
+      backdrop.classList.remove('hidden');
+      SoundFX.modalOpen();
+      setTimeout(() => $('txAmount')?.focus(), 50);
+    }
+
+    function closeTxModal(playSound = true) {
+      const backdrop = $('txModalBackdrop');
+      if (!backdrop || backdrop.classList.contains('hidden')) return;
+      backdrop.classList.add('hidden');
+      inlineEditingTxId = null;
+      if (playSound) SoundFX.modalClose();
+    }
+
+    $('openAddTxModalBtn')?.addEventListener('click', () => openTxModal(null));
+    $('homeAddTxBtn')?.addEventListener('click', () => openTxModal(null));
+    $('topbarQuickAddTxBtn')?.addEventListener('click', () => openTxModal(null));
+    $('closeTxModalBtn')?.addEventListener('click', () => closeTxModal(true));
+    $('txCancelEditBtn')?.addEventListener('click', () => closeTxModal(true));
+    $('txModalBackdrop')?.addEventListener('click', (e) => {
+      if (e.target === $('txModalBackdrop')) closeTxModal(true);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeTxModal(true);
+    });
+
+    function renderHomeSummary() {
+      const cur = state.settings?.currency || 'MMK';
+      const vm = buildActiveDashboardViewModel();
+      const net = Number(vm.totalIncome || 0) - Number(vm.totalExpense || 0);
+
+      if ($('homeWelcomeHeading')) {
+        $('homeWelcomeHeading').textContent = `Welcome, ${state.user?.display_name || 'Member'}`;
+      }
+      if ($('homeContextSub')) {
+        $('homeContextSub').textContent = `${state.settings?.workspace_name || state.wsId || 'Workspace'} · Period: ${state.month} · ${cur}`;
+      }
+      if ($('homeKpiIncomeLbl')) $('homeKpiIncomeLbl').textContent = `Income (${state.month})`;
+      if ($('homeKpiExpenseLbl')) $('homeKpiExpenseLbl').textContent = `Expense (${state.month})`;
+      if ($('homeKpiIncome')) $('homeKpiIncome').textContent = `${fmtNum(vm.totalIncome)} ${cur}`;
+      if ($('homeKpiExpense')) $('homeKpiExpense').textContent = `${fmtNum(vm.totalExpense)} ${cur}`;
+      if ($('homeKpiPoolRem')) {
+        $('homeKpiPoolRem').textContent = `${fmtNum(vm.totalRemaining)} ${cur}`;
+        $('homeKpiPoolRem').className = `val ${vm.totalRemaining < 0 ? 'exp' : 'inc'}`;
+      }
+      if ($('homeKpiNet')) {
+        $('homeKpiNet').textContent = `${fmtNum(net)} ${cur}`;
+        $('homeKpiNet').className = `val ${net < 0 ? 'exp' : 'inc'}`;
+      }
+      if ($('homeMetaTx')) {
+        $('homeMetaTx').textContent = `${(state.transactions || []).length} records this month →`;
+      }
+      if ($('homeMetaPools')) {
+        $('homeMetaPools').textContent = `${(state.pools || []).length} active pools →`;
+      }
+    }
+
     async function checkAdminPrivilege() {
-      if (!state.user) {
-        state.isAdmin = false;
-        updateAdminTabVisibility();
-        return;
-      }
-      if (isGlobalAdmin()) {
-        state.isAdmin = true;
-        updateAdminTabVisibility();
-        return;
-      }
+      if (!state.user) { state.isAdmin = false; updateAdminTabVisibility(); return; }
+      if (isGlobalAdmin()) { state.isAdmin = true; updateAdminTabVisibility(); return; }
       try {
         await apiFetch('/api/admin/overview');
         state.isAdmin = true;
@@ -1621,13 +2003,8 @@
       const reqId = ++wsLoadSeq;
       const refreshBtn = $('globalRefreshBtn');
       const dashRefreshBtn = $('dashRefreshBtn');
-      if (refreshBtn) {
-        refreshBtn.disabled = true;
-        refreshBtn.textContent = '↻ Syncing...';
-      }
-      if (dashRefreshBtn) {
-        dashRefreshBtn.disabled = true;
-      }
+      if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.textContent = '↻ Syncing...'; }
+      if (dashRefreshBtn) dashRefreshBtn.disabled = true;
 
       try {
         const ws = encodeURIComponent(state.wsId);
@@ -1647,8 +2024,7 @@
           apiFetch(`/api/workspaces/${ws}/pools?month=${m}${bust}`),
           ...prevFiveMonths.map((pm) =>
             apiFetch(`/api/workspaces/${ws}/summary?month=${encodeURIComponent(pm)}${bust}`).catch(() => ({
-              month: pm,
-              summary: { total_income: 0, total_expense: 0, total_saving: 0 }
+              month: pm, summary: { total_income: 0, total_expense: 0, total_saving: 0 }
             }))
           ),
           ...otherYearMonths.map((ym) =>
@@ -1656,7 +2032,6 @@
           )
         ]);
 
-        // Ignore stale response if a newer month/workspace/refresh request started
         if (reqId !== wsLoadSeq) return;
 
         const prevSumResults = restResults.slice(0, prevFiveMonths.length);
@@ -1666,64 +2041,54 @@
         state.categories = catRes.data || [];
         state.transactions = txRes.data || [];
         state.summary = sumRes.summary || {
-          total_income: 0,
-          total_expense: 0,
-          total_saving: 0,
-          net_balance: 0,
-          total_pool_allocated: 0,
-          total_pool_remaining: 0,
-          unallocated_income: 0
+          total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0,
+          total_pool_allocated: 0, total_pool_remaining: 0, unallocated_income: 0
         };
         state.categorySummary = sumRes.categories || [];
         state.pools = poolRes.data || sumRes.pools || [];
 
-      const yearTxMap = new Map();
-      yearMonths.forEach((ym) => {
-        if (ym === state.month) {
-          yearTxMap.set(ym, state.transactions);
-        } else {
-          const idx = otherYearMonths.indexOf(ym);
-          yearTxMap.set(ym, idx >= 0 ? (otherYearTxResults[idx]?.data || []) : []);
-        }
-      });
-      state.yearlyTransactions = yearMonths.flatMap((ym) => yearTxMap.get(ym) || []);
-
-      const trendMap = new Map();
-      prevFiveMonths.forEach((pm, idx) => {
-        const s = prevSumResults[idx]?.summary || {};
-        trendMap.set(pm, {
-          month: pm,
-          income: Number(s.total_income || 0),
-          expense: Number(s.total_expense || 0),
-          saving: Number(s.total_saving || 0)
+        const yearTxMap = new Map();
+        yearMonths.forEach((ym) => {
+          if (ym === state.month) yearTxMap.set(ym, state.transactions);
+          else {
+            const idx = otherYearMonths.indexOf(ym);
+            yearTxMap.set(ym, idx >= 0 ? (otherYearTxResults[idx]?.data || []) : []);
+          }
         });
-      });
-      const activeMonthAgg = aggregateTransactions(state.transactions || [], state.pools || [], 1);
-      const hasActiveTx = (state.transactions || []).length > 0;
-      trendMap.set(state.month, {
-        month: state.month,
-        income: hasActiveTx ? activeMonthAgg.totalIncome : Number(state.summary.total_income || 0),
-        expense: hasActiveTx ? activeMonthAgg.totalExpense : Number(state.summary.total_expense || 0),
-        saving: hasActiveTx ? activeMonthAgg.totalSaving : Number(state.summary.total_saving || 0)
-      });
-      state.sixMonthTrend = sixMonths.map((ym) => trendMap.get(ym) || { month: ym, income: 0, expense: 0, saving: 0 });
+        state.yearlyTransactions = yearMonths.flatMap((ym) => yearTxMap.get(ym) || []);
+
+        const trendMap = new Map();
+        prevFiveMonths.forEach((pm, idx) => {
+          const s = prevSumResults[idx]?.summary || {};
+          trendMap.set(pm, {
+            month: pm,
+            income: Number(s.total_income || 0),
+            expense: Number(s.total_expense || 0),
+            saving: Number(s.total_saving || 0)
+          });
+        });
+        const activeMonthAgg = aggregateTransactions(state.transactions || [], state.pools || [], 1);
+        const hasActiveTx = (state.transactions || []).length > 0;
+        trendMap.set(state.month, {
+          month: state.month,
+          income: hasActiveTx ? activeMonthAgg.totalIncome : Number(state.summary.total_income || 0),
+          expense: hasActiveTx ? activeMonthAgg.totalExpense : Number(state.summary.total_expense || 0),
+          saving: hasActiveTx ? activeMonthAgg.totalSaving : Number(state.summary.total_saving || 0)
+        });
+        state.sixMonthTrend = sixMonths.map((ym) => trendMap.get(ym) || { month: ym, income: 0, expense: 0, saving: 0 });
 
         renderFormOptions();
         renderSettingsForm(memRes.data || []);
         renderCategories();
         renderPoolManager();
         syncSlicerButtons();
+        renderHomeSummary();
         renderDashboard();
         renderTransactions();
       } finally {
         if (reqId === wsLoadSeq) {
-          if (refreshBtn) {
-            refreshBtn.disabled = false;
-            refreshBtn.textContent = '↻ Data Refresh';
-          }
-          if (dashRefreshBtn) {
-            dashRefreshBtn.disabled = false;
-          }
+          if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.textContent = '↻ Refresh'; }
+          if (dashRefreshBtn) dashRefreshBtn.disabled = false;
         }
       }
     }
@@ -1766,12 +2131,8 @@
         hintEl.textContent = 'Select a pool to check remaining balance before spending.';
         return;
       }
-
       const pool = (state.pools || []).find((p) => Number(p.id) === poolId);
-      if (!pool) {
-        hintEl.textContent = 'Pool Balance: -';
-        return;
-      }
+      if (!pool) { hintEl.textContent = 'Pool Balance: -'; return; }
 
       hintEl.innerHTML = `Available: <strong>${fmtNum(pool.remaining_balance)} ${escapeHtml(cur)}</strong> <span class="muted">(${fmtNum(pool.spent_amount)} / ${fmtNum(pool.available_budget)} ${escapeHtml(cur)})</span>`;
     }
@@ -1791,10 +2152,7 @@
       $('setPayments').value = (s.payment_methods || []).join(', ');
 
       const listEl = $('memberList');
-      if (!membersList || !membersList.length) {
-        listEl.textContent = 'Members: -';
-        return;
-      }
+      if (!membersList || !membersList.length) { listEl.textContent = 'Members: -'; return; }
       listEl.innerHTML = '<strong>Active Group Members:</strong> ' + membersList
         .map((m) => `${escapeHtml(m.display_name)} (${escapeHtml(m.email)}) · <em>${escapeHtml(m.role)}</em>`)
         .join(', ');
@@ -1866,7 +2224,7 @@
         ? pools.map((p) => {
             const pid = Number(p.id);
             const isDirty = dirtyPoolIds.has(pid);
-            const isCustom = p.override_amount !== null;
+            const isCustom = p.override_amount !== null && p.override_amount !== undefined;
             const remCls = p.status === 'over_budget' ? 'rem-over' : p.status === 'warning' ? 'rem-warn' : 'rem-ok';
             const statusPill = p.status === 'over_budget'
               ? '<span class="pill Expense">Over Budget</span>'
@@ -1878,12 +2236,12 @@
               <tr data-pool-id="${pid}" data-is-custom="${isCustom ? '1' : '0'}" class="${isDirty ? 'is-dirty-pool' : ''}">
                 <td>
                   <div class="row-actions" style="align-items:center;">
-                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#10b981')};"></span>
+                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#22d3ee')};"></span>
                     ${isPoolBulkEditMode
                       ? `<input type="text" id="poolNameInput_${pid}" value="${escapeHtml(p.pool_name)}" style="min-width:110px; height:32px; padding:4px 7px; font-size:12px;" oninput="markPoolDirty(${pid})" placeholder="Pool Name" />
                          <select id="poolColorInput_${pid}" style="max-width:86px; height:32px; padding:4px 5px; font-size:12px;" onchange="markPoolDirty(${pid})">
-                           <option value="#10b981" ${(p.color_tag || '#10b981') === '#10b981' ? 'selected' : ''}>Emerald</option>
-                           <option value="#38bdf8" ${p.color_tag === '#38bdf8' ? 'selected' : ''}>Sky</option>
+                           <option value="#22d3ee" ${(p.color_tag || '#22d3ee') === '#22d3ee' ? 'selected' : ''}>Aqua</option>
+                           <option value="#10b981" ${p.color_tag === '#10b981' ? 'selected' : ''}>Emerald</option>
                            <option value="#f59e0b" ${p.color_tag === '#f59e0b' ? 'selected' : ''}>Amber</option>
                            <option value="#a855f7" ${p.color_tag === '#a855f7' ? 'selected' : ''}>Purple</option>
                            <option value="#f43f5e" ${p.color_tag === '#f43f5e' ? 'selected' : ''}>Rose</option>
@@ -1899,17 +2257,15 @@
                   <input type="number" step="any" min="0" id="poolDefInput_${pid}"
                          class="pool-amt-input"
                          value="${escapeHtml(p.default_amount)}"
-                         oninput="syncPoolDefaultInput(${pid}); markPoolDirty(${pid})"
-                         title="လတိုင်း သုံးမည့် ပုံသေပမာဏ" />
+                         oninput="syncPoolDefaultInput(${pid}); markPoolDirty(${pid})" />
                 </td>
                 <td>
                   <div class="row-actions">
                     <input type="number" step="any" min="0" id="poolMonthInput_${pid}"
                            class="pool-amt-input"
                            value="${escapeHtml(p.allocated_amount)}"
-                           oninput="markPoolDirty(${pid})"
-                           title="${escapeHtml(state.month)} တစ်လတည်းအတွက် ပမာဏ" />
-                    ${isCustom ? `<button type="button" class="small" onclick="resetPoolMonthBudget(${pid})" title="Default အတိုင်း ပြန်ထားရန်">Reset</button>` : ''}
+                           oninput="markPoolDirty(${pid})" />
+                    ${isCustom ? `<button type="button" class="small" onclick="resetPoolMonthBudget(${pid})">Reset</button>` : ''}
                   </div>
                 </td>
                 <td>${fmtNum(p.spent_amount)} ${escapeHtml(cur)}</td>
@@ -1929,9 +2285,7 @@
       if (!row || row.dataset.isCustom === '1') return;
       const defEl = $(`poolDefInput_${poolId}`);
       const monthEl = $(`poolMonthInput_${poolId}`);
-      if (defEl && monthEl) {
-        monthEl.value = defEl.value;
-      }
+      if (defEl && monthEl) monthEl.value = defEl.value;
     };
 
     window.markPoolDirty = function(poolId) {
@@ -1960,29 +2314,17 @@
         return { error: 'Pool name cannot be empty' };
       }
 
-      const colorTag = colorEl ? colorEl.value : (pool?.color_tag || '#10b981');
+      const colorTag = colorEl ? colorEl.value : (pool?.color_tag || '#22d3ee');
 
-      const row = document.querySelector(`tr[data-pool-id="${poolId}"]`);
-      const wasCustom = row?.dataset.isCustom === '1' || (pool && pool.override_amount !== null && pool.override_amount !== undefined);
-      const prevDef = Number(pool?.default_amount ?? 0);
-      const prevAlloc = Number(pool?.allocated_amount ?? prevDef);
-
-      const payload = {
-        pool_name: poolName,
-        color_tag: colorTag,
-        default_amount: defVal,
-        month: state.month
+      return {
+        payload: {
+          pool_name: poolName,
+          color_tag: colorTag,
+          default_amount: defVal,
+          month: state.month,
+          month_allocated_amount: monthVal
+        }
       };
-
-      if (monthVal !== defVal && (monthVal !== prevAlloc || defVal === prevDef)) {
-        payload.month_allocated_amount = monthVal;
-      } else if (wasCustom && monthVal !== defVal) {
-        payload.month_allocated_amount = monthVal;
-      } else {
-        payload.month_allocated_amount = defVal;
-      }
-
-      return { payload };
     }
 
     window.saveAllPools = async function() {
@@ -1995,10 +2337,7 @@
 
       const btn = $('toggleEditAllPoolsBtn');
       const cancelBtn = $('cancelEditAllPoolsBtn');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Saving All...';
-      }
+      if (btn) { btn.disabled = true; btn.textContent = 'Saving All...'; }
       if (cancelBtn) cancelBtn.disabled = true;
 
       let savedCount = 0;
@@ -2008,10 +2347,7 @@
       for (const p of targetPools) {
         const pid = Number(p.id);
         const { payload, error } = buildPoolPatchPayload(pid);
-        if (error) {
-          errCount++;
-          continue;
-        }
+        if (error) { errCount++; continue; }
         try {
           await apiFetch(`/api/workspaces/${encWs}/pools/${pid}`, {
             method: 'PATCH',
@@ -2028,11 +2364,8 @@
       if (cancelBtn) cancelBtn.disabled = false;
       isPoolBulkEditMode = false;
 
-      if (errCount > 0) {
-        toast(`Saved ${savedCount} pool(s), ${errCount} failed`, 'error');
-      } else {
-        toast(`Saved ${savedCount} budget pool(s)`, 'success');
-      }
+      if (errCount > 0) toast(`Saved ${savedCount} pool(s), ${errCount} failed`, 'error');
+      else toast(`Saved ${savedCount} budget pool(s)`, 'success');
       await loadWorkspaceDetails();
     };
 
@@ -2043,22 +2376,16 @@
         });
         toast('Reset to monthly default', 'success');
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     };
 
     window.disablePoolRow = async function(poolId) {
       if (!confirm('Hide this budget pool?')) return;
       try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools/${poolId}`, {
-          method: 'DELETE'
-        });
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools/${poolId}`, { method: 'DELETE' });
         toast('Pool hidden', 'success');
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     };
 
     $('poolTransferForm')?.addEventListener('submit', async (e) => {
@@ -2067,14 +2394,8 @@
       const toId = Number($('transferToPool')?.value || 0);
       const amt = Number($('transferAmount')?.value || 0);
 
-      if (!fromId || !toId || fromId === toId) {
-        toast('Select two different pools to transfer', 'error');
-        return;
-      }
-      if (!(amt > 0)) {
-        toast('Transfer amount must be greater than 0', 'error');
-        return;
-      }
+      if (!fromId || !toId || fromId === toId) { toast('Select two different pools to transfer', 'error'); return; }
+      if (!(amt > 0)) { toast('Transfer amount must be greater than 0', 'error'); return; }
 
       const fromPool = (state.pools || []).find((p) => Number(p.id) === fromId);
       const toPool = (state.pools || []).find((p) => Number(p.id) === toId);
@@ -2087,30 +2408,21 @@
         const encWs = encodeURIComponent(state.wsId);
         await Promise.all([
           apiFetch(`/api/workspaces/${encWs}/pools/${fromId}`, {
-            method: 'PATCH',
-            body: JSON.stringify({ month: state.month, month_allocated_amount: nextFromAlloc })
+            method: 'PATCH', body: JSON.stringify({ month: state.month, month_allocated_amount: nextFromAlloc })
           }),
           apiFetch(`/api/workspaces/${encWs}/pools/${toId}`, {
-            method: 'PATCH',
-            body: JSON.stringify({ month: state.month, month_allocated_amount: nextToAlloc })
+            method: 'PATCH', body: JSON.stringify({ month: state.month, month_allocated_amount: nextToAlloc })
           })
         ]);
         $('transferAmount').value = '';
         toast(`Transferred ${fmtNum(amt)} to ${toPool.pool_name}`, 'success');
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     });
 
     function aggregateTransactions(txList, basePools, multiplier = 1) {
-      let totalIncome = 0;
-      let totalExpense = 0;
-      let totalSaving = 0;
-      const spentByPoolId = new Map();
-      const spentByPoolName = new Map();
-      const topupByPoolId = new Map();
-      const catMap = new Map();
+      let totalIncome = 0, totalExpense = 0, totalSaving = 0;
+      const spentByPoolId = new Map(), spentByPoolName = new Map(), topupByPoolId = new Map(), catMap = new Map();
 
       for (const tx of (txList || [])) {
         const amt = Number(tx.amount_mmk || 0);
@@ -2130,9 +2442,7 @@
         }
 
         const catKey = `${tx.category || 'Uncategorized'}||${type}`;
-        if (!catMap.has(catKey)) {
-          catMap.set(catKey, { category: tx.category || 'Uncategorized', entry_type: type, total_mmk: 0 });
-        }
+        if (!catMap.has(catKey)) catMap.set(catKey, { category: tx.category || 'Uncategorized', entry_type: type, total_mmk: 0 });
         catMap.get(catKey).total_mmk += amt;
       }
 
@@ -2143,10 +2453,7 @@
           ? Number(p.allocated_amount ?? p.default_amount ?? 0)
           : Number(p.default_amount ?? p.allocated_amount ?? 0) * multiplier;
 
-        const txSpent = spentByPoolId.has(pid)
-          ? spentByPoolId.get(pid)
-          : (spentByPoolName.get(pName) || 0);
-
+        const txSpent = spentByPoolId.has(pid) ? spentByPoolId.get(pid) : (spentByPoolName.get(pName) || 0);
         const spent = (txList && txList.length > 0) ? txSpent : Number(p.spent_amount || 0);
         const topup = (txList && txList.length > 0) ? Number(topupByPoolId.get(pid) || 0) : Number(p.topup_amount || 0);
         const available = baseAlloc + topup;
@@ -2154,32 +2461,14 @@
         const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : 0;
         const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
 
-        return {
-          ...p,
-          allocated_amount: baseAlloc,
-          spent_amount: spent,
-          topup_amount: topup,
-          available_budget: available,
-          remaining_balance: remaining,
-          utilization_pct: util,
-          status
-        };
+        return { ...p, allocated_amount: baseAlloc, spent_amount: spent, topup_amount: topup, available_budget: available, remaining_balance: remaining, utilization_pct: util, status };
       });
 
       const totalAllocated = computedPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
       const totalRemaining = computedPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
       const cats = [...catMap.values()].sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
 
-      return {
-        totalIncome,
-        totalExpense,
-        totalSaving,
-        totalAllocated,
-        totalRemaining,
-        unalloc: totalIncome - totalAllocated,
-        pools: computedPools,
-        cats
-      };
+      return { totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining, unalloc: totalIncome - totalAllocated, pools: computedPools, cats };
     }
 
     function buildActiveDashboardViewModel() {
@@ -2192,19 +2481,7 @@
         const sum = state.summary || {};
         if (txList.length > 0) {
           const agg = aggregateTransactions(txList, basePools, 1);
-          return {
-            isYearly: false,
-            periodLabel: state.month,
-            totalIncome: agg.totalIncome,
-            totalExpense: agg.totalExpense,
-            totalSaving: agg.totalSaving,
-            totalAllocated: agg.totalAllocated,
-            totalRemaining: agg.totalRemaining,
-            unalloc: agg.unalloc,
-            pools: agg.pools,
-            cats: agg.cats,
-            txList
-          };
+          return { isYearly: false, periodLabel: state.month, ...agg, txList };
         }
 
         const fallbackPools = basePools.map((p) => {
@@ -2222,66 +2499,21 @@
         const totalAllocated = fallbackPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
         const totalRemaining = fallbackPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
 
-        return {
-          isYearly: false,
-          periodLabel: state.month,
-          totalIncome,
-          totalExpense,
-          totalSaving,
-          totalAllocated,
-          totalRemaining,
-          unalloc: totalIncome - totalAllocated,
-          pools: fallbackPools,
-          cats: state.categorySummary || [],
-          txList
-        };
+        return { isYearly: false, periodLabel: state.month, totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining, unalloc: totalIncome - totalAllocated, pools: fallbackPools, cats: state.categorySummary || [], txList };
       }
 
       const yTx = state.yearlyTransactions || [];
       const agg = aggregateTransactions(yTx, basePools, 12);
-
-      return {
-        isYearly: true,
-        periodLabel: `${year} (Yearly)`,
-        totalIncome: agg.totalIncome,
-        totalExpense: agg.totalExpense,
-        totalSaving: agg.totalSaving,
-        totalAllocated: agg.totalAllocated,
-        totalRemaining: agg.totalRemaining,
-        unalloc: agg.unalloc,
-        pools: agg.pools,
-        cats: agg.cats,
-        txList: yTx
-      };
+      return { isYearly: true, periodLabel: `${year} (Yearly)`, ...agg, txList: yTx };
     }
 
-    function getChartTextColor() {
-      return document.documentElement.getAttribute('data-theme') === 'light' ? '#334155' : '#cbd5e1';
-    }
-
-    function getChartGridColor() {
-      return document.documentElement.getAttribute('data-theme') === 'light'
-        ? 'rgba(15, 23, 42, 0.08)'
-        : 'rgba(148, 163, 184, 0.14)';
-    }
-
-    function getDoughnutLegendPosition() {
-      return window.innerWidth < 640 ? 'bottom' : 'right';
-    }
-
-    function destroyChart(key) {
-      if (charts[key]) {
-        charts[key].destroy();
-        charts[key] = null;
-      }
-    }
+    function getChartTextColor() { return document.documentElement.getAttribute('data-theme') === 'light' ? '#334155' : '#cbd5e1'; }
+    function getChartGridColor() { return document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(15, 23, 42, 0.08)' : 'rgba(148, 163, 184, 0.14)'; }
+    function getDoughnutLegendPosition() { return window.innerWidth < 640 ? 'bottom' : 'right'; }
+    function destroyChart(key) { if (charts[key]) { charts[key].destroy(); charts[key] = null; } }
 
     let lastDrilldownFilter = null;
-
-    function closeDashboardDrilldown() {
-      lastDrilldownFilter = null;
-      $('dashDrilldownCard')?.classList.add('hidden');
-    }
+    function closeDashboardDrilldown() { lastDrilldownFilter = null; $('dashDrilldownCard')?.classList.add('hidden'); }
 
     async function showDashboardDrilldown(filter) {
       const card = $('dashDrilldownCard');
@@ -2297,9 +2529,7 @@
         try {
           const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions?month=${encodeURIComponent(filter.month)}`);
           baseList = res.data || [];
-        } catch {
-          baseList = [];
-        }
+        } catch { baseList = []; }
       }
 
       const matched = baseList.filter((tx) => {
@@ -2310,9 +2540,7 @@
           const sameName = filter.poolName && String(tx.pool_name || '').trim().toLowerCase() === String(filter.poolName).trim().toLowerCase();
           if (!sameId && !sameName) return false;
         }
-        if (filter.category && String(tx.category || '').trim().toLowerCase() !== String(filter.category).trim().toLowerCase()) {
-          return false;
-        }
+        if (filter.category && String(tx.category || '').trim().toLowerCase() !== String(filter.category).trim().toLowerCase()) return false;
         return true;
       });
 
@@ -2341,13 +2569,11 @@
     }
 
     $('drilldownCloseBtn')?.addEventListener('click', closeDashboardDrilldown);
-    $('drilldownOpenTxTabBtn')?.addEventListener('click', () => {
+    $('drilldownOpenTxTabBtn')?.addEventListener('click', async () => {
       if (!lastDrilldownFilter) return;
-      document.querySelector('.nav-tabs button[data-tab="transactions"]')?.click();
+      await activateTab('transactions', true);
       if ($('txTypeFilter')) $('txTypeFilter').value = lastDrilldownFilter.entryType || '';
-      if ($('txSearch')) {
-        $('txSearch').value = lastDrilldownFilter.category || lastDrilldownFilter.poolName || '';
-      }
+      if ($('txSearch')) $('txSearch').value = lastDrilldownFilter.category || lastDrilldownFilter.poolName || '';
       renderTransactions();
     });
 
@@ -2357,9 +2583,7 @@
       const gridCol = getChartGridColor();
       const legendPos = getDoughnutLegendPosition();
       const commonHover = (evt, elements) => {
-        if (evt?.native?.target) {
-          evt.native.target.style.cursor = elements && elements.length ? 'pointer' : 'default';
-        }
+        if (evt?.native?.target) evt.native.target.style.cursor = elements && elements.length ? 'pointer' : 'default';
       };
 
       destroyChart('sixMonthTrend');
@@ -2374,58 +2598,23 @@
           data: {
             labels: trendData.map((d) => d.month),
             datasets: [
-              {
-                type: 'line',
-                label: `Income (${cur})`,
-                data: trendData.map((d) => d.income),
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                borderWidth: 2.5,
-                tension: 0.3,
-                fill: false,
-                pointRadius: 5,
-                pointHoverRadius: 7
-              },
-              {
-                type: 'bar',
-                label: `Expense (${cur})`,
-                data: trendData.map((d) => d.expense),
-                backgroundColor: 'rgba(244, 63, 94, 0.82)',
-                borderRadius: 6
-              },
-              {
-                type: 'bar',
-                label: `Saving (${cur})`,
-                data: trendData.map((d) => d.saving),
-                backgroundColor: 'rgba(234, 179, 8, 0.82)',
-                borderRadius: 6
-              }
+              { type: 'line', label: `Income (${cur})`, data: trendData.map((d) => d.income), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.2)', borderWidth: 2.5, tension: 0.3, fill: false, pointRadius: 5, pointHoverRadius: 7 },
+              { type: 'bar', label: `Expense (${cur})`, data: trendData.map((d) => d.expense), backgroundColor: 'rgba(244, 63, 94, 0.82)', borderRadius: 6 },
+              { type: 'bar', label: `Saving (${cur})`, data: trendData.map((d) => d.saving), backgroundColor: 'rgba(34, 211, 238, 0.82)', borderRadius: 6 }
             ]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            onHover: commonHover,
+            responsive: true, maintainAspectRatio: false, onHover: commonHover,
             onClick: (_evt, elements) => {
               if (!elements || !elements.length) return;
               const { datasetIndex, index } = elements[0];
               const mItem = trendData[index];
               if (!mItem) return;
               const typeMap = ['Income', 'Expense', 'Saving'];
-              const entryType = typeMap[datasetIndex] || '';
-              showDashboardDrilldown({
-                title: `${mItem.month} · ${entryType} Transactions`,
-                month: mItem.month,
-                entryType
-              });
+              showDashboardDrilldown({ title: `${mItem.month} · ${typeMap[datasetIndex] || ''} Transactions`, month: mItem.month, entryType: typeMap[datasetIndex] || '' });
             },
-            plugins: {
-              legend: { labels: { color: textCol, boxWidth: 12 } }
-            },
-            scales: {
-              x: { ticks: { color: textCol }, grid: { display: false } },
-              y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true }
-            }
+            plugins: { legend: { labels: { color: textCol, boxWidth: 12 } } },
+            scales: { x: { ticks: { color: textCol }, grid: { display: false } }, y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true } }
           }
         });
       }
@@ -2439,43 +2628,20 @@
           data: {
             labels: poolList.map((p) => String(p.pool_name || '').replace(/\s*Pool$/i, '')),
             datasets: [
-              {
-                label: `Budget (${cur})`,
-                data: poolList.map((p) => Number(p.available_budget || 0)),
-                backgroundColor: 'rgba(16, 185, 129, 0.82)',
-                borderRadius: 6
-              },
-              {
-                label: `Spent (${cur})`,
-                data: poolList.map((p) => Number(p.spent_amount || 0)),
-                backgroundColor: 'rgba(244, 63, 94, 0.85)',
-                borderRadius: 6
-              }
+              { label: `Budget (${cur})`, data: poolList.map((p) => Number(p.available_budget || 0)), backgroundColor: 'rgba(34, 211, 238, 0.82)', borderRadius: 6 },
+              { label: `Spent (${cur})`, data: poolList.map((p) => Number(p.spent_amount || 0)), backgroundColor: 'rgba(244, 63, 94, 0.85)', borderRadius: 6 }
             ]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            onHover: commonHover,
+            responsive: true, maintainAspectRatio: false, onHover: commonHover,
             onClick: (_evt, elements) => {
               if (!elements || !elements.length) return;
-              const { index } = elements[0];
-              const p = poolList[index];
+              const p = poolList[elements[0].index];
               if (!p) return;
-              showDashboardDrilldown({
-                title: `${p.pool_name} · Expense Transactions`,
-                entryType: 'Expense',
-                poolId: p.id,
-                poolName: p.pool_name
-              });
+              showDashboardDrilldown({ title: `${p.pool_name} · Expense Transactions`, entryType: 'Expense', poolId: p.id, poolName: p.pool_name });
             },
-            plugins: {
-              legend: { labels: { color: textCol, boxWidth: 12 } }
-            },
-            scales: {
-              x: { ticks: { color: textCol }, grid: { display: false } },
-              y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true }
-            }
+            plugins: { legend: { labels: { color: textCol, boxWidth: 12 } } },
+            scales: { x: { ticks: { color: textCol }, grid: { display: false } }, y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true } }
           }
         });
       }
@@ -2484,41 +2650,22 @@
       const poolMixCtx = $('poolMixDonutCanvas')?.getContext('2d');
       if (poolMixCtx) {
         const activePools = (pools || []).filter((p) => Number(p.available_budget || 0) > 0);
-        const logoMixPalette = ['#10b981', '#eab308', '#1d4ed8', '#059669', '#d97706', '#6366f1'];
+        const aquaPalette = ['#22d3ee', '#10b981', '#38bdf8', '#eab308', '#a855f7', '#14b8a6'];
         charts.poolMixDonut = new Chart(poolMixCtx, {
           type: 'doughnut',
           data: {
-            labels: activePools.length
-              ? activePools.map((p) => `${p.pool_name} (Bal: ${fmtNum(p.remaining_balance)})`)
-              : ['No Pool Budget'],
-            datasets: [{
-              data: activePools.length ? activePools.map((p) => Number(p.available_budget || 0)) : [1],
-              backgroundColor: activePools.length
-                ? activePools.map((p, idx) => p.color_tag || logoMixPalette[idx % logoMixPalette.length])
-                : ['rgba(148,163,184,0.25)'],
-              borderWidth: 0
-            }]
+            labels: activePools.length ? activePools.map((p) => `${p.pool_name} (Bal: ${fmtNum(p.remaining_balance)})`) : ['No Pool Budget'],
+            datasets: [{ data: activePools.length ? activePools.map((p) => Number(p.available_budget || 0)) : [1], backgroundColor: activePools.length ? activePools.map((p, idx) => p.color_tag || aquaPalette[idx % aquaPalette.length]) : ['rgba(148,163,184,0.25)'], borderWidth: 0 }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '62%',
-            onHover: commonHover,
+            responsive: true, maintainAspectRatio: false, cutout: '62%', onHover: commonHover,
             onClick: (_evt, elements) => {
               if (!elements || !elements.length || !activePools.length) return;
-              const { index } = elements[0];
-              const p = activePools[index];
+              const p = activePools[elements[0].index];
               if (!p) return;
-              showDashboardDrilldown({
-                title: `${p.pool_name} · Expense Transactions`,
-                entryType: 'Expense',
-                poolId: p.id,
-                poolName: p.pool_name
-              });
+              showDashboardDrilldown({ title: `${p.pool_name} · Expense Transactions`, entryType: 'Expense', poolId: p.id, poolName: p.pool_name });
             },
-            plugins: {
-              legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } }
-            }
+            plugins: { legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } } }
           }
         });
       }
@@ -2526,41 +2673,23 @@
       destroyChart('categoryDonut');
       const donutCtx = $('categoryDonutCanvas')?.getContext('2d');
       if (donutCtx) {
-        const expCats = (cats || [])
-          .filter((c) => c.entry_type === 'Expense' && Number(c.total_mmk || 0) > 0)
-          .sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0))
-          .slice(0, 7);
-
-        const palette = ['#10b981', '#eab308', '#f43f5e', '#3b82f6', '#a855f7', '#14b8a6', '#f97316'];
+        const expCats = (cats || []).filter((c) => c.entry_type === 'Expense' && Number(c.total_mmk || 0) > 0).sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0)).slice(0, 7);
+        const palette = ['#22d3ee', '#10b981', '#f43f5e', '#38bdf8', '#a855f7', '#eab308', '#f97316'];
         charts.categoryDonut = new Chart(donutCtx, {
           type: 'doughnut',
           data: {
             labels: expCats.length ? expCats.map((c) => c.category) : ['No Expense'],
-            datasets: [{
-              data: expCats.length ? expCats.map((c) => Number(c.total_mmk || 0)) : [1],
-              backgroundColor: expCats.length ? palette.slice(0, expCats.length) : ['rgba(148,163,184,0.25)'],
-              borderWidth: 0
-            }]
+            datasets: [{ data: expCats.length ? expCats.map((c) => Number(c.total_mmk || 0)) : [1], backgroundColor: expCats.length ? palette.slice(0, expCats.length) : ['rgba(148,163,184,0.25)'], borderWidth: 0 }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '62%',
-            onHover: commonHover,
+            responsive: true, maintainAspectRatio: false, cutout: '62%', onHover: commonHover,
             onClick: (_evt, elements) => {
               if (!elements || !elements.length || !expCats.length) return;
-              const { index } = elements[0];
-              const cat = expCats[index];
+              const cat = expCats[elements[0].index];
               if (!cat) return;
-              showDashboardDrilldown({
-                title: `Category: ${cat.category} · Expense Transactions`,
-                entryType: 'Expense',
-                category: cat.category
-              });
+              showDashboardDrilldown({ title: `Category: ${cat.category} · Expense Transactions`, entryType: 'Expense', category: cat.category });
             },
-            plugins: {
-              legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } }
-            }
+            plugins: { legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } } }
           }
         });
       }
@@ -2573,36 +2702,18 @@
           type: 'bar',
           data: {
             labels: flowTypes,
-            datasets: [{
-              label: `Amount (${cur})`,
-              data: [
-                Number(sum.total_income || 0),
-                Number(sum.total_expense || 0),
-                Number(sum.total_saving || 0)
-              ],
-              backgroundColor: ['#10b981', '#f43f5e', '#eab308'],
-              borderRadius: 6
-            }]
+            datasets: [{ label: `Amount (${cur})`, data: [Number(sum.total_income || 0), Number(sum.total_expense || 0), Number(sum.total_saving || 0)], backgroundColor: ['#10b981', '#f43f5e', '#22d3ee'], borderRadius: 6 }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            onHover: commonHover,
+            responsive: true, maintainAspectRatio: false, onHover: commonHover,
             onClick: (_evt, elements) => {
               if (!elements || !elements.length) return;
-              const { index } = elements[0];
-              const entryType = flowTypes[index];
+              const entryType = flowTypes[elements[0].index];
               if (!entryType) return;
-              showDashboardDrilldown({
-                title: `${entryType} Transactions`,
-                entryType
-              });
+              showDashboardDrilldown({ title: `${entryType} Transactions`, entryType });
             },
             plugins: { legend: { display: false } },
-            scales: {
-              x: { ticks: { color: textCol }, grid: { display: false } },
-              y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true }
-            }
+            scales: { x: { ticks: { color: textCol }, grid: { display: false } }, y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true } }
           }
         });
       }
@@ -2611,13 +2722,10 @@
     function renderMemberReport(txList, cur) {
       const tbody = $('dashMemberReportBody');
       if (!tbody) return;
-
       const map = new Map();
       for (const tx of txList || []) {
         const name = tx.member_name || 'Unknown';
-        if (!map.has(name)) {
-          map.set(name, { member: name, income: 0, expense: 0, saving: 0, count: 0 });
-        }
+        if (!map.has(name)) map.set(name, { member: name, income: 0, expense: 0, saving: 0, count: 0 });
         const item = map.get(name);
         const amt = Number(tx.amount_mmk || 0);
         if (tx.entry_type === 'Income') item.income += amt;
@@ -2625,7 +2733,6 @@
         else item.expense += amt;
         item.count += 1;
       }
-
       const rows = [...map.values()].sort((a, b) => b.expense - a.expense);
       tbody.innerHTML = rows.length
         ? rows.map((r) => `
@@ -2643,25 +2750,9 @@
     function renderDashboard() {
       const cur = state.settings?.currency || 'MMK';
       const vm = buildActiveDashboardViewModel();
-      const {
-        isYearly,
-        periodLabel,
-        totalIncome,
-        totalAllocated,
-        totalExpense,
-        totalSaving,
-        totalRemaining,
-        unalloc,
-        pools,
-        cats,
-        txList
-      } = vm;
+      const { isYearly, periodLabel, totalIncome, totalAllocated, totalExpense, totalSaving, totalRemaining, unalloc, pools, cats, txList } = vm;
 
-      if ($('dashReportHeading')) {
-        $('dashReportHeading').textContent = isYearly
-          ? `Yearly Budget Health Report (${periodLabel})`
-          : `Monthly Budget Health Report (${periodLabel})`;
-      }
+      if ($('dashReportHeading')) $('dashReportHeading').textContent = isYearly ? `Yearly Budget Health Report (${periodLabel})` : `Monthly Budget Health Report (${periodLabel})`;
       if ($('kpiIncomeLabel')) $('kpiIncomeLabel').textContent = isYearly ? 'Total Income (Year)' : 'Total Income (Month)';
       if ($('kpiPoolAllocLabel')) $('kpiPoolAllocLabel').textContent = isYearly ? 'Total Pool Budget (12M)' : 'Total Pool Budget';
       if ($('kpiExpenseLabel')) $('kpiExpenseLabel').textContent = isYearly ? 'Total Expense (Year)' : 'Total Expense';
@@ -2669,16 +2760,9 @@
       if ($('cashflowPeriodTag')) $('cashflowPeriodTag').textContent = periodLabel;
       if ($('catSummaryTitle')) $('catSummaryTitle').textContent = `Category Breakdown (${periodLabel})`;
       if ($('memberReportTitle')) $('memberReportTitle').textContent = `Member Activity Report (${periodLabel})`;
-
-      if ($('printTitle')) {
-        $('printTitle').textContent = `${state.settings?.workspace_name || state.wsId} — ${isYearly ? 'Yearly' : 'Monthly'} Financial Report`;
-      }
-      if ($('printSubtitle')) {
-        $('printSubtitle').textContent = `Period: ${periodLabel} · Currency: ${cur}`;
-      }
-      if ($('printGeneratedAt')) {
-        $('printGeneratedAt').textContent = `Generated: ${new Date().toLocaleString()}`;
-      }
+      if ($('printTitle')) $('printTitle').textContent = `${state.settings?.workspace_name || state.wsId} — ${isYearly ? 'Yearly' : 'Monthly'} Financial Report`;
+      if ($('printSubtitle')) $('printSubtitle').textContent = `Period: ${periodLabel} · Currency: ${cur}`;
+      if ($('printGeneratedAt')) $('printGeneratedAt').textContent = `Generated: ${new Date().toLocaleString()}`;
 
       $('kpiIncome').textContent = `${fmtNum(totalIncome)} ${cur}`;
       $('kpiPoolAllocated').textContent = `${fmtNum(totalAllocated)} ${cur}`;
@@ -2687,60 +2771,36 @@
       $('kpiPoolRemaining').className = `val ${totalRemaining < 0 ? 'exp' : totalRemaining === 0 ? 'warn' : 'inc'}`;
 
       const netCashflowBalance = Number(totalIncome || 0) - Number(totalExpense || 0);
-      if ($('kpiNetBalanceLabel')) {
-        $('kpiNetBalanceLabel').textContent = isYearly
-          ? 'Net Balance (Income − Expense · Year)'
-          : 'Net Balance (Income − Expense)';
-      }
+      if ($('kpiNetBalanceLabel')) $('kpiNetBalanceLabel').textContent = isYearly ? 'Net Balance (Income − Expense · Year)' : 'Net Balance (Income − Expense)';
       if ($('kpiNetBalance')) {
         $('kpiNetBalance').textContent = `${fmtNum(netCashflowBalance)} ${cur}`;
         $('kpiNetBalance').className = `val ${netCashflowBalance < 0 ? 'exp' : netCashflowBalance === 0 ? 'warn' : 'inc'}`;
       }
       if ($('kpiNetBalanceSub')) {
         const afterSaving = netCashflowBalance - Number(totalSaving || 0);
-        $('kpiNetBalanceSub').textContent = Number(totalSaving || 0) > 0
-          ? `After Saving (${fmtNum(totalSaving)}): ${fmtNum(afterSaving)} ${cur}`
-          : 'Total Income − Total Expense';
+        $('kpiNetBalanceSub').textContent = Number(totalSaving || 0) > 0 ? `After Saving (${fmtNum(totalSaving)}): ${fmtNum(afterSaving)} ${cur}` : 'Total Income − Total Expense';
       }
 
       if ($('kpiPoolAllocSub')) {
-        $('kpiPoolAllocSub').textContent = unalloc >= 0
-          ? `Unallocated: ${fmtNum(unalloc)} ${cur}`
-          : `Over income by ${fmtNum(Math.abs(unalloc))} ${cur}`;
+        $('kpiPoolAllocSub').textContent = unalloc >= 0 ? `Unallocated: ${fmtNum(unalloc)} ${cur}` : `Over income by ${fmtNum(Math.abs(unalloc))} ${cur}`;
       }
 
       const overPools = pools.filter((p) => p.status === 'over_budget');
       const warnPools = pools.filter((p) => p.status === 'warning');
-
       const badgeEl = $('dashHealthBadge');
       if (badgeEl) {
-        if (overPools.length > 0) {
-          badgeEl.className = 'pill Expense';
-          badgeEl.textContent = `${overPools.length} Pool Over Budget`;
-        } else if (warnPools.length > 0) {
-          badgeEl.className = 'pill Saving';
-          badgeEl.textContent = `${warnPools.length} Pool 80%+ Used`;
-        } else {
-          badgeEl.className = 'pill Income';
-          badgeEl.textContent = 'Healthy';
-        }
+        if (overPools.length > 0) { badgeEl.className = 'pill Expense'; badgeEl.textContent = `${overPools.length} Pool Over Budget`; }
+        else if (warnPools.length > 0) { badgeEl.className = 'pill Saving'; badgeEl.textContent = `${warnPools.length} Pool 80%+ Used`; }
+        else { badgeEl.className = 'pill Income'; badgeEl.textContent = 'Healthy'; }
       }
 
       if ($('poolPlanNote')) {
-        const allocText = unalloc >= 0
-          ? `Unallocated Income: ${fmtNum(unalloc)} ${cur}`
-          : `Pool Budget exceeds Income by ${fmtNum(Math.abs(unalloc))} ${cur}`;
-        const alertText = overPools.length
-          ? ` · Over budget: ${overPools.map((p) => p.pool_name).join(', ')}`
-          : warnPools.length
-            ? ` · Approaching limit: ${warnPools.map((p) => p.pool_name).join(', ')}`
-            : ' · All pools within budget';
+        const allocText = unalloc >= 0 ? `Unallocated Income: ${fmtNum(unalloc)} ${cur}` : `Pool Budget exceeds Income by ${fmtNum(Math.abs(unalloc))} ${cur}`;
+        const alertText = overPools.length ? ` · Over budget: ${overPools.map((p) => p.pool_name).join(', ')}` : warnPools.length ? ` · Approaching limit: ${warnPools.map((p) => p.pool_name).join(', ')}` : ' · All pools within budget';
         $('poolPlanNote').textContent = `Period (${periodLabel}) · ${allocText}${alertText}`;
       }
 
-      if ($('dashPoolCountLabel')) {
-        $('dashPoolCountLabel').textContent = `${pools.length} Active Pools`;
-      }
+      if ($('dashPoolCountLabel')) $('dashPoolCountLabel').textContent = `${pools.length} Active Pools`;
 
       renderPowerBiCharts(pools, cats, { total_income: totalIncome, total_expense: totalExpense, total_saving: totalSaving }, cur);
 
@@ -2754,7 +2814,7 @@
               <div class="pool-card" role="button" tabindex="0" data-pool-id="${escapeHtml(p.id)}" data-pool-name="${escapeHtml(p.pool_name)}" title="Click to inspect ${escapeHtml(p.pool_name)} transactions">
                 <div class="pool-header">
                   <div class="pool-title">
-                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#10b981')}"></span>
+                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#22d3ee')}"></span>
                     <span>${escapeHtml(p.pool_name)}</span>
                   </div>
                   <span class="muted">${p.utilization_pct}%</span>
@@ -2770,23 +2830,9 @@
         : '<div class="muted">No budget pools found for this workspace.</div>';
 
       poolCardsEl.querySelectorAll('.pool-card[data-pool-id]').forEach((cardEl) => {
-        const openPoolList = () => {
-          const pid = Number(cardEl.dataset.poolId);
-          const pname = cardEl.dataset.poolName || 'Budget Pool';
-          showDashboardDrilldown({
-            title: `${pname} · Expense Transactions`,
-            entryType: 'Expense',
-            poolId: pid,
-            poolName: pname
-          });
-        };
+        const openPoolList = () => showDashboardDrilldown({ title: `${cardEl.dataset.poolName || 'Budget Pool'} · Expense Transactions`, entryType: 'Expense', poolId: Number(cardEl.dataset.poolId), poolName: cardEl.dataset.poolName || 'Budget Pool' });
         cardEl.addEventListener('click', openPoolList);
-        cardEl.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            openPoolList();
-          }
-        });
+        cardEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPoolList(); } });
       });
 
       const maxFlow = Math.max(totalIncome, totalExpense, totalSaving, 1);
@@ -2815,11 +2861,15 @@
       renderMemberReport(txList, cur);
     }
 
+    let resizeTimer = null;
     window.addEventListener('resize', () => {
-      if (state.summary && !$('tab-dashboard')?.classList.contains('hidden')) {
-        const vm = buildActiveDashboardViewModel();
-        renderPowerBiCharts(vm.pools, vm.cats, { total_income: vm.totalIncome, total_expense: vm.totalExpense, total_saving: vm.totalSaving }, state.settings?.currency || 'MMK');
-      }
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if ((state.summary || state.pools.length || state.transactions.length) && !$('tab-dashboard')?.classList.contains('hidden')) {
+          const vm = buildActiveDashboardViewModel();
+          renderPowerBiCharts(vm.pools, vm.cats, { total_income: vm.totalIncome, total_expense: vm.totalExpense, total_saving: vm.totalSaving }, state.settings?.currency || 'MMK');
+        }
+      }, 200);
     });
 
     $('slicerMonthlyBtn')?.addEventListener('click', () => setPeriodMode('monthly'));
@@ -2837,25 +2887,15 @@
     }
 
     $('globalRefreshBtn')?.addEventListener('click', async () => {
-      try {
-        await runCleanRefresh(true);
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      try { await runCleanRefresh(true); } catch (err) { toast(err.message, 'error'); }
     });
 
     $('dashRefreshBtn')?.addEventListener('click', async () => {
-      try {
-        await runCleanRefresh(true);
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      try { await runCleanRefresh(true); } catch (err) { toast(err.message, 'error'); }
     });
 
     $('dashPrintBtn')?.addEventListener('click', () => {
-      if ($('printGeneratedAt')) {
-        $('printGeneratedAt').textContent = `Generated: ${new Date().toLocaleString()}`;
-      }
+      if ($('printGeneratedAt')) $('printGeneratedAt').textContent = `Generated: ${new Date().toLocaleString()}`;
       window.print();
     });
 
@@ -2873,20 +2913,22 @@
     }
 
     async function openReceipt(key) {
+      let url = '';
       try {
-        const res = await fetch(getApiUrl(`/api/receipts/${key}`), {
+        const res = await fetch(getApiUrl(`/api/receipts/${encodeURIComponent(key)}`), {
           headers: { Authorization: `Bearer ${state.token}` }
         });
         if (!res.ok) throw new Error('Receipt fetch failed');
         const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
+        url = URL.createObjectURL(blob);
         window.open(url, '_blank', 'noopener');
+        setTimeout(() => { if (url) URL.revokeObjectURL(url); }, 60000);
       } catch (err) {
+        if (url) URL.revokeObjectURL(url);
         toast(err.message, 'error');
       }
     }
 
-    // [Multiselect Delete Helpers]
     function updateBulkDeleteUi() {
       const btn = $('deleteSelectedTxBtn');
       const selectAllCb = $('selectAllTxCb');
@@ -2913,11 +2955,8 @@
 
     $('selectAllTxCb')?.addEventListener('change', (e) => {
       const rows = getFilteredTransactions();
-      if (e.target.checked) {
-        rows.forEach((r) => selectedTxIds.add(Number(r.id)));
-      } else {
-        rows.forEach((r) => selectedTxIds.delete(Number(r.id)));
-      }
+      if (e.target.checked) rows.forEach((r) => selectedTxIds.add(Number(r.id)));
+      else rows.forEach((r) => selectedTxIds.delete(Number(r.id)));
       renderTransactions();
     });
 
@@ -2930,28 +2969,19 @@
       btn.disabled = true;
       btn.textContent = `Deleting (${ids.length})...`;
 
-      let okCount = 0;
-      let failCount = 0;
+      let okCount = 0, failCount = 0;
       const encWs = encodeURIComponent(state.wsId);
-
       for (const id of ids) {
         try {
           await apiFetch(`/api/workspaces/${encWs}/transactions/${id}`, { method: 'DELETE' });
           selectedTxIds.delete(id);
           okCount++;
-        } catch {
-          failCount++;
-        }
+        } catch { failCount++; }
       }
 
       btn.disabled = false;
       updateBulkDeleteUi();
-      toast(
-        failCount > 0
-          ? `Deleted ${okCount}, failed ${failCount}`
-          : `Deleted ${okCount} selected transaction(s)`,
-        failCount > 0 ? 'error' : 'success'
-      );
+      toast(failCount > 0 ? `Deleted ${okCount}, failed ${failCount}` : `Deleted ${okCount} selected transaction(s)`, failCount > 0 ? 'error' : 'success');
       await loadWorkspaceDetails();
     });
 
@@ -2961,9 +2991,7 @@
       const filtered = (state.categories || []).filter((c) => c.entry_type === entryType);
       const list = filtered.length ? filtered : (state.categories || []);
       const names = list.map((c) => String(c.name));
-      if (currentCat && !names.includes(String(currentCat))) {
-        names.unshift(String(currentCat));
-      }
+      if (currentCat && !names.includes(String(currentCat))) names.unshift(String(currentCat));
       return names.map((n) => `<option value="${escapeHtml(n)}" ${n === String(currentCat) ? 'selected' : ''}>${escapeHtml(n)}</option>`).join('');
     }
 
@@ -2984,17 +3012,14 @@
         if (pid === curIdStr) found = true;
         opts += `<option value="${escapeHtml(pid)}" ${pid === curIdStr ? 'selected' : ''}>${escapeHtml(p.pool_name)}</option>`;
       }
-      if (!found && curIdStr) {
-        opts += `<option value="${escapeHtml(curIdStr)}" selected>${escapeHtml(currentPoolName || 'Pool #' + curIdStr)}</option>`;
-      }
+      if (!found && curIdStr) opts += `<option value="${escapeHtml(curIdStr)}" selected>${escapeHtml(currentPoolName || 'Pool #' + curIdStr)}</option>`;
       return opts;
     }
 
     window.onInlineTxTypeChange = function(id) {
       const typeEl = $(`inTxType_${id}`);
       const catEl = $(`inTxCat_${id}`);
-      if (!typeEl || !catEl) return;
-      catEl.innerHTML = buildInlineCategoryOptions(typeEl.value, catEl.value);
+      if (typeEl && catEl) catEl.innerHTML = buildInlineCategoryOptions(typeEl.value, catEl.value);
     };
 
     function rerenderTxPreservingScroll() {
@@ -3025,43 +3050,26 @@
       const paymentMethod = $(`inTxPay_${numId}`)?.value || 'Cash';
       const notes = ($(`inTxNote_${numId}`)?.value || '').trim();
 
-      if (!txDate) {
-        toast('Date is required', 'error');
-        return;
-      }
-      if (!(amountMmk > 0)) {
-        toast('Amount must be greater than 0', 'error');
-        return;
-      }
+      if (!txDate) { toast('Date is required', 'error'); return; }
+      if (!(amountMmk > 0)) { toast('Amount must be greater than 0', 'error'); return; }
 
       const saveBtn = $(`inTxSaveBtn_${numId}`);
-      if (saveBtn) {
-        saveBtn.disabled = true;
-        saveBtn.textContent = 'Saving...';
-      }
+      if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
 
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${numId}`, {
           method: 'PATCH',
           body: JSON.stringify({
-            tx_date: txDate,
-            member_name: memberName,
-            entry_type: entryType,
-            category: category,
-            amount_mmk: amountMmk,
-            payment_method: paymentMethod,
-            notes: notes,
-            pool_id: poolVal ? Number(poolVal) : null
+            tx_date: txDate, member_name: memberName, entry_type: entryType,
+            category, amount_mmk: amountMmk, payment_method: paymentMethod,
+            notes, pool_id: poolVal ? Number(poolVal) : null
           })
         });
         inlineEditingTxId = null;
         toast('Transaction updated', 'success');
         await loadWorkspaceDetails();
       } catch (err) {
-        if (saveBtn) {
-          saveBtn.disabled = false;
-          saveBtn.textContent = 'Save';
-        }
+        if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
         toast(err.message, 'error');
       }
     };
@@ -3073,7 +3081,8 @@
       const payments = Array.isArray(s.payment_methods) && s.payment_methods.length ? s.payment_methods : ['Cash'];
 
       const rows = getFilteredTransactions();
-      $('txTableBody').innerHTML = rows.length
+      const tbody = $('txTableBody');
+      tbody.innerHTML = rows.length
         ? rows.map((r) => {
             const rowId = Number(r.id);
             const isChecked = selectedTxIds.has(rowId);
@@ -3084,40 +3093,14 @@
                 <tr class="is-editing-row">
                   <td><input type="checkbox" class="tx-row-cb" ${isChecked ? 'checked' : ''} onchange="toggleSelectTx(${rowId}, this.checked)" /></td>
                   <td class="tx-edit-cell"><input type="date" id="inTxDate_${rowId}" class="inline-tx-input" value="${escapeHtml(r.tx_date || '')}" /></td>
-                  <td class="tx-edit-cell">
-                    <select id="inTxMember_${rowId}" class="inline-tx-input">
-                      ${buildInlineOptions(members, r.member_name, state.user?.display_name || 'Member')}
-                    </select>
-                  </td>
-                  <td class="tx-edit-cell">
-                    <select id="inTxType_${rowId}" class="inline-tx-input" onchange="onInlineTxTypeChange(${rowId})">
-                      <option value="Expense" ${r.entry_type === 'Expense' ? 'selected' : ''}>Expense</option>
-                      <option value="Income" ${r.entry_type === 'Income' ? 'selected' : ''}>Income</option>
-                      <option value="Saving" ${r.entry_type === 'Saving' ? 'selected' : ''}>Saving</option>
-                    </select>
-                  </td>
-                  <td class="tx-edit-cell">
-                    <select id="inTxPool_${rowId}" class="inline-tx-input">
-                      ${buildInlinePoolOptions(r.pool_id, r.pool_name)}
-                    </select>
-                  </td>
-                  <td class="tx-edit-cell">
-                    <select id="inTxCat_${rowId}" class="inline-tx-input">
-                      ${buildInlineCategoryOptions(r.entry_type || 'Expense', r.category)}
-                    </select>
-                  </td>
-                  <td class="tx-edit-cell">
-                    <input type="number" step="any" min="0.01" id="inTxAmt_${rowId}" class="inline-tx-input amt-in" value="${escapeHtml(r.amount_mmk)}" />
-                  </td>
-                  <td class="tx-edit-cell">
-                    <select id="inTxPay_${rowId}" class="inline-tx-input">
-                      ${buildInlineOptions(payments, r.payment_method || 'Cash', 'Cash')}
-                    </select>
-                  </td>
-                  <td class="tx-edit-cell">
-                    <input type="text" id="inTxNote_${rowId}" class="inline-tx-input" value="${escapeHtml(r.notes || '')}" placeholder="Notes" />
-                  </td>
-                  <td>${r.receipt_key ? `<button type="button" class="small" onclick="openReceipt('${escapeHtml(r.receipt_key).replace(/'/g, "\\'")}')">View</button>` : '-'}</td>
+                  <td class="tx-edit-cell"><select id="inTxMember_${rowId}" class="inline-tx-input">${buildInlineOptions(members, r.member_name, state.user?.display_name || 'Member')}</select></td>
+                  <td class="tx-edit-cell"><select id="inTxType_${rowId}" class="inline-tx-input" onchange="onInlineTxTypeChange(${rowId})"><option value="Expense" ${r.entry_type === 'Expense' ? 'selected' : ''}>Expense</option><option value="Income" ${r.entry_type === 'Income' ? 'selected' : ''}>Income</option><option value="Saving" ${r.entry_type === 'Saving' ? 'selected' : ''}>Saving</option></select></td>
+                  <td class="tx-edit-cell"><select id="inTxPool_${rowId}" class="inline-tx-input">${buildInlinePoolOptions(r.pool_id, r.pool_name)}</select></td>
+                  <td class="tx-edit-cell"><select id="inTxCat_${rowId}" class="inline-tx-input">${buildInlineCategoryOptions(r.entry_type || 'Expense', r.category)}</select></td>
+                  <td class="tx-edit-cell"><input type="number" step="any" min="0.01" id="inTxAmt_${rowId}" class="inline-tx-input amt-in" value="${escapeHtml(r.amount_mmk)}" /></td>
+                  <td class="tx-edit-cell"><select id="inTxPay_${rowId}" class="inline-tx-input">${buildInlineOptions(payments, r.payment_method || 'Cash', 'Cash')}</select></td>
+                  <td class="tx-edit-cell"><input type="text" id="inTxNote_${rowId}" class="inline-tx-input" value="${escapeHtml(r.notes || '')}" placeholder="Notes" /></td>
+                  <td>${r.receipt_key ? `<button type="button" class="small view-receipt-btn" data-receipt-key="${escapeHtml(r.receipt_key)}">View</button>` : '-'}</td>
                   <td class="tx-edit-cell">
                     <div class="row-actions">
                       <button type="button" class="small primary" id="inTxSaveBtn_${rowId}" onclick="saveInlineEditTx(${rowId})">Save</button>
@@ -3139,7 +3122,7 @@
                 <td><strong>${fmtNum(r.amount_mmk)}</strong> ${escapeHtml(cur)}</td>
                 <td>${escapeHtml(r.payment_method || '-')}</td>
                 <td>${escapeHtml(r.notes || '-')}</td>
-                <td>${r.receipt_key ? `<button type="button" class="small" onclick="openReceipt('${escapeHtml(r.receipt_key).replace(/'/g, "\\'")}')">View</button>` : '-'}</td>
+                <td>${r.receipt_key ? `<button type="button" class="small view-receipt-btn" data-receipt-key="${escapeHtml(r.receipt_key)}">View</button>` : '-'}</td>
                 <td>
                   <div class="row-actions">
                     <button type="button" class="small" onclick="startEditTx(${rowId})">Edit</button>
@@ -3150,24 +3133,11 @@
             `;
           }).join('')
         : '<tr><td colspan="11" class="muted">No transactions found.</td></tr>';
+
+      tbody.querySelectorAll('.view-receipt-btn[data-receipt-key]').forEach((btn) => {
+        btn.addEventListener('click', () => openReceipt(btn.dataset.receiptKey));
+      });
       updateBulkDeleteUi();
-    }
-
-    window.openReceipt = openReceipt;
-
-    function resetTxForm() {
-      inlineEditingTxId = null;
-      $('editingTxId').value = '';
-      $('txFormTitle').textContent = 'Add New Transaction';
-      $('txDate').value = new Date().toISOString().slice(0, 10);
-      $('txPool').value = '';
-      updatePoolBalanceHint();
-      $('txAmount').value = '';
-      $('txNotes').value = '';
-      $('txReceipt').value = '';
-      $('receiptInputWrap').classList.remove('hidden');
-      $('txSubmitBtn').textContent = 'Save Transaction';
-      $('txCancelEditBtn').classList.add('hidden');
     }
 
     window.deleteTx = async function(id) {
@@ -3177,60 +3147,40 @@
         selectedTxIds.delete(Number(id));
         toast('Transaction deleted', 'success');
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     };
 
-    // Full Portal Admin Console Functions
     window.switchToWorkspaceFromAdmin = async function(wsId, targetTab = 'workspace') {
       if (!wsId) return;
       state.wsId = wsId;
       localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
       $('workspaceSelect').value = state.wsId;
-      resetTxForm();
       await loadWorkspaceDetails();
-      document.querySelector(`.nav-tabs button[data-tab="${targetTab}"]`)?.click();
+      await activateTab(targetTab, true);
       toast(`Switched to ${wsId}`, 'success');
     };
 
     window.grantAdminFromUserRow = async function(email) {
-      if (!isGlobalAdmin()) {
-        toast('Only Global Admin can grant admin role.', 'error');
-        return;
-      }
+      if (!isGlobalAdmin()) { toast('Only Global Admin can grant admin role.', 'error'); return; }
       try {
-        await apiFetch('/api/admin/users/admins', {
-          method: 'POST',
-          body: JSON.stringify({ email })
-        });
+        await apiFetch('/api/admin/users/admins', { method: 'POST', body: JSON.stringify({ email }) });
         toast(`Admin granted to ${email}`, 'success');
         await loadFullAdminConsole();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     };
 
     window.removeExtraAdmin = async function(email) {
-      if (!isGlobalAdmin()) {
-        toast('Only Global Admin can remove admins.', 'error');
-        return;
-      }
+      if (!isGlobalAdmin()) { toast('Only Global Admin can remove admins.', 'error'); return; }
       if (!confirm(`Remove admin access for ${email}?`)) return;
       try {
         await apiFetch(`/api/admin/users/admins/${encodeURIComponent(email)}`, { method: 'DELETE' });
         toast('Admin access removed', 'success');
         await loadFullAdminConsole();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     };
 
     const adminSelectedTxKeys = new Set();
-
-    function getAdminTxKey(wsId, id) {
-      return `${String(wsId || '')}::${Number(id)}`;
-    }
+    function getAdminTxKey(wsId, id) { return `${String(wsId || '')}::${Number(id)}`; }
 
     function updateAdminBulkDeleteUi() {
       const btn = $('adminDeleteSelectedTxBtn');
@@ -3238,21 +3188,13 @@
       const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
       const visibleRows = (state.adminTransactions || []).filter((r) => {
         if (!q) return true;
-        const hay = `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase();
-        return hay.includes(q);
+        return `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q);
       });
-
       const visibleKeys = visibleRows.map((r) => getAdminTxKey(r.workspace_id, r.id));
       const checkedVisibleCount = visibleKeys.filter((k) => adminSelectedTxKeys.has(k)).length;
 
-      if (btn) {
-        btn.classList.toggle('hidden', adminSelectedTxKeys.size === 0);
-        btn.textContent = `Delete Selected (${adminSelectedTxKeys.size})`;
-      }
-      if (selectAllCb) {
-        selectAllCb.checked = visibleKeys.length > 0 && checkedVisibleCount === visibleKeys.length;
-        selectAllCb.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < visibleKeys.length;
-      }
+      if (btn) { btn.classList.toggle('hidden', adminSelectedTxKeys.size === 0); btn.textContent = `Delete Selected (${adminSelectedTxKeys.size})`; }
+      if (selectAllCb) { selectAllCb.checked = visibleKeys.length > 0 && checkedVisibleCount === visibleKeys.length; selectAllCb.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < visibleKeys.length; }
     }
 
     window.toggleSelectAdminTx = function(wsId, id, checked) {
@@ -3266,8 +3208,7 @@
       const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
       const visibleRows = (state.adminTransactions || []).filter((r) => {
         if (!q) return true;
-        const hay = `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase();
-        return hay.includes(q);
+        return `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q);
       });
       visibleRows.forEach((r) => {
         const key = getAdminTxKey(r.workspace_id, r.id);
@@ -3286,13 +3227,11 @@
       btn.disabled = true;
       btn.textContent = `Deleting (${keys.length})...`;
 
-      let okCount = 0;
-      let failCount = 0;
-      let touchedCurrentWs = false;
-
+      let okCount = 0, failCount = 0, touchedCurrentWs = false;
       for (const key of keys) {
-        const [wsId, rawId] = key.split('::');
-        const id = Number(rawId);
+        const sepIdx = key.indexOf('::');
+        const wsId = sepIdx >= 0 ? key.slice(0, sepIdx) : '';
+        const id = Number(sepIdx >= 0 ? key.slice(sepIdx + 2) : 0);
         try {
           await apiFetch(`/api/workspaces/${encodeURIComponent(wsId)}/transactions/${id}`, { method: 'DELETE' });
           adminSelectedTxKeys.delete(key);
@@ -3303,23 +3242,13 @@
             state.transactions = (state.transactions || []).filter((r) => Number(r.id) !== id);
             state.yearlyTransactions = (state.yearlyTransactions || []).filter((r) => Number(r.id) !== id);
           }
-        } catch {
-          failCount++;
-        }
+        } catch { failCount++; }
       }
 
       btn.disabled = false;
       updateAdminBulkDeleteUi();
-      toast(
-        failCount > 0
-          ? `Deleted ${okCount}, failed ${failCount}`
-          : `Deleted ${okCount} selected transaction(s)`,
-        failCount > 0 ? 'error' : 'success'
-      );
-      if (touchedCurrentWs) {
-        renderTransactions();
-        renderDashboard();
-      }
+      toast(failCount > 0 ? `Deleted ${okCount}, failed ${failCount}` : `Deleted ${okCount} selected transaction(s)`, failCount > 0 ? 'error' : 'success');
+      if (touchedCurrentWs) { renderTransactions(); renderDashboard(); renderHomeSummary(); }
       await loadAdminInspectorTransactions();
       if (touchedCurrentWs) await loadWorkspaceDetails();
     });
@@ -3329,43 +3258,35 @@
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(wsId)}/transactions/${txId}`, { method: 'DELETE' });
         adminSelectedTxKeys.delete(getAdminTxKey(wsId, txId));
-        state.adminTransactions = (state.adminTransactions || []).filter(
-          (r) => !(String(r.workspace_id) === String(wsId) && Number(r.id) === Number(txId))
-        );
+        state.adminTransactions = (state.adminTransactions || []).filter((r) => !(String(r.workspace_id) === String(wsId) && Number(r.id) === Number(txId)));
         renderAdminInspectorTable();
         if (String(wsId) === String(state.wsId)) {
           selectedTxIds.delete(Number(txId));
           state.transactions = (state.transactions || []).filter((r) => Number(r.id) !== Number(txId));
           state.yearlyTransactions = (state.yearlyTransactions || []).filter((r) => Number(r.id) !== Number(txId));
-          renderTransactions();
-          renderDashboard();
+          renderTransactions(); renderDashboard(); renderHomeSummary();
         }
         toast(`Deleted transaction #${txId}`, 'success');
         await loadAdminInspectorTransactions();
         if (String(wsId) === String(state.wsId)) await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     };
 
     function renderAdminInspectorTable() {
       const tbody = $('adminTxTableBody');
       if (!tbody) return;
       const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
-
       const rows = (state.adminTransactions || []).filter((r) => {
         if (!q) return true;
-        const hay = `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase();
-        return hay.includes(q);
+        return `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q);
       });
 
       tbody.innerHTML = rows.length
         ? rows.map((r) => {
             const checked = adminSelectedTxKeys.has(getAdminTxKey(r.workspace_id, r.id));
-            const safeWs = escapeHtml(r.workspace_id).replace(/'/g, "\\'");
             return `
-              <tr>
-                <td><input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleSelectAdminTx('${safeWs}', ${r.id}, this.checked)" /></td>
+              <tr data-ws-id="${escapeHtml(r.workspace_id)}" data-tx-id="${Number(r.id)}">
+                <td><input type="checkbox" class="adm-tx-cb" ${checked ? 'checked' : ''} /></td>
                 <td>${escapeHtml(r.tx_date)}</td>
                 <td><code>${escapeHtml(r.workspace_id)}</code></td>
                 <td>${escapeHtml(r.member_name)} <span class="muted">(${escapeHtml(r.creator_email || '-')})</span></td>
@@ -3375,13 +3296,18 @@
                 <td><strong>${fmtNum(r.amount_mmk)}</strong></td>
                 <td>${escapeHtml(r.payment_method || '-')}</td>
                 <td>${escapeHtml(r.notes || '-')}</td>
-                <td>
-                  <button type="button" class="small danger" onclick="adminDeleteTransaction('${safeWs}', ${r.id})">Delete</button>
-                </td>
+                <td><button type="button" class="small danger adm-tx-del-btn">Delete</button></td>
               </tr>
             `;
           }).join('')
         : '<tr><td colspan="11" class="muted">No transactions found.</td></tr>';
+
+      tbody.querySelectorAll('tr[data-ws-id][data-tx-id]').forEach((tr) => {
+        const wsId = tr.dataset.wsId;
+        const txId = Number(tr.dataset.txId);
+        tr.querySelector('.adm-tx-cb')?.addEventListener('change', (e) => toggleSelectAdminTx(wsId, txId, e.target.checked));
+        tr.querySelector('.adm-tx-del-btn')?.addEventListener('click', () => adminDeleteTransaction(wsId, txId));
+      });
       updateAdminBulkDeleteUi();
     }
 
@@ -3431,20 +3357,16 @@
         renderAdminAccessTable();
         renderAdminWorkspacesTable();
         await loadAdminInspectorTransactions();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     }
 
-    
     function renderAdminUsersTable() {
       const tbody = $('adminUsersTableBody');
       if (!tbody) return;
       const q = ($('adminUserSearch')?.value || '').trim().toLowerCase();
       const users = (state.adminUsers || []).filter((u) => {
         if (!q) return true;
-        const hay = `${u.id || ''} ${u.display_name || ''} ${u.email || ''} ${u.role || ''}`.toLowerCase();
-        return hay.includes(q);
+        return `${u.id || ''} ${u.display_name || ''} ${u.email || ''} ${u.role || ''}`.toLowerCase().includes(q);
       });
 
       const adminSet = new Set((state.adminAdmins || []).map((a) => normalizeEmail(a.email)));
@@ -3455,7 +3377,6 @@
             const em = normalizeEmail(u.email);
             const isGlobal = em === normalizeEmail(GLOBAL_ADMIN_EMAIL);
             const hasAdmin = adminSet.has(em);
-            const safeEmail = escapeHtml(u.email).replace(/'/g, "\'");
             const wsList = Array.isArray(u.workspaces)
               ? u.workspaces.map((w) => escapeHtml(typeof w === 'string' ? w : (w.workspace_name || w.workspace_id || ''))).filter(Boolean).join(', ')
               : escapeHtml(u.workspace_count ?? u.workspaces ?? '-');
@@ -3463,8 +3384,8 @@
             let actionHtml = '<span class="muted">-</span>';
             if (isGlobalAdmin() && !isGlobal) {
               actionHtml = hasAdmin
-                ? `<button type="button" class="small danger" onclick="removeExtraAdmin('${safeEmail}')">Revoke Admin</button>`
-                : `<button type="button" class="small primary" onclick="grantAdminFromUserRow('${safeEmail}')">Make Admin</button>`;
+                ? `<button type="button" class="small danger adm-revoke-btn" data-email="${escapeHtml(u.email)}">Revoke Admin</button>`
+                : `<button type="button" class="small primary adm-grant-btn" data-email="${escapeHtml(u.email)}">Make Admin</button>`;
             }
 
             return `
@@ -3480,6 +3401,9 @@
             `;
           }).join('')
         : '<tr><td colspan="7" class="muted">No users found.</td></tr>';
+
+      tbody.querySelectorAll('.adm-grant-btn[data-email]').forEach((btn) => btn.addEventListener('click', () => grantAdminFromUserRow(btn.dataset.email)));
+      tbody.querySelectorAll('.adm-revoke-btn[data-email]').forEach((btn) => btn.addEventListener('click', () => removeExtraAdmin(btn.dataset.email)));
     }
 
     function renderAdminAccessTable() {
@@ -3494,17 +3418,18 @@
         ? list.map((a) => {
             const em = normalizeEmail(a.email);
             const isGlobal = em === normalizeEmail(GLOBAL_ADMIN_EMAIL);
-            const safeEmail = escapeHtml(a.email).replace(/'/g, "\'");
             return `
               <tr>
                 <td><strong>${escapeHtml(a.email)}</strong></td>
                 <td><span class="pill ${isGlobal ? 'Income' : 'Saving'}">${escapeHtml(a.level || (isGlobal ? 'Global Admin' : 'Portal Admin'))}</span></td>
                 <td>${escapeHtml(a.added_by || '-')}</td>
-                <td>${(!isGlobal && isGlobalAdmin()) ? `<button type="button" class="small danger" onclick="removeExtraAdmin('${safeEmail}')">Remove</button>` : '<span class="muted">Protected</span>'}</td>
+                <td>${(!isGlobal && isGlobalAdmin()) ? `<button type="button" class="small danger adm-rem-btn" data-email="${escapeHtml(a.email)}">Remove</button>` : '<span class="muted">Protected</span>'}</td>
               </tr>
             `;
           }).join('')
         : '<tr><td colspan="4" class="muted">No admin records.</td></tr>';
+
+      tbody.querySelectorAll('.adm-rem-btn[data-email]').forEach((btn) => btn.addEventListener('click', () => removeExtraAdmin(btn.dataset.email)));
     }
 
     function renderAdminWorkspacesTable() {
@@ -3514,12 +3439,11 @@
 
       tbody.innerHTML = rows.length
         ? rows.map((w) => {
-            const safeWsId = escapeHtml(w.workspace_id).replace(/'/g, "\'");
             const ownerText = w.owner_name || w.owner_email
               ? `${escapeHtml(w.owner_name || '')}${w.owner_email ? ` <span class="muted">(${escapeHtml(w.owner_email)})</span>` : ''}`
               : '<span class="muted">- (-)</span>';
             return `
-              <tr>
+              <tr data-ws-id="${escapeHtml(w.workspace_id)}">
                 <td><strong>${escapeHtml(w.workspace_name || w.workspace_id)}</strong></td>
                 <td><code>${escapeHtml(w.workspace_id)}</code></td>
                 <td>${ownerText}</td>
@@ -3528,97 +3452,61 @@
                 <td>${escapeHtml(w.currency || 'MMK')}</td>
                 <td>
                   <div class="row-actions">
-                    <button type="button" class="small" onclick="switchToWorkspaceFromAdmin('${safeWsId}', 'dashboard')">View</button>
-                    <button type="button" class="small primary" onclick="switchToWorkspaceFromAdmin('${safeWsId}', 'workspace')">Pools & Settings</button>
+                    <button type="button" class="small adm-ws-view">View</button>
+                    <button type="button" class="small primary adm-ws-pools">Pools & Settings</button>
                   </div>
                 </td>
               </tr>
             `;
           }).join('')
         : '<tr><td colspan="7" class="muted">No workspaces found.</td></tr>';
+
+      tbody.querySelectorAll('tr[data-ws-id]').forEach((tr) => {
+        const wsId = tr.dataset.wsId;
+        tr.querySelector('.adm-ws-view')?.addEventListener('click', () => switchToWorkspaceFromAdmin(wsId, 'dashboard'));
+        tr.querySelector('.adm-ws-pools')?.addEventListener('click', () => switchToWorkspaceFromAdmin(wsId, 'workspace'));
+      });
     }
 
-    // 5 Merged Budget Pools (Income -> pool_id = null; Expenses -> 5 clean pools)
     const MERGED_POOL_DEFS = [
       { key: 'food_dining', name: 'Food & Dining Pool', color: '#10b981' },
-      { key: 'home_bills', name: 'Home & Bills Pool', color: '#38bdf8' },
+      { key: 'home_bills', name: 'Home & Bills Pool', color: '#22d3ee' },
       { key: 'transport', name: 'Transport Pool', color: '#f59e0b' },
       { key: 'personal_family', name: 'Personal & Family Pool', color: '#a855f7' },
       { key: 'lifestyle_debt', name: 'Lifestyle, Debt & Other Pool', color: '#f43f5e' }
     ];
 
     function normalizePoolKey(v) {
-      return String(v || '')
-        .toLowerCase()
-        .replace(/^pool_/, '')
-        .replace(/&/g, ' and ')
-        .replace(/[^a-z0-9]+/g, '_')
-        .replace(/^_+|_+$/g, '');
+      return String(v || '').toLowerCase().replace(/^pool_/, '').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
     }
 
     const SLUG_TO_MERGED_KEY = {
-      food_groceries: 'food_dining',
-      dining_snacks: 'food_dining',
-      food_and_groceries_pool: 'food_dining',
-      dining_out_and_snacks_pool: 'food_dining',
-      food_and_dining_pool: 'food_dining',
-
-      household_housing: 'home_bills',
-      bills_utilities_tax: 'home_bills',
-      household_and_housing_pool: 'home_bills',
-      bills_utilities_and_tax_pool: 'home_bills',
-      bills_and_utilities_pool: 'home_bills',
-      home_and_bills_pool: 'home_bills',
-
-      transport_fuel: 'transport',
-      transport_and_fuel_pool: 'transport',
-      transport_pool: 'transport',
-
-      tps_personal: 'personal_family',
-      family_support: 'personal_family',
-      family_general: 'personal_family',
-      kids_education: 'personal_family',
-      health_medical: 'personal_family',
-      family_and_personal_pool: 'personal_family',
-      kids_and_education_pool: 'personal_family',
-      health_and_medical_pool: 'personal_family',
-      personal_and_family_pool: 'personal_family',
-
-      shopping_lifestyle: 'lifestyle_debt',
-      gifts_social: 'lifestyle_debt',
-      pet_care: 'lifestyle_debt',
-      charity_donations: 'lifestyle_debt',
-      debt_repayment: 'lifestyle_debt',
-      shopping_and_lifestyle_pool: 'lifestyle_debt',
-      gifts_and_social_pool: 'lifestyle_debt',
-      pet_care_pool: 'lifestyle_debt',
-      charity_and_donations_pool: 'lifestyle_debt',
-      debt_and_credit_repayment_pool: 'lifestyle_debt',
-      lifestyle_debt_and_other_pool: 'lifestyle_debt'
+      food_groceries: 'food_dining', dining_snacks: 'food_dining', food_and_groceries_pool: 'food_dining',
+      dining_out_and_snacks_pool: 'food_dining', food_and_dining_pool: 'food_dining',
+      household_housing: 'home_bills', bills_utilities_tax: 'home_bills', household_and_housing_pool: 'home_bills',
+      bills_utilities_and_tax_pool: 'home_bills', bills_and_utilities_pool: 'home_bills', home_and_bills_pool: 'home_bills',
+      transport_fuel: 'transport', transport_and_fuel_pool: 'transport', transport_pool: 'transport',
+      tps_personal: 'personal_family', family_support: 'personal_family', family_general: 'personal_family',
+      kids_education: 'personal_family', health_medical: 'personal_family', family_and_personal_pool: 'personal_family',
+      kids_and_education_pool: 'personal_family', health_and_medical_pool: 'personal_family', personal_and_family_pool: 'personal_family',
+      shopping_lifestyle: 'lifestyle_debt', gifts_social: 'lifestyle_debt', pet_care: 'lifestyle_debt',
+      charity_donations: 'lifestyle_debt', debt_repayment: 'lifestyle_debt', shopping_and_lifestyle_pool: 'lifestyle_debt',
+      gifts_and_social_pool: 'lifestyle_debt', pet_care_pool: 'lifestyle_debt', charity_and_donations_pool: 'lifestyle_debt',
+      debt_and_credit_repayment_pool: 'lifestyle_debt', lifestyle_debt_and_other_pool: 'lifestyle_debt'
     };
 
     function resolveMergedPoolKey(entryType, poolColText, catText, poolIdText = '') {
       if (entryType === 'Income') return null;
-
       const pidSlug = normalizePoolKey(poolIdText);
       const pName = normalizePoolKey(poolColText);
-
       if (pidSlug && SLUG_TO_MERGED_KEY[pidSlug]) return SLUG_TO_MERGED_KEY[pidSlug];
       if (pName && SLUG_TO_MERGED_KEY[pName]) return SLUG_TO_MERGED_KEY[pName];
 
       const c = String(catText || '').toLowerCase();
-      if (c.includes('grocer') || c.includes('food') || c.includes('အစားအသောက်') || c.includes('entertainment') || c.includes('ဖျော်ဖြေရေး') || c.includes('မုန့်စား')) {
-        return 'food_dining';
-      }
-      if (c.includes('bill') || c.includes('internet') || c.includes('electric') || c.includes('tax') || c.includes('housing') || c.includes('အိမ်') || c.includes('household')) {
-        return 'home_bills';
-      }
-      if (c.includes('transport') || c.includes('သွားလာရေး')) {
-        return 'transport';
-      }
-      if (c.includes('debt') || c.includes('အကြွေး') || c.includes('shop') || c.includes('gift') || c.includes('pet') || c.includes('charity')) {
-        return 'lifestyle_debt';
-      }
+      if (c.includes('grocer') || c.includes('food') || c.includes('အစားအသောက်') || c.includes('entertainment') || c.includes('ဖျော်ဖြေရေး') || c.includes('မုန့်စား')) return 'food_dining';
+      if (c.includes('bill') || c.includes('internet') || c.includes('electric') || c.includes('tax') || c.includes('housing') || c.includes('အိမ်') || c.includes('household')) return 'home_bills';
+      if (c.includes('transport') || c.includes('သွားလာရေး')) return 'transport';
+      if (c.includes('debt') || c.includes('အကြွေး') || c.includes('shop') || c.includes('gift') || c.includes('pet') || c.includes('charity')) return 'lifestyle_debt';
       return 'personal_family';
     }
 
@@ -3643,11 +3531,7 @@
           if (!def) continue;
           await apiFetch(`/api/workspaces/${encWs}/pools`, {
             method: 'POST',
-            body: JSON.stringify({
-              pool_name: def.name,
-              default_amount: Number(defaultAmount) || 0,
-              color_tag: def.color
-            })
+            body: JSON.stringify({ pool_name: def.name, default_amount: Number(defaultAmount) || 0, color_tag: def.color })
           });
           createdAny = true;
         }
@@ -3659,23 +3543,17 @@
       }
 
       const keyToId = {};
-      for (const key of neededKeys) {
-        keyToId[key] = findIdByKey(key, pools);
-      }
+      for (const key of neededKeys) keyToId[key] = findIdByKey(key, pools);
       return { pools, keyToId };
     }
 
-    // Smart CSV Preview with Header Auto-Detect + Duplicate Match
     async function buildCsvPreview() {
       const targetWs = $('adminImportWs')?.value;
       const file = $('adminImportCsvFile')?.files?.[0];
       const prevEl = $('adminImportPreview');
       state.preparedCsvRows = [];
 
-      if (!file || !targetWs) {
-        prevEl?.classList.add('hidden');
-        return;
-      }
+      if (!file || !targetWs) { prevEl?.classList.add('hidden'); return; }
 
       try {
         const text = await file.text();
@@ -3704,19 +3582,13 @@
         const dateAmtMap = new Map();
 
         existingTx.forEach((t) => {
-          const exactKey = `${t.tx_date}|${Number(t.amount_mmk)}|${normalizeNoteKey(t.notes)}`;
-          existingMap.set(exactKey, t);
+          existingMap.set(`${t.tx_date}|${Number(t.amount_mmk)}|${normalizeNoteKey(t.notes)}`, t);
           const looseKey = `${t.tx_date}|${Number(t.amount_mmk)}`;
           if (!dateAmtMap.has(looseKey)) dateAmtMap.set(looseKey, t);
         });
 
-        let invalidCount = 0;
-        let newCount = 0;
-        let updateCount = 0;
-        let sumInc = 0;
-        let sumExp = 0;
-        const parsedItems = [];
-        const neededPoolKeys = new Set();
+        let invalidCount = 0, newCount = 0, updateCount = 0, sumInc = 0, sumExp = 0;
+        const parsedItems = [], neededPoolKeys = new Set();
 
         for (let i = 1; i < rows.length; i++) {
           const r = rows[i];
@@ -3732,10 +3604,7 @@
           const csvPoolName = String(r[colPoolName] || '').trim();
           const csvPoolId = String(r[colPoolId] || '').trim();
 
-          if (!txDate || amountMmk <= 0) {
-            invalidCount++;
-            continue;
-          }
+          if (!txDate || amountMmk <= 0) { invalidCount++; continue; }
 
           const mergedKey = resolveMergedPoolKey(entryType, csvPoolName, category, csvPoolId);
           if (mergedKey) neededPoolKeys.add(mergedKey);
@@ -3746,48 +3615,20 @@
 
           if (entryType === 'Income') sumInc += amountMmk;
           if (entryType === 'Expense') sumExp += amountMmk;
+          if (existingRow) updateCount++; else newCount++;
 
-          if (existingRow) {
-            updateCount++;
-          } else {
-            newCount++;
-          }
-
-          parsedItems.push({
-            existing_id: existingRow ? existingRow.id : null,
-            tx_date: txDate,
-            member_name: memberName,
-            entry_type: entryType,
-            category,
-            amount_mmk: amountMmk,
-            payment_method: paymentMethod,
-            notes,
-            merged_pool_key: mergedKey,
-            csv_pool_name: csvPoolName
-          });
+          parsedItems.push({ existing_id: existingRow ? existingRow.id : null, tx_date: txDate, member_name: memberName, entry_type: entryType, category, amount_mmk: amountMmk, payment_method: paymentMethod, notes, merged_pool_key: mergedKey, csv_pool_name: csvPoolName });
         }
 
         const { keyToId } = await ensureMergedPoolsAndMap(targetWs, state.month, neededPoolKeys, 0);
+        state.preparedCsvRows = parsedItems.map((item) => ({ ...item, pool_id: item.merged_pool_key ? (keyToId[item.merged_pool_key] ?? null) : null }));
 
-        const ready = parsedItems.map((item) => ({
-          ...item,
-          pool_id: item.merged_pool_key ? (keyToId[item.merged_pool_key] ?? null) : null
-        }));
-
-        state.preparedCsvRows = ready;
         if (prevEl) {
           prevEl.classList.remove('hidden');
           prevEl.innerHTML = `
             <div><strong>Smart Import Preview (${escapeHtml(targetWs)})</strong></div>
-            <div style="margin-top:4px;">
-              New Rows: <strong style="color:var(--income);">${newCount}</strong> ·
-              Existing Rows to Update Pool: <strong style="color:var(--gold);">${updateCount}</strong> ·
-              Invalid Skipped: <strong>${invalidCount}</strong>
-            </div>
-            <div class="muted" style="margin-top:4px;">
-              Preview Income (Unpooled): <strong>${fmtNum(sumInc)}</strong> ·
-              Preview Expense (5 Merged Pools): <strong>${fmtNum(sumExp)}</strong>
-            </div>
+            <div style="margin-top:4px;">New Rows: <strong style="color:var(--income);">${newCount}</strong> · Existing Rows to Update Pool: <strong style="color:var(--gold);">${updateCount}</strong> · Invalid Skipped: <strong>${invalidCount}</strong></div>
+            <div class="muted" style="margin-top:4px;">Preview Income (Unpooled): <strong>${fmtNum(sumInc)}</strong> · Preview Expense (5 Merged Pools): <strong>${fmtNum(sumExp)}</strong></div>
           `;
         }
       } catch (err) {
@@ -3805,26 +3646,16 @@
       e.preventDefault();
       const targetWs = $('adminImportWs')?.value;
       if (!targetWs) return;
-
-      if (!state.preparedCsvRows.length) {
-        await buildCsvPreview();
-      }
+      if (!state.preparedCsvRows.length) await buildCsvPreview();
       const readyList = state.preparedCsvRows || [];
-      if (!readyList.length) {
-        toast('No valid rows found in CSV', 'error');
-        return;
-      }
+      if (!readyList.length) { toast('No valid rows found in CSV', 'error'); return; }
 
       const btn = $('adminImportSubmitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Syncing CSV...';
+      btn.disabled = true; btn.textContent = 'Syncing CSV...';
       setStatus('adminImportStatus', '');
 
       try {
-        let insertedCount = 0;
-        let updatedCount = 0;
-        let failedCount = 0;
-        let lastErr = '';
+        let insertedCount = 0, updatedCount = 0, failedCount = 0, lastErr = '';
         const encWs = encodeURIComponent(targetWs);
 
         for (const item of readyList) {
@@ -3832,77 +3663,42 @@
             if (item.existing_id) {
               await apiFetch(`/api/workspaces/${encWs}/transactions/${item.existing_id}`, {
                 method: 'PATCH',
-                body: JSON.stringify({
-                  tx_date: item.tx_date,
-                  member_name: item.member_name,
-                  entry_type: item.entry_type,
-                  category: item.category,
-                  amount_mmk: item.amount_mmk,
-                  payment_method: item.payment_method,
-                  notes: item.notes,
-                  pool_id: item.pool_id
-                })
+                body: JSON.stringify({ tx_date: item.tx_date, member_name: item.member_name, entry_type: item.entry_type, category: item.category, amount_mmk: item.amount_mmk, payment_method: item.payment_method, notes: item.notes, pool_id: item.pool_id })
               });
               updatedCount++;
             } else {
               const fd = new FormData();
-              fd.append('tx_date', item.tx_date);
-              fd.append('member_name', item.member_name);
-              fd.append('entry_type', item.entry_type);
-              fd.append('category', item.category);
-              fd.append('amount_mmk', String(item.amount_mmk));
-              fd.append('payment_method', item.payment_method);
+              fd.append('tx_date', item.tx_date); fd.append('member_name', item.member_name);
+              fd.append('entry_type', item.entry_type); fd.append('category', item.category);
+              fd.append('amount_mmk', String(item.amount_mmk)); fd.append('payment_method', item.payment_method);
               if (item.pool_id) fd.append('pool_id', String(item.pool_id));
               if (item.notes) fd.append('notes', item.notes);
-
-              await apiFetch(`/api/workspaces/${encWs}/transactions`, {
-                method: 'POST',
-                body: fd
-              });
+              await apiFetch(`/api/workspaces/${encWs}/transactions`, { method: 'POST', body: fd });
               insertedCount++;
             }
-          } catch (rowErr) {
-            failedCount++;
-            lastErr = rowErr?.message || 'Row failed';
-          }
+          } catch (rowErr) { failedCount++; lastErr = rowErr?.message || 'Row failed'; }
         }
 
         if (insertedCount > 0 || updatedCount > 0) {
-          $('adminImportCsvFile').value = '';
-          state.preparedCsvRows = [];
-          $('adminImportPreview')?.classList.add('hidden');
+          $('adminImportCsvFile').value = ''; state.preparedCsvRows = []; $('adminImportPreview')?.classList.add('hidden');
         }
 
-        const msg = failedCount > 0
-          ? `Inserted ${insertedCount}, Updated ${updatedCount}, Failed ${failedCount} (${lastErr})`
-          : `Done: ${insertedCount} new rows inserted, ${updatedCount} existing rows updated in ${targetWs}`;
+        const msg = failedCount > 0 ? `Inserted ${insertedCount}, Updated ${updatedCount}, Failed ${failedCount} (${lastErr})` : `Done: ${insertedCount} new rows inserted, ${updatedCount} existing rows updated in ${targetWs}`;
         setStatus('adminImportStatus', msg, failedCount > 0 ? 'err' : 'ok');
         toast(msg, failedCount > 0 ? 'error' : 'success');
         if (targetWs === state.wsId) await loadWorkspaceDetails();
         await loadFullAdminConsole();
       } catch (err) {
-        setStatus('adminImportStatus', err.message, 'err');
-        toast(err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Import CSV to D1';
-      }
+        setStatus('adminImportStatus', err.message, 'err'); toast(err.message, 'error');
+      } finally { btn.disabled = false; btn.textContent = 'Import CSV to D1'; }
     });
 
     $('adminReloadBtn')?.addEventListener('click', async () => {
-      await loadWorkspacesAndData();
-      await loadFullAdminConsole();
-      toast('Admin portal data refreshed', 'success');
+      await loadWorkspacesAndData(); await loadFullAdminConsole(); toast('Admin portal data refreshed', 'success');
     });
 
-    $('adminJumpWorkspaceBtn')?.addEventListener('click', () => {
-      document.querySelector('.nav-tabs button[data-tab="workspace"]')?.click();
-    });
-
-    $('dashManagePoolsBtn')?.addEventListener('click', () => {
-      document.querySelector('.nav-tabs button[data-tab="workspace"]')?.click();
-    });
-
+    $('adminJumpWorkspaceBtn')?.addEventListener('click', () => activateTab('workspace', true));
+    $('dashManagePoolsBtn')?.addEventListener('click', () => activateTab('workspace', true));
     $('adminUserSearch')?.addEventListener('input', renderAdminUsersTable);
     $('adminTxSearch')?.addEventListener('input', renderAdminInspectorTable);
     $('adminLoadTxBtn')?.addEventListener('click', loadAdminInspectorTransactions);
@@ -3910,12 +3706,7 @@
     $('adminExportTxCsvBtn')?.addEventListener('click', () => {
       const rows = state.adminTransactions || [];
       const headers = ['Date', 'Workspace', 'Member', 'CreatorEmail', 'Type', 'Pool', 'Category', 'Amount', 'Payment', 'Notes'];
-      const lines = [headers.join(',')].concat(
-        rows.map((r) => [
-          r.tx_date, r.workspace_id, r.member_name, r.creator_email || '',
-          r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''
-        ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
-      );
+      const lines = [headers.join(',')].concat(rows.map((r) => [r.tx_date, r.workspace_id, r.member_name, r.creator_email || '', r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')));
       const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -3926,240 +3717,114 @@
 
     $('addAdminEmailForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!isGlobalAdmin()) {
-        toast('Only Global Admin can add admins.', 'error');
-        return;
-      }
+      if (!isGlobalAdmin()) { toast('Only Global Admin can add admins.', 'error'); return; }
       const email = normalizeEmail($('newAdminEmail')?.value);
       if (!email) return;
-
       try {
-        await apiFetch('/api/admin/users/admins', {
-          method: 'POST',
-          body: JSON.stringify({ email })
-        });
+        await apiFetch('/api/admin/users/admins', { method: 'POST', body: JSON.stringify({ email }) });
         $('newAdminEmail').value = '';
         toast('Admin added', 'success');
         await loadFullAdminConsole();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     });
 
     $('themeToggleBtn').addEventListener('click', () => {
-      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     });
 
     function showAuthMode(mode) {
-      const isLogin = mode === 'login';
-      const isReg = mode === 'register';
-      const isForgot = mode === 'forgot';
-
+      const isLogin = mode === 'login', isReg = mode === 'register', isForgot = mode === 'forgot';
       $('tabLogin').classList.toggle('active', isLogin || isForgot);
       $('tabRegister').classList.toggle('active', isReg);
       $('loginForm').classList.toggle('hidden', !isLogin);
       $('registerForm').classList.toggle('hidden', !isReg);
       $('forgotWrap').classList.toggle('hidden', !isForgot);
-
-      setStatus('loginStatus', '');
-      setStatus('regStatus', '');
-      setStatus('forgotStatus', '');
+      setStatus('loginStatus', ''); setStatus('regStatus', ''); setStatus('forgotStatus', '');
     }
 
     $('tabLogin').addEventListener('click', () => showAuthMode('login'));
     $('tabRegister').addEventListener('click', () => showAuthMode('register'));
-    $('openForgotBtn').addEventListener('click', () => {
-      $('forgotEmail').value = $('loginEmail').value.trim();
-      showAuthMode('forgot');
-    });
+    $('openForgotBtn').addEventListener('click', () => { $('forgotEmail').value = $('loginEmail').value.trim(); showAuthMode('forgot'); });
     $('backToLoginBtn').addEventListener('click', () => showAuthMode('login'));
 
     $('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = $('loginSubmitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Signing in...';
+      btn.disabled = true; btn.textContent = 'Signing in...';
       setStatus('loginStatus', '');
-
       try {
-        const data = await apiFetch('/api/auth/login', {
-          method: 'POST',
-          body: JSON.stringify({
-            email: $('loginEmail').value.trim(),
-            password: $('loginPassword').value
-          })
-        });
+        const data = await apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: $('loginEmail').value.trim(), password: $('loginPassword').value }) });
         state.token = data.token;
         state.user = { ...data.user, default_workspace_id: data.default_workspace_id };
         state.wsId = data.default_workspace_id || '';
         localStorage.setItem(STORAGE_KEYS.token, state.token);
         setAuthUi(true);
+        await activateTab('home', false);
         toast('Signed in successfully', 'success');
         await loadWorkspacesAndData();
-      } catch (err) {
-        setStatus('loginStatus', err.message, 'err');
-        toast(err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Sign In';
-      }
+      } catch (err) { setStatus('loginStatus', err.message, 'err'); toast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Sign In'; }
     });
 
     $('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const pw = $('regPassword').value;
-      const confirmPw = $('regConfirmPassword').value;
-      if (pw !== confirmPw) {
-        const msg = 'Passwords do not match';
-        setStatus('regStatus', msg, 'err');
-        toast(msg, 'error');
-        return;
-      }
+      const pw = $('regPassword').value, confirmPw = $('regConfirmPassword').value;
+      if (pw !== confirmPw) { const msg = 'Passwords do not match'; setStatus('regStatus', msg, 'err'); toast(msg, 'error'); return; }
       const btn = $('regSubmitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Creating account...';
+      btn.disabled = true; btn.textContent = 'Creating account...';
       setStatus('regStatus', '');
-
       try {
-        const data = await apiFetch('/api/auth/register', {
-          method: 'POST',
-          body: JSON.stringify({
-            display_name: $('regName').value.trim(),
-            email: $('regEmail').value.trim(),
-            password: pw
-          })
-        });
+        const data = await apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify({ display_name: $('regName').value.trim(), email: $('regEmail').value.trim(), password: pw }) });
         state.token = data.token;
         state.user = { ...data.user, default_workspace_id: data.default_workspace_id };
         state.wsId = data.default_workspace_id || '';
         localStorage.setItem(STORAGE_KEYS.token, state.token);
         setAuthUi(true);
+        await activateTab('home', false);
         toast('Account created', 'success');
         await loadWorkspacesAndData();
-      } catch (err) {
-        setStatus('regStatus', err.message, 'err');
-        toast(err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Create Account';
-      }
+      } catch (err) { setStatus('regStatus', err.message, 'err'); toast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Create Account'; }
     });
 
     $('forgotForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = $('sendCodeBtn');
-      btn.disabled = true;
-      btn.textContent = 'Sending...';
+      btn.disabled = true; btn.textContent = 'Sending...';
       setStatus('forgotStatus', '');
-
       try {
-        const res = await apiFetch('/api/auth/forgot-password', {
-          method: 'POST',
-          body: JSON.stringify({ email: $('forgotEmail').value.trim() })
-        });
+        const res = await apiFetch('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email: $('forgotEmail').value.trim() }) });
         if (res.reset_code) $('resetCode').value = res.reset_code;
         setStatus('forgotStatus', res.message + (res.reset_code ? ` (Code: ${res.reset_code})` : ''), 'ok');
         toast('Reset code sent', 'success');
-      } catch (err) {
-        setStatus('forgotStatus', err.message, 'err');
-        toast(err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Send Code';
-      }
+      } catch (err) { setStatus('forgotStatus', err.message, 'err'); toast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Send Code'; }
     });
 
     $('resetForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const newPw = $('resetNewPassword').value;
-      const confirmPw = $('resetConfirmPassword').value;
-
-      if (newPw.length < 6) {
-        const msg = 'Password must be at least 6 characters';
-        setStatus('forgotStatus', msg, 'err');
-        toast(msg, 'error');
-        return;
-      }
-
-      if (newPw !== confirmPw) {
-        const msg = 'New passwords do not match';
-        setStatus('forgotStatus', msg, 'err');
-        toast(msg, 'error');
-        return;
-      }
-
+      const newPw = $('resetNewPassword').value, confirmPw = $('resetConfirmPassword').value;
+      if (newPw.length < 6) { const msg = 'Password must be at least 6 characters'; setStatus('forgotStatus', msg, 'err'); toast(msg, 'error'); return; }
+      if (newPw !== confirmPw) { const msg = 'New passwords do not match'; setStatus('forgotStatus', msg, 'err'); toast(msg, 'error'); return; }
       const btn = $('resetSubmitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Updating...';
+      btn.disabled = true; btn.textContent = 'Updating...';
       setStatus('forgotStatus', '');
-
       try {
-        const res = await apiFetch('/api/auth/reset-password', {
-          method: 'POST',
-          body: JSON.stringify({
-            email: $('forgotEmail').value.trim(),
-            code: $('resetCode').value.trim(),
-            new_password: newPw
-          })
-        });
-        $('resetCode').value = '';
-        $('resetNewPassword').value = '';
-        $('resetConfirmPassword').value = '';
+        const res = await apiFetch('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ email: $('forgotEmail').value.trim(), code: $('resetCode').value.trim(), new_password: newPw }) });
+        $('resetCode').value = ''; $('resetNewPassword').value = ''; $('resetConfirmPassword').value = '';
         toast(res.message || 'Password updated', 'success');
         showAuthMode('login');
         setStatus('loginStatus', 'Password updated. Please sign in.', 'ok');
-      } catch (err) {
-        setStatus('forgotStatus', err.message, 'err');
-        toast(err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Update Password';
-      }
+      } catch (err) { setStatus('forgotStatus', err.message, 'err'); toast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Update Password'; }
     });
 
     $('logoutBtn').addEventListener('click', () => handleLogout(true));
 
-
-
-   document.querySelectorAll('.nav-tabs button').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const target = btn.dataset.tab;
-        if (target === 'admin' && !isAnyAdmin()) {
-          toast('Admin access required', 'error');
-          return;
-        }
-        document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b === btn));
-        ['dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => $('tab-' + t).classList.toggle('hidden', t !== target));
-        if (target === 'dashboard') {
-          syncSlicerButtons();
-          renderDashboard();
-          if (state.wsId) {
-            try {
-              await loadWorkspaceDetails();
-            } catch (err) {
-              toast(err.message, 'error');
-            }
-          }
-        } else if (target === 'transactions') {
-          renderTransactions();
-          if (state.wsId) {
-            try {
-              await loadWorkspaceDetails();
-            } catch (err) {
-              toast(err.message, 'error');
-            }
-          }
-        } else if (target === 'admin') {
-          await loadFullAdminConsole();
-        }
-      });
-    });
-
     $('workspaceSelect').addEventListener('change', async (e) => {
       state.wsId = e.target.value;
       localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
-      resetTxForm();
+      closeTxModal(false);
       await loadWorkspaceDetails();
     });
 
@@ -4172,54 +3837,43 @@
 
     $('txType').addEventListener('change', updateCategoryDropdown);
     $('txPool').addEventListener('change', updatePoolBalanceHint);
-    $('txCancelEditBtn').addEventListener('click', resetTxForm);
 
     $('txForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const ws = encodeURIComponent(state.wsId);
       const editId = $('editingTxId').value;
       const selectedPoolId = $('txPool').value ? Number($('txPool').value) : null;
+      const submitBtn = $('txSubmitBtn');
+      submitBtn.disabled = true;
 
       try {
         if (editId) {
           await apiFetch(`/api/workspaces/${ws}/transactions/${editId}`, {
             method: 'PATCH',
             body: JSON.stringify({
-              tx_date: $('txDate').value,
-              member_name: $('txMember').value,
-              entry_type: $('txType').value,
-              category: $('txCategory').value,
-              amount_mmk: Number($('txAmount').value),
-              payment_method: $('txPayment').value,
-              notes: $('txNotes').value.trim(),
-              pool_id: selectedPoolId
+              tx_date: $('txDate').value, member_name: $('txMember').value, entry_type: $('txType').value,
+              category: $('txCategory').value, amount_mmk: Number($('txAmount').value),
+              payment_method: $('txPayment').value, notes: $('txNotes').value.trim(), pool_id: selectedPoolId
             })
           });
           toast('Transaction updated', 'success');
         } else {
           const fd = new FormData();
-          fd.append('tx_date', $('txDate').value);
-          fd.append('member_name', $('txMember').value);
-          fd.append('entry_type', $('txType').value);
-          fd.append('category', $('txCategory').value);
-          fd.append('amount_mmk', String(Number($('txAmount').value)));
-          fd.append('payment_method', $('txPayment').value);
+          fd.append('tx_date', $('txDate').value); fd.append('member_name', $('txMember').value);
+          fd.append('entry_type', $('txType').value); fd.append('category', $('txCategory').value);
+          fd.append('amount_mmk', String(Number($('txAmount').value))); fd.append('payment_method', $('txPayment').value);
           if (selectedPoolId) fd.append('pool_id', String(selectedPoolId));
           if ($('txNotes').value.trim()) fd.append('notes', $('txNotes').value.trim());
           const file = $('txReceipt').files[0];
           if (file) fd.append('receipt', file);
 
-          await apiFetch(`/api/workspaces/${ws}/transactions`, {
-            method: 'POST',
-            body: fd
-          });
+          await apiFetch(`/api/workspaces/${ws}/transactions`, { method: 'POST', body: fd });
           toast('Saved to D1 & R2', 'success');
         }
-        resetTxForm();
+        closeTxModal(false);
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
+      finally { submitBtn.disabled = false; }
     });
 
     $('txSearch').addEventListener('input', renderTransactions);
@@ -4228,12 +3882,7 @@
     $('exportCsvBtn').addEventListener('click', () => {
       const rows = getFilteredTransactions();
       const headers = ['Date', 'Member', 'Type', 'Pool', 'Category', 'Amount', 'Payment', 'Notes', 'ReceiptKey'];
-      const lines = [headers.join(',')].concat(
-        rows.map((r) => [
-          r.tx_date, r.member_name, r.entry_type, r.pool_name || '', r.category,
-          r.amount_mmk, r.payment_method || '', r.notes || '', r.receipt_key || ''
-        ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
-      );
+      const lines = [headers.join(',')].concat(rows.map((r) => [r.tx_date, r.member_name, r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || '', r.receipt_key || ''].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')));
       const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -4247,19 +3896,12 @@
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools`, {
           method: 'POST',
-          body: JSON.stringify({
-            pool_name: $('newPoolName').value.trim(),
-            default_amount: Number($('newPoolDefaultAmt').value),
-            color_tag: $('newPoolColor').value
-          })
+          body: JSON.stringify({ pool_name: $('newPoolName').value.trim(), default_amount: Number($('newPoolDefaultAmt').value), color_tag: $('newPoolColor').value })
         });
-        $('newPoolName').value = '';
-        $('newPoolDefaultAmt').value = '';
+        $('newPoolName').value = ''; $('newPoolDefaultAmt').value = '';
         toast('Budget pool saved', 'success');
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     });
 
     $('createWsForm').addEventListener('submit', async (e) => {
@@ -4267,19 +3909,13 @@
       try {
         const res = await apiFetch('/api/workspaces', {
           method: 'POST',
-          body: JSON.stringify({
-            workspace_name: $('newWsName').value.trim(),
-            workspace_id: $('newWsId').value.trim()
-          })
+          body: JSON.stringify({ workspace_name: $('newWsName').value.trim(), workspace_id: $('newWsId').value.trim() })
         });
         state.wsId = res.workspace_id;
-        $('newWsName').value = '';
-        $('newWsId').value = '';
+        $('newWsName').value = ''; $('newWsId').value = '';
         toast('Workspace created', 'success');
         await loadWorkspacesAndData();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     });
 
     $('inviteMemberForm').addEventListener('submit', async (e) => {
@@ -4287,20 +3923,11 @@
       try {
         const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/invites`, {
           method: 'POST',
-          body: JSON.stringify({
-            email: $('inviteEmail').value.trim(),
-            app_url: window.location.origin
-          })
+          body: JSON.stringify({ email: $('inviteEmail').value.trim(), app_url: window.location.origin })
         });
         $('inviteEmail').value = '';
-        if (res.sent) {
-          toast('Invite email sent!', 'success');
-        } else {
-          toast('Invite created! Share link: ' + res.invite_link, 'success');
-        }
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+        toast(res.sent ? 'Invite email sent!' : 'Invite created! Share link: ' + res.invite_link, 'success');
+      } catch (err) { toast(err.message, 'error'); }
     });
 
     $('settingsForm').addEventListener('submit', async (e) => {
@@ -4317,9 +3944,7 @@
         });
         toast('Settings updated', 'success');
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     });
 
     $('addCategoryForm').addEventListener('submit', async (e) => {
@@ -4327,32 +3952,23 @@
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories`, {
           method: 'POST',
-          body: JSON.stringify({
-            name: $('newCatName').value.trim(),
-            entry_type: $('newCatType').value
-          })
+          body: JSON.stringify({ name: $('newCatName').value.trim(), entry_type: $('newCatType').value })
         });
         $('newCatName').value = '';
         toast('Category saved', 'success');
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     });
 
     if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       const swCode = `
         const CACHE_NAME = 'sayin-pwa-v1';
         self.addEventListener('install', (event) => {
-          event.waitUntil(
-            caches.open(CACHE_NAME).then((cache) => cache.addAll(['./sayin-logo-cropped-transparent.png']).catch(() => {}))
-          );
+          event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./sayin-logo-cropped-transparent.png']).catch(() => {})));
           self.skipWaiting();
         });
         self.addEventListener('activate', (event) => {
-          event.waitUntil(
-            caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
-          );
+          event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))));
           self.clients.claim();
         });
         self.addEventListener('fetch', (event) => {
@@ -4362,10 +3978,7 @@
           if (url.origin === self.location.origin && (req.mode === 'navigate' || url.pathname.endsWith('.png'))) {
             event.respondWith(
               fetch(req).then((res) => {
-                if (res && res.ok) {
-                  const copy = res.clone();
-                  caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
-                }
+                if (res && res.ok) { const copy = res.clone(); caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {}); }
                 return res;
               }).catch(() => caches.match(req).then((cached) => cached || caches.match('./')))
             );
@@ -4377,6 +3990,7 @@
       navigator.serviceWorker.register(swUrl, { scope: './' }).catch(() => {});
     }
 
+    syncSoundButton();
     applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
     syncSlicerButtons();
     $('txDate').value = new Date().toISOString().slice(0, 10);
@@ -4385,10 +3999,7 @@
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && state.token && state.wsId) {
         const now = Date.now();
-        if (now - lastAutoSyncAt > 4000) {
-          lastAutoSyncAt = now;
-          loadWorkspaceDetails({ force: true }).catch(() => {});
-        }
+        if (now - lastAutoSyncAt > 4000) { lastAutoSyncAt = now; loadWorkspaceDetails({ force: true }).catch(() => {}); }
       }
     });
 
@@ -4399,74 +4010,38 @@
         try {
           const size = 512;
           const canvas = document.createElement('canvas');
-          canvas.width = size;
-          canvas.height = size;
+          canvas.width = size; canvas.height = size;
           const ctx = canvas.getContext('2d');
           if (!ctx) return;
-
-          // Dark navy background matching logo badge + brand theme
-          ctx.fillStyle = '#0b192c';
-          ctx.fillRect(0, 0, size, size);
-
-          // Preserve natural aspect ratio with safe inset padding (76% of square)
-          const maxW = size * 0.76;
-          const maxH = size * 0.76;
-          const natW = img.naturalWidth || size;
-          const natH = img.naturalHeight || size;
-          const scale = Math.min(maxW / natW, maxH / natH);
-          const drawW = natW * scale;
-          const drawH = natH * scale;
-          const dx = (size - drawW) / 2;
-          const dy = (size - drawH) / 2;
-
-          ctx.drawImage(img, dx, dy, drawW, drawH);
+          ctx.fillStyle = '#071b2e'; ctx.fillRect(0, 0, size, size);
+          const maxW = size * 0.76, maxH = size * 0.76;
+          const scale = Math.min(maxW / (img.naturalWidth || size), maxH / (img.naturalHeight || size));
+          const drawW = (img.naturalWidth || size) * scale, drawH = (img.naturalHeight || size) * scale;
+          ctx.drawImage(img, (size - drawW) / 2, (size - drawH) / 2, drawW, drawH);
           const squareDataUrl = canvas.toDataURL('image/png');
-
-          const appleLink = $('appleTouchIconLink');
-          if (appleLink) appleLink.href = squareDataUrl;
-
-          const manifestLink = $('pwaManifestLink');
-          if (manifestLink) {
+          if ($('appleTouchIconLink')) $('appleTouchIconLink').href = squareDataUrl;
+          if ($('pwaManifestLink')) {
             const manifestObj = {
-              name: 'Sayin — Budget Pool Portal',
-              short_name: 'Sayin',
-              start_url: './',
-              scope: './',
-              display: 'standalone',
-              orientation: 'portrait-primary',
-              background_color: '#060d1a',
-              theme_color: '#0b192c',
-              icons: [
-                {
-                  src: squareDataUrl,
-                  sizes: '512x512',
-                  type: 'image/png',
-                  purpose: 'any'
-                }
-              ]
+              name: 'Sayin — Budget Pool Portal', short_name: 'Sayin', start_url: './', scope: './',
+              display: 'standalone', orientation: 'portrait-primary', background_color: '#051221', theme_color: '#071b2e',
+              icons: [{ src: squareDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any' }]
             };
-            manifestLink.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifestObj));
+            $('pwaManifestLink').href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifestObj));
           }
-        } catch {
-          // Keep direct PNG fallback if canvas is tainted
-        }
+        } catch {}
       };
       img.src = './sayin-logo-cropped-transparent.png';
     })();
 
     (async function boot() {
-      if (!state.token) {
-        setAuthUi(false);
-        return;
-      }
+      if (!state.token) { setAuthUi(false); return; }
       try {
         const me = await apiFetch('/api/auth/me');
         state.user = me.user;
         setAuthUi(true);
+        await activateTab('home', false);
         await loadWorkspacesAndData();
-      } catch {
-        handleLogout(false);
-      }
+      } catch { handleLogout(false); }
     })();
   </script>
 </body>
