@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0b192c" />
-  <link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sayin%20%E2%80%94%20Budget%20Pool%20Portal%22%2C%22short_name%22%3A%22Sayin%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22background_color%22%3A%22%23060d1a%22%2C%22theme_color%22%3A%22%230b192c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22.%2Fsayin-logo-cropped-transparent.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D" />
+  <link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sayin%20%E2%80%94%20Budget%20Pool%20Portal%22%2C%22short_name%22%3A%22Sayin%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22background_color%22%3A%22%23060d1a%22%2C%22theme_color%22%3A%22%230b192c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22.%2Fsayin-logo-cropped-transparent.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%5D%7D" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sayin" />
-  <link rel="apple-touch-icon" href="./sayin-logo-cropped-transparent.png" />
+  <link id="appleTouchIconLink" rel="apple-touch-icon" sizes="180x180" href="./sayin-logo-cropped-transparent.png" />
   <title>Sayin — စာရင်း & Budget Pool Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
@@ -4391,6 +4391,68 @@
         }
       }
     });
+
+    (function buildSquarePwaIcons() {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        try {
+          const size = 512;
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+
+          // Dark navy background matching logo badge + brand theme
+          ctx.fillStyle = '#0b192c';
+          ctx.fillRect(0, 0, size, size);
+
+          // Preserve natural aspect ratio with safe inset padding (76% of square)
+          const maxW = size * 0.76;
+          const maxH = size * 0.76;
+          const natW = img.naturalWidth || size;
+          const natH = img.naturalHeight || size;
+          const scale = Math.min(maxW / natW, maxH / natH);
+          const drawW = natW * scale;
+          const drawH = natH * scale;
+          const dx = (size - drawW) / 2;
+          const dy = (size - drawH) / 2;
+
+          ctx.drawImage(img, dx, dy, drawW, drawH);
+          const squareDataUrl = canvas.toDataURL('image/png');
+
+          const appleLink = $('appleTouchIconLink');
+          if (appleLink) appleLink.href = squareDataUrl;
+
+          const manifestLink = $('pwaManifestLink');
+          if (manifestLink) {
+            const manifestObj = {
+              name: 'Sayin — Budget Pool Portal',
+              short_name: 'Sayin',
+              start_url: './',
+              scope: './',
+              display: 'standalone',
+              orientation: 'portrait-primary',
+              background_color: '#060d1a',
+              theme_color: '#0b192c',
+              icons: [
+                {
+                  src: squareDataUrl,
+                  sizes: '512x512',
+                  type: 'image/png',
+                  purpose: 'any'
+                }
+              ]
+            };
+            manifestLink.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifestObj));
+          }
+        } catch {
+          // Keep direct PNG fallback if canvas is tainted
+        }
+      };
+      img.src = './sayin-logo-cropped-transparent.png';
+    })();
 
     (async function boot() {
       if (!state.token) {
