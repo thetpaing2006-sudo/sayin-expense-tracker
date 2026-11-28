@@ -808,9 +808,31 @@
       .brand { flex: 1 1 100%; }
       .brand-logo-box img { height: 26px; max-width: 96px; }
       .brand h1 { font-size: 15px; }
-      .topbar-actions { width: 100%; max-width: 100%; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
-      #wsSelectorWrap, #monthWrap { width: 100%; max-width: 100%; min-width: 0 !important; overflow: hidden; }
-      #wsSelectorWrap select, #monthWrap input[type="month"] { width: 100%; max-width: 100%; min-width: 0; font-size: 13px; padding: 8px 10px; }
+  .topbar-actions {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+    #wsSelectorWrap,
+      #monthWrap {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow: hidden;
+      }
+     #monthWrap input[type="month"],
+      #wsSelectorWrap select {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        font-size: 13px;
+        padding: 8px 10px;
+      }
       .topbar-btn-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px; width: 100%; }
       .topbar-btn-row > button { width: 100%; padding: 8px 7px; font-size: 11px; text-align: center; }
       .slicer-group { width: 100%; }
