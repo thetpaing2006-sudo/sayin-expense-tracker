@@ -2089,12 +2089,27 @@ function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
       $('slicerYearlyBtn')?.classList.toggle('active', isYearly);
     }
 
-    function setPeriodMode(mode) {
-      state.periodMode = mode === 'yearly' ? 'yearly' : 'monthly';
-      localStorage.setItem(STORAGE_KEYS.period, state.periodMode);
-      syncSlicerButtons();
+function setPeriodMode(mode) {
+      const allowed = ['day', 'week', 'monthly', 'yearly'];
+      state.periodMode = allowed.includes(mode) ? mode : 'monthly';
+      if (STORAGE_KEYS?.period) {
+        localStorage.setItem(STORAGE_KEYS.period, state.periodMode);
+      }
+      if (typeof syncSlicerButtons === 'function') {
+        syncSlicerButtons();
+      } else {
+        $('slicerDayBtn')?.classList.toggle('active', state.periodMode === 'day');
+        $('slicerWeekBtn')?.classList.toggle('active', state.periodMode === 'week');
+        $('slicerMonthlyBtn')?.classList.toggle('active', state.periodMode === 'monthly');
+        $('slicerYearlyBtn')?.classList.toggle('active', state.periodMode === 'yearly');
+      }
       renderDashboard();
     }
+
+    $('slicerDayBtn')?.addEventListener('click', () => setPeriodMode('day'));
+    $('slicerWeekBtn')?.addEventListener('click', () => setPeriodMode('week'));
+    $('slicerMonthlyBtn')?.addEventListener('click', () => setPeriodMode('monthly'));
+    $('slicerYearlyBtn')?.addEventListener('click', () => setPeriodMode('yearly'));
 
     function getApiUrl(path) {
       const base = (state.apiBase || '').replace(/\/+$/, '');
@@ -2895,61 +2910,109 @@ function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
       return { isYearly: false, periodLabel: state.month, totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining, unalloc: totalIncome - totalAllocated, pools: fallbackPools, cats: state.categorySummary || [], txList };
     }
 
-    function buildActiveDashboardViewModel() {
-      if (state.periodMode !== 'yearly') return buildMonthlyViewModel();
-      const { year, months } = getYearMonths(state.month);
-      const yTx = state.yearlyTransactions || [];
-      let totalIncome = 0, totalExpense = 0, totalSaving = 0;
-      const catMap = new Map();
-      for (const tx of yTx) {
-        const amt = Number(tx.amount_mmk || 0);
-        const type = tx.entry_type;
-        if (type === 'Income') totalIncome += amt;
-        else if (type === 'Saving') totalSaving += amt;
-        else totalExpense += amt;
-        const catKey = `${tx.category || 'Uncategorized'}||${type}`;
-        if (!catMap.has(catKey)) catMap.set(catKey, { category: tx.category || 'Uncategorized', entry_type: type, total_mmk: 0 });
-        catMap.get(catKey).total_mmk += amt;
+   function buildActiveDashboardViewModel() {
+      const mode = state.periodMode || 'monthly';
+      if (mode === 'monthly') return buildMonthlyViewModel();
+
+      if (mode === 'yearly') {
+        const { year, months } = getYearMonths(state.month);
+        const yTx = state.yearlyTransactions || [];
+        let totalIncome = 0, totalExpense = 0, totalSaving = 0;
+        const catMap = new Map();
+
+        for (const tx of yTx) {
+          const amt = Number(tx.amount_mmk || 0);
+          const type = tx.entry_type;
+          if (type === 'Income') totalIncome += amt;
+          else if (type === 'Saving') totalSaving += amt;
+          else totalExpense += amt;
+
+          const catKey = `${tx.category || 'Uncategorized'}||${type}`;
+          if (!catMap.has(catKey)) catMap.set(catKey, { category: tx.category || 'Uncategorized', entry_type: type, total_mmk: 0 });
+          catMap.get(catKey).total_mmk += amt;
+        }
+
+        const poolAccMap = new Map();
+        (state.pools || []).forEach((p) => {
+          poolAccMap.set(Number(p.id), {
+            ...p,
+            base_allocated_amount: 0, allocated_amount: 0, available_budget: 0,
+            spent_amount: 0, topup_amount: 0, rollover_in: 0, borrowed_in: 0,
+            lent_out: 0, transfer_in: 0, transfer_out: 0, ledger_delta: 0
+          });
+        });
+
+        months.forEach((ym) => {
+          const mPools = state.yearlyPoolsByMonth[ym] || state.pools || [];
+          const mTx = yTx.filter((t) => getMonthFromDate(t.tx_date) === ym);
+          const mAgg = aggregateMonthlyTransactions(mTx, mPools, ym);
+
+          mAgg.pools.forEach((mp) => {
+            const pid = Number(mp.id);
+            if (!poolAccMap.has(pid)) {
+              poolAccMap.set(pid, { ...mp, base_allocated_amount: 0, allocated_amount: 0, available_budget: 0, spent_amount: 0, topup_amount: 0, rollover_in: 0, borrowed_in: 0, lent_out: 0, transfer_in: 0, transfer_out: 0, ledger_delta: 0 });
+            }
+            const acc = poolAccMap.get(pid);
+            acc.base_allocated_amount += Number(mp.base_allocated_amount || 0);
+            acc.allocated_amount += Number(mp.available_budget || 0);
+            acc.available_budget += Number(mp.available_budget || 0);
+            acc.spent_amount += Number(mp.spent_amount || 0);
+            acc.topup_amount += Number(mp.topup_amount || 0);
+            acc.rollover_in += Number(mp.rollover_in || 0);
+            acc.borrowed_in += Number(mp.borrowed_in || 0);
+            acc.lent_out += Number(mp.lent_out || 0);
+            acc.transfer_in += Number(mp.transfer_in || 0);
+            acc.transfer_out += Number(mp.transfer_out || 0);
+            acc.ledger_delta += Number(mp.ledger_delta || 0);
+          });
+        });
+
+        const yearlyPools = [...poolAccMap.values()].map((p) => {
+          const remaining = p.available_budget - p.spent_amount;
+          const util = p.available_budget > 0 ? Math.round((p.spent_amount / p.available_budget) * 1000) / 10 : (p.spent_amount > 0 ? 100 : 0);
+          const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
+          return { ...p, remaining_balance: remaining, utilization_pct: util, status };
+        });
+
+        const totalAllocated = yearlyPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
+        const totalRemaining = yearlyPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
+        const cats = [...catMap.values()].sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
+
+        return {
+          isYearly: true,
+          periodMode: 'yearly',
+          periodLabel: `${year} (Yearly)`,
+          totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining,
+          unalloc: totalIncome - totalAllocated,
+          pools: yearlyPools, cats, txList: yTx
+        };
       }
 
-      const poolAccMap = new Map();
-      (state.pools || []).forEach((p) => {
-        poolAccMap.set(Number(p.id), { ...p, base_allocated_amount: 0, allocated_amount: 0, available_budget: 0, spent_amount: 0, topup_amount: 0, rollover_in: 0, borrowed_in: 0, lent_out: 0, transfer_in: 0, transfer_out: 0, ledger_delta: 0 });
+      // Day or Week filtering over available loaded transactions
+      const anchorDate = state.anchorDate || `${state.month}-01`;
+      const weekInfo = getWeekRangeFromDate(anchorDate);
+      const sourceTx = (state.yearlyTransactions && state.yearlyTransactions.length)
+        ? state.yearlyTransactions
+        : (state.transactions || []);
+
+      const filteredTx = sourceTx.filter((tx) => {
+        const d = normalizeIsoDate(tx.tx_date);
+        if (!d) return false;
+        if (mode === 'day') return d === anchorDate;
+        return d >= weekInfo.start && d <= weekInfo.end;
       });
 
-      months.forEach((ym) => {
-        const mPools = state.yearlyPoolsByMonth[ym] || state.pools || [];
-        const mTx = yTx.filter((t) => getMonthFromDate(t.tx_date) === ym);
-        const mAgg = aggregateMonthlyTransactions(mTx, mPools, ym);
-        mAgg.pools.forEach((mp) => {
-          const pid = Number(mp.id);
-          if (!poolAccMap.has(pid)) poolAccMap.set(pid, { ...mp, base_allocated_amount: 0, allocated_amount: 0, available_budget: 0, spent_amount: 0, topup_amount: 0, rollover_in: 0, borrowed_in: 0, lent_out: 0, transfer_in: 0, transfer_out: 0, ledger_delta: 0 });
-          const acc = poolAccMap.get(pid);
-          acc.base_allocated_amount += Number(mp.base_allocated_amount || 0);
-          acc.allocated_amount += Number(mp.available_budget || 0);
-          acc.available_budget += Number(mp.available_budget || 0);
-          acc.spent_amount += Number(mp.spent_amount || 0);
-          acc.topup_amount += Number(mp.topup_amount || 0);
-          acc.rollover_in += Number(mp.rollover_in || 0);
-          acc.borrowed_in += Number(mp.borrowed_in || 0);
-          acc.lent_out += Number(mp.lent_out || 0);
-          acc.transfer_in += Number(mp.transfer_in || 0);
-          acc.transfer_out += Number(mp.transfer_out || 0);
-          acc.ledger_delta += Number(mp.ledger_delta || 0);
-        });
-      });
+      const periodMonth = getMonthFromDate(anchorDate) || state.month;
+      const basePools = state.yearlyPoolsByMonth?.[periodMonth] || state.pools || [];
+      const agg = aggregateMonthlyTransactions(filteredTx, basePools, periodMonth);
 
-      const yearlyPools = [...poolAccMap.values()].map((p) => {
-        const remaining = p.available_budget - p.spent_amount;
-        const util = p.available_budget > 0 ? Math.round((p.spent_amount / p.available_budget) * 1000) / 10 : (p.spent_amount > 0 ? 100 : 0);
-        const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
-        return { ...p, remaining_balance: remaining, utilization_pct: util, status };
-      });
-
-      const totalAllocated = yearlyPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
-      const totalRemaining = yearlyPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
-      const cats = [...catMap.values()].sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
-      return { isYearly: true, periodLabel: `${year} (Yearly)`, totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining, unalloc: totalIncome - totalAllocated, pools: yearlyPools, cats, txList: yTx };
+      return {
+        isYearly: false,
+        periodMode: mode,
+        periodLabel: mode === 'day' ? `${anchorDate} (Day)` : `${weekInfo.label} (Week)`,
+        ...agg,
+        txList: filteredTx
+      };
     }
 
     function getChartTextColor() { return document.documentElement.getAttribute('data-theme') === 'light' ? '#334155' : '#cbd5e1'; }
