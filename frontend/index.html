@@ -357,6 +357,16 @@
     }
 
     .pool-amt-input { width: 120px; min-width: 92px; padding: 6px 8px; }
+    .inline-tx-input {
+      width: 100%;
+      min-width: 95px;
+      padding: 5px 7px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+    .inline-tx-input.date-in { min-width: 122px; }
+    .inline-tx-input.amt-in { min-width: 92px; text-align: right; }
+    .inline-tx-input.note-in { min-width: 115px; }
 
     .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -2890,15 +2900,175 @@
       await loadWorkspaceDetails();
     });
 
+    let inlineEditingTxId = null;
+
+    function buildInlineCategoryOptions(entryType, currentCat) {
+      const filtered = (state.categories || []).filter((c) => c.entry_type === entryType);
+      const list = filtered.length ? filtered : (state.categories || []);
+      const names = list.map((c) => String(c.name));
+      if (currentCat && !names.includes(String(currentCat))) {
+        names.unshift(String(currentCat));
+      }
+      return names.map((n) => `<option value="${escapeHtml(n)}" ${n === String(currentCat) ? 'selected' : ''}>${escapeHtml(n)}</option>`).join('');
+    }
+
+    function buildInlineOptions(items, currentVal, fallbackVal = '') {
+      const list = Array.isArray(items) && items.length ? [...items] : (fallbackVal ? [fallbackVal] : []);
+      const curStr = String(currentVal || '');
+      if (curStr && !list.includes(curStr)) list.unshift(curStr);
+      return list.map((v) => `<option value="${escapeHtml(v)}" ${String(v) === curStr ? 'selected' : ''}>${escapeHtml(v)}</option>`).join('');
+    }
+
+    function buildInlinePoolOptions(currentPoolId, currentPoolName) {
+      const pools = state.pools || [];
+      const curIdStr = currentPoolId ? String(currentPoolId) : '';
+      let opts = `<option value="" ${!curIdStr ? 'selected' : ''}>General (No Pool)</option>`;
+      let found = !curIdStr;
+      for (const p of pools) {
+        const pid = String(p.id);
+        if (pid === curIdStr) found = true;
+        opts += `<option value="${escapeHtml(pid)}" ${pid === curIdStr ? 'selected' : ''}>${escapeHtml(p.pool_name)}</option>`;
+      }
+      if (!found && curIdStr) {
+        opts += `<option value="${escapeHtml(curIdStr)}" selected>${escapeHtml(currentPoolName || 'Pool #' + curIdStr)}</option>`;
+      }
+      return opts;
+    }
+
+    window.onInlineTxTypeChange = function(id) {
+      const typeEl = $(`inTxType_${id}`);
+      const catEl = $(`inTxCat_${id}`);
+      if (!typeEl || !catEl) return;
+      catEl.innerHTML = buildInlineCategoryOptions(typeEl.value, catEl.value);
+    };
+
+    window.startEditTx = function(id) {
+      inlineEditingTxId = Number(id);
+      renderTransactions();
+    };
+
+    window.cancelInlineEditTx = function() {
+      inlineEditingTxId = null;
+      renderTransactions();
+    };
+
+    window.saveInlineEditTx = async function(id) {
+      const numId = Number(id);
+      const txDate = $(`inTxDate_${numId}`)?.value || '';
+      const memberName = $(`inTxMember_${numId}`)?.value || '';
+      const entryType = $(`inTxType_${numId}`)?.value || 'Expense';
+      const poolVal = $(`inTxPool_${numId}`)?.value || '';
+      const category = $(`inTxCat_${numId}`)?.value || '';
+      const amountMmk = Number($(`inTxAmt_${numId}`)?.value || 0);
+      const paymentMethod = $(`inTxPay_${numId}`)?.value || 'Cash';
+      const notes = ($(`inTxNote_${numId}`)?.value || '').trim();
+
+      if (!txDate) {
+        toast('Date is required', 'error');
+        return;
+      }
+      if (!(amountMmk > 0)) {
+        toast('Amount must be greater than 0', 'error');
+        return;
+      }
+
+      const saveBtn = $(`inTxSaveBtn_${numId}`);
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+      }
+
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${numId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            tx_date: txDate,
+            member_name: memberName,
+            entry_type: entryType,
+            category: category,
+            amount_mmk: amountMmk,
+            payment_method: paymentMethod,
+            notes: notes,
+            pool_id: poolVal ? Number(poolVal) : null
+          })
+        });
+        inlineEditingTxId = null;
+        toast('Transaction updated', 'success');
+        await loadWorkspaceDetails();
+      } catch (err) {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save';
+        }
+        toast(err.message, 'error');
+      }
+    };
+
     function renderTransactions() {
       const cur = state.settings?.currency || 'MMK';
+      const s = state.settings || {};
+      const members = Array.isArray(s.members) && s.members.length ? s.members : [state.user?.display_name || 'Member'];
+      const payments = Array.isArray(s.payment_methods) && s.payment_methods.length ? s.payment_methods : ['Cash'];
+
       const rows = getFilteredTransactions();
       $('txTableBody').innerHTML = rows.length
         ? rows.map((r) => {
-            const isChecked = selectedTxIds.has(Number(r.id));
+            const rowId = Number(r.id);
+            const isChecked = selectedTxIds.has(rowId);
+            const isEditing = inlineEditingTxId === rowId;
+
+            if (isEditing) {
+              return `
+                <tr style="background: rgba(16, 185, 129, 0.08);">
+                  <td><input type="checkbox" class="tx-row-cb" ${isChecked ? 'checked' : ''} onchange="toggleSelectTx(${rowId}, this.checked)" /></td>
+                  <td><input type="date" id="inTxDate_${rowId}" class="inline-tx-input date-in" value="${escapeHtml(r.tx_date || '')}" /></td>
+                  <td>
+                    <select id="inTxMember_${rowId}" class="inline-tx-input">
+                      ${buildInlineOptions(members, r.member_name, state.user?.display_name || 'Member')}
+                    </select>
+                  </td>
+                  <td>
+                    <select id="inTxType_${rowId}" class="inline-tx-input" onchange="onInlineTxTypeChange(${rowId})">
+                      <option value="Expense" ${r.entry_type === 'Expense' ? 'selected' : ''}>Expense</option>
+                      <option value="Income" ${r.entry_type === 'Income' ? 'selected' : ''}>Income</option>
+                      <option value="Saving" ${r.entry_type === 'Saving' ? 'selected' : ''}>Saving</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select id="inTxPool_${rowId}" class="inline-tx-input">
+                      ${buildInlinePoolOptions(r.pool_id, r.pool_name)}
+                    </select>
+                  </td>
+                  <td>
+                    <select id="inTxCat_${rowId}" class="inline-tx-input">
+                      ${buildInlineCategoryOptions(r.entry_type || 'Expense', r.category)}
+                    </select>
+                  </td>
+                  <td>
+                    <input type="number" step="any" min="0.01" id="inTxAmt_${rowId}" class="inline-tx-input amt-in" value="${escapeHtml(r.amount_mmk)}" />
+                  </td>
+                  <td>
+                    <select id="inTxPay_${rowId}" class="inline-tx-input">
+                      ${buildInlineOptions(payments, r.payment_method || 'Cash', 'Cash')}
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" id="inTxNote_${rowId}" class="inline-tx-input note-in" value="${escapeHtml(r.notes || '')}" placeholder="Notes" />
+                  </td>
+                  <td>${r.receipt_key ? `<button type="button" class="small" onclick="openReceipt('${escapeHtml(r.receipt_key).replace(/'/g, "\\'")}')">View</button>` : '-'}</td>
+                  <td>
+                    <div class="row-actions">
+                      <button type="button" class="small primary" id="inTxSaveBtn_${rowId}" onclick="saveInlineEditTx(${rowId})">Save</button>
+                      <button type="button" class="small" onclick="cancelInlineEditTx()">Cancel</button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }
+
             return `
               <tr>
-                <td><input type="checkbox" class="tx-row-cb" ${isChecked ? 'checked' : ''} onchange="toggleSelectTx(${r.id}, this.checked)" /></td>
+                <td><input type="checkbox" class="tx-row-cb" ${isChecked ? 'checked' : ''} onchange="toggleSelectTx(${rowId}, this.checked)" /></td>
                 <td>${escapeHtml(r.tx_date)}</td>
                 <td>${escapeHtml(r.member_name)}</td>
                 <td><span class="pill ${escapeHtml(r.entry_type)}">${escapeHtml(r.entry_type)}</span></td>
@@ -2910,8 +3080,8 @@
                 <td>${r.receipt_key ? `<button type="button" class="small" onclick="openReceipt('${escapeHtml(r.receipt_key).replace(/'/g, "\\'")}')">View</button>` : '-'}</td>
                 <td>
                   <div class="row-actions">
-                    <button type="button" class="small" onclick="startEditTx(${r.id})">Edit</button>
-                    <button type="button" class="small danger" onclick="deleteTx(${r.id})">Delete</button>
+                    <button type="button" class="small" onclick="startEditTx(${rowId})">Edit</button>
+                    <button type="button" class="small danger" onclick="deleteTx(${rowId})">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -2923,67 +3093,8 @@
 
     window.openReceipt = openReceipt;
 
-    function ensureSelectOption(selectEl, value) {
-      if (!selectEl || value === null || value === undefined || value === '') return;
-      const strVal = String(value);
-      const exists = Array.from(selectEl.options).some((opt) => opt.value === strVal);
-      if (!exists) {
-        const opt = document.createElement('option');
-        opt.value = strVal;
-        opt.textContent = strVal;
-        selectEl.appendChild(opt);
-      }
-      selectEl.value = strVal;
-    }
-
-    window.startEditTx = function(id) {
-      const tx = (state.transactions || []).find((x) => Number(x.id) === Number(id));
-      if (!tx) {
-        toast('Transaction not found in current list', 'error');
-        return;
-      }
-
-      document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === 'transactions'));
-      ['dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => $('tab-' + t).classList.toggle('hidden', t !== 'transactions'));
-
-      $('editingTxId').value = String(tx.id);
-      $('txFormTitle').textContent = `Edit Transaction #${tx.id}`;
-      $('txDate').value = tx.tx_date || '';
-      ensureSelectOption($('txMember'), tx.member_name);
-
-      $('txType').value = tx.entry_type || 'Expense';
-      updateCategoryDropdown();
-      ensureSelectOption($('txCategory'), tx.category);
-
-      const poolVal = tx.pool_id ? String(tx.pool_id) : '';
-      if (poolVal) {
-        const poolExists = Array.from($('txPool').options).some((opt) => opt.value === poolVal);
-        if (!poolExists && tx.pool_name) {
-          const opt = document.createElement('option');
-          opt.value = poolVal;
-          opt.textContent = `${tx.pool_name} (Hidden Pool)`;
-          $('txPool').appendChild(opt);
-        }
-      }
-      $('txPool').value = poolVal;
-      updatePoolBalanceHint();
-
-      $('txAmount').value = tx.amount_mmk;
-      ensureSelectOption($('txPayment'), tx.payment_method || 'Cash');
-      $('txNotes').value = tx.notes || '';
-      $('receiptInputWrap').classList.add('hidden');
-      $('txSubmitBtn').textContent = 'Update Transaction';
-      $('txCancelEditBtn').classList.remove('hidden');
-
-      const formCard = $('txForm')?.closest('.card');
-      if (formCard) {
-        formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    };
-
     function resetTxForm() {
+      inlineEditingTxId = null;
       $('editingTxId').value = '';
       $('txFormTitle').textContent = 'Add New Transaction';
       $('txDate').value = new Date().toISOString().slice(0, 10);
