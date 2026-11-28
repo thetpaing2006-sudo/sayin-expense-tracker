@@ -492,6 +492,7 @@
         </div>
         <button type="button" id="themeToggleBtn">Light / Dark</button>
         <button type="button" id="logoutBtn" class="danger hidden">Logout</button>
+        <button type="button" id="closeAppBtn" class="danger">Close App</button>
       </div>
     </header>
 
@@ -3858,6 +3859,18 @@
     });
 
     $('logoutBtn').addEventListener('click', () => handleLogout(true));
+
+    $('closeAppBtn')?.addEventListener('click', () => {
+      try {
+        window.open('', '_self');
+        window.close();
+      } catch {}
+      setTimeout(() => {
+        if (!window.closed) {
+          toast('Browser/OS security blocked auto-close — please swipe up or press Cmd+Q / Alt+F4 to close.', 'info');
+        }
+      }, 250);
+    });
 
    document.querySelectorAll('.nav-tabs button').forEach((btn) => {
       btn.addEventListener('click', async () => {
