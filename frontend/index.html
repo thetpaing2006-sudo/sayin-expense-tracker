@@ -3597,7 +3597,11 @@
           }).join('')
         : '<tr><td colspan="11" class="muted">No transactions found for this filter.</td></tr>';
 
-      tbody.querySelectorAll('.view-receipt-btn[data-receipt-key]').forEach((btn) => btn.addEventListener('click', () => openReceipt(btn.dataset.receiptKey)));
+     tbody.onclick = (e) => {
+        const btn = e.target.closest('.view-receipt-btn[data-receipt-key]');
+        if (!btn) return;
+        openReceipt(btn.dataset.receiptKey);
+      };
       updateBulkDeleteUi();
     }
 
