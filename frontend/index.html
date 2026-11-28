@@ -356,7 +356,14 @@
       min-width: 0;
     }
 
-    .pool-amt-input { width: 120px; min-width: 92px; padding: 6px 8px; }
+    .pool-amt-input { width: 112px; min-width: 84px; padding: 5px 8px; height: 32px; font-size: 13px; }
+    .pool-mgr-table {
+      table-layout: fixed;
+      width: 100%;
+      min-width: 900px;
+    }
+    .pool-mgr-table tr { height: 54px; }
+    .pool-mgr-table tr.is-dirty-pool { background: rgba(16, 185, 129, 0.08); }
     .tx-table {
       table-layout: fixed;
       width: 100%;
@@ -950,11 +957,12 @@
             <div>
               <h2 style="margin: 0;">Monthly Budget Pools (<span id="poolManageMonthLabel">-</span>)</h2>
               <p class="muted" style="margin: 4px 0 0;">
-                Pool အားလုံးရဲ့ Monthly Default နဲ့ This Month Budget တွေကို တစ်ပြိုင်နက် ဖြည့်ပြီး <strong>Save All Pools</strong> ခလုပ်တစ်ခုတည်းနဲ့ တစ်ခါတည်း Save လုပ်နိုင်ပါတယ်။
+                <strong>Edit All Pools</strong> ကိုနှိပ်ပြီး Pool အားလုံးရဲ့ နာမည်၊ အရောင်၊ Monthly Default နဲ့ This Month Budget တွေကို တစ်ခါတည်းပြင်ကာ <strong>Save All Changes</strong> ခလုပ်တစ်ခုတည်းနဲ့ Save လုပ်နိုင်ပါတယ်။
               </p>
             </div>
             <div class="inline-form">
-              <button type="button" class="primary" id="saveAllPoolsBtn" onclick="saveAllPools()">Save All Pools</button>
+              <button type="button" class="primary" id="toggleEditAllPoolsBtn" onclick="togglePoolBulkEditMode()">Edit All Pools</button>
+              <button type="button" class="hidden" id="cancelEditAllPoolsBtn" onclick="cancelPoolBulkEditMode()">Cancel</button>
             </div>
           </div>
 
@@ -1023,7 +1031,16 @@
           </div>
 
           <div class="table-wrap">
-            <table>
+            <table class="pool-mgr-table">
+              <colgroup>
+                <col style="width: 240px;" />
+                <col style="width: 130px;" />
+                <col style="width: 185px;" />
+                <col style="width: 120px;" />
+                <col style="width: 140px;" />
+                <col style="width: 110px;" />
+                <col style="width: 82px;" />
+              </colgroup>
               <thead>
                 <tr>
                   <th>Budget Pool</th>
@@ -1032,7 +1049,7 @@
                   <th>Spent</th>
                   <th>Remaining Balance</th>
                   <th>Status</th>
-                  <th>Actions</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody id="poolManageTableBody"></tbody>
@@ -1789,19 +1806,38 @@
         : '<span class="muted">No categories</span>';
     }
 
-    const editingPoolMetaIds = new Set();
+    let isPoolBulkEditMode = false;
+    const dirtyPoolIds = new Set();
 
-    window.toggleEditPoolMeta = function(poolId) {
-      const pid = Number(poolId);
-      if (editingPoolMetaIds.has(pid)) {
-        editingPoolMetaIds.delete(pid);
+    function syncPoolBulkButtons() {
+      const toggleBtn = $('toggleEditAllPoolsBtn');
+      const cancelBtn = $('cancelEditAllPoolsBtn');
+      if (!toggleBtn) return;
+
+      const hasPending = isPoolBulkEditMode || dirtyPoolIds.size > 0;
+      if (hasPending) {
+        const countTag = dirtyPoolIds.size > 0 ? ` (${dirtyPoolIds.size})` : '';
+        toggleBtn.textContent = `Save All Changes${countTag}`;
+        cancelBtn?.classList.remove('hidden');
       } else {
-        editingPoolMetaIds.add(pid);
+        toggleBtn.textContent = 'Edit All Pools';
+        cancelBtn?.classList.add('hidden');
       }
+    }
+
+    window.togglePoolBulkEditMode = async function() {
+      if (!isPoolBulkEditMode && dirtyPoolIds.size === 0) {
+        isPoolBulkEditMode = true;
+        renderPoolManager();
+        return;
+      }
+      await saveAllPools();
+    };
+
+    window.cancelPoolBulkEditMode = function() {
+      isPoolBulkEditMode = false;
+      dirtyPoolIds.clear();
       renderPoolManager();
-      if (editingPoolMetaIds.has(pid)) {
-        $(`poolNameInput_${pid}`)?.focus();
-      }
     };
 
     function renderPoolManager() {
@@ -1821,13 +1857,15 @@
         $('poolMgrTotalRemaining').className = `val ${totalRemaining < 0 ? 'exp' : totalRemaining === 0 ? 'warn' : 'inc'}`;
       }
 
+      syncPoolBulkButtons();
+
       const tbody = $('poolManageTableBody');
       if (!tbody) return;
 
       tbody.innerHTML = pools.length
         ? pools.map((p) => {
             const pid = Number(p.id);
-            const isEditingMeta = editingPoolMetaIds.has(pid);
+            const isDirty = dirtyPoolIds.has(pid);
             const isCustom = p.override_amount !== null;
             const remCls = p.status === 'over_budget' ? 'rem-over' : p.status === 'warning' ? 'rem-warn' : 'rem-ok';
             const statusPill = p.status === 'over_budget'
@@ -1837,13 +1875,13 @@
                 : `<span class="pill Income">${p.utilization_pct}% Used</span>`;
 
             return `
-              <tr data-pool-id="${pid}" data-is-custom="${isCustom ? '1' : '0'}">
+              <tr data-pool-id="${pid}" data-is-custom="${isCustom ? '1' : '0'}" class="${isDirty ? 'is-dirty-pool' : ''}">
                 <td>
                   <div class="row-actions" style="align-items:center;">
                     <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#10b981')};"></span>
-                    ${isEditingMeta
-                      ? `<input type="text" id="poolNameInput_${pid}" value="${escapeHtml(p.pool_name)}" style="min-width:140px; padding:6px 8px;" oninput="markPoolDirty(${pid})" placeholder="Pool Name" />
-                         <select id="poolColorInput_${pid}" style="max-width:105px; padding:6px 6px;" onchange="markPoolDirty(${pid})">
+                    ${isPoolBulkEditMode
+                      ? `<input type="text" id="poolNameInput_${pid}" value="${escapeHtml(p.pool_name)}" style="min-width:110px; height:32px; padding:4px 7px; font-size:12px;" oninput="markPoolDirty(${pid})" placeholder="Pool Name" />
+                         <select id="poolColorInput_${pid}" style="max-width:86px; height:32px; padding:4px 5px; font-size:12px;" onchange="markPoolDirty(${pid})">
                            <option value="#10b981" ${(p.color_tag || '#10b981') === '#10b981' ? 'selected' : ''}>Emerald</option>
                            <option value="#38bdf8" ${p.color_tag === '#38bdf8' ? 'selected' : ''}>Sky</option>
                            <option value="#f59e0b" ${p.color_tag === '#f59e0b' ? 'selected' : ''}>Amber</option>
@@ -1878,11 +1916,7 @@
                 <td><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></td>
                 <td>${statusPill}</td>
                 <td>
-                  <div class="row-actions">
-                    <button type="button" class="small" onclick="toggleEditPoolMeta(${pid})">${isEditingMeta ? 'Done' : 'Edit'}</button>
-                    <button type="button" class="small primary" onclick="savePoolRow(${pid})">Save</button>
-                    <button type="button" class="small danger" onclick="disablePoolRow(${pid})">Hide</button>
-                  </div>
+                  <button type="button" class="small danger" onclick="disablePoolRow(${pid})">Hide</button>
                 </td>
               </tr>
             `;
@@ -1900,10 +1934,12 @@
       }
     };
 
-    const dirtyPoolIds = new Set();
-
     window.markPoolDirty = function(poolId) {
-      dirtyPoolIds.add(Number(poolId));
+      const pid = Number(poolId);
+      dirtyPoolIds.add(pid);
+      const row = document.querySelector(`tr[data-pool-id="${pid}"]`);
+      if (row) row.classList.add('is-dirty-pool');
+      syncPoolBulkButtons();
     };
 
     function buildPoolPatchPayload(poolId) {
@@ -1949,42 +1985,27 @@
       return { payload };
     }
 
-    window.savePoolRow = async function(poolId) {
-      const { payload, error } = buildPoolPatchPayload(poolId);
-      if (error) {
-        toast(error, 'error');
-        return;
-      }
-
-      try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools/${poolId}`, {
-          method: 'PATCH',
-          body: JSON.stringify(payload)
-        });
-        dirtyPoolIds.delete(Number(poolId));
-        editingPoolMetaIds.delete(Number(poolId));
-        toast('Budget pool updated', 'success');
-        await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
-    };
-
     window.saveAllPools = async function() {
       const pools = state.pools || [];
       if (!pools.length) return;
 
-      const btn = $('saveAllPoolsBtn');
+      const targetPools = dirtyPoolIds.size > 0
+        ? pools.filter((p) => dirtyPoolIds.has(Number(p.id)))
+        : pools;
+
+      const btn = $('toggleEditAllPoolsBtn');
+      const cancelBtn = $('cancelEditAllPoolsBtn');
       if (btn) {
         btn.disabled = true;
         btn.textContent = 'Saving All...';
       }
+      if (cancelBtn) cancelBtn.disabled = true;
 
       let savedCount = 0;
       let errCount = 0;
       const encWs = encodeURIComponent(state.wsId);
 
-      for (const p of pools) {
+      for (const p of targetPools) {
         const pid = Number(p.id);
         const { payload, error } = buildPoolPatchPayload(pid);
         if (error) {
@@ -2003,16 +2024,14 @@
         }
       }
 
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = 'Save All Pools';
-      }
+      if (btn) btn.disabled = false;
+      if (cancelBtn) cancelBtn.disabled = false;
+      isPoolBulkEditMode = false;
 
-      editingPoolMetaIds.clear();
       if (errCount > 0) {
         toast(`Saved ${savedCount} pool(s), ${errCount} failed`, 'error');
       } else {
-        toast(`All ${savedCount} budget pools saved`, 'success');
+        toast(`Saved ${savedCount} budget pool(s)`, 'success');
       }
       await loadWorkspaceDetails();
     };
@@ -2808,7 +2827,7 @@
 
     async function runCleanRefresh(showToast = true) {
       dirtyPoolIds.clear();
-      editingPoolMetaIds.clear();
+      isPoolBulkEditMode = false;
       closeDashboardDrilldown();
       await loadWorkspaceDetails({ force: true });
       if (!$('tab-admin')?.classList.contains('hidden') && isAnyAdmin()) {
