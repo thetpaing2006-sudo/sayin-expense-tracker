@@ -335,6 +335,11 @@
       color: var(--expense);
       border-color: rgba(251, 113, 133, 0.52);
     }
+    button.warn-btn {
+      background: linear-gradient(180deg, rgba(254, 249, 195, 0.26), rgba(250, 204, 21, 0.22), rgba(234, 179, 8, 0.14));
+      color: var(--warn);
+      border-color: rgba(250, 204, 21, 0.52);
+    }
     button.small { padding: 6px 10px; font-size: 12px; border-radius: 10px; }
     button.link-btn {
       background: none; border: none; padding: 0; color: var(--aqua);
@@ -547,6 +552,26 @@
     .pool-metrics strong.rem-ok { color: var(--income); font-size: 14px; }
     .pool-metrics strong.rem-warn { color: var(--warn); font-size: 14px; }
     .pool-metrics strong.rem-over { color: var(--expense); font-size: 14px; }
+    .pool-badge-strip { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .mini-badge {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 6px;
+      font-weight: 700;
+      background: rgba(34, 211, 238, 0.16);
+      color: var(--aqua);
+      border: 1px solid rgba(34, 211, 238, 0.34);
+    }
+    .mini-badge.borrow {
+      background: rgba(250, 204, 21, 0.16);
+      color: var(--warn);
+      border-color: rgba(250, 204, 21, 0.36);
+    }
+    .mini-badge.rollover {
+      background: rgba(16, 185, 129, 0.16);
+      color: var(--income);
+      border-color: rgba(16, 185, 129, 0.36);
+    }
 
     /* Glossy Crystal Graph Bars */
     .bar-row { margin-bottom: 13px; }
@@ -633,8 +658,8 @@
     }
 
     .pool-amt-input { width: 112px; min-width: 84px; padding: 5px 8px; height: 32px; font-size: 13px; }
-    .pool-mgr-table { table-layout: fixed; width: 100%; min-width: 900px; }
-    .pool-mgr-table tr { height: 54px; }
+    .pool-mgr-table { table-layout: fixed; width: 100%; min-width: 960px; }
+    .pool-mgr-table tr { height: 56px; }
     .pool-mgr-table tr.is-dirty-pool { background: rgba(34, 211, 238, 0.12); }
     .tx-table { table-layout: fixed; width: 100%; min-width: 1040px; }
     .tx-table th, .tx-table td { overflow: hidden; text-overflow: ellipsis; }
@@ -956,7 +981,7 @@
                     <span class="pill Saving">Budgets</span>
                   </div>
                   <h3 class="launcher-title" style="margin-top:12px;">Pool Management</h3>
-                  <p class="launcher-desc">Monthly Budget Pool များ ညှိနှိုင်းရန်၊ Pool Transfer လုပ်ရန်နှင့် Workspace ချိန်ညှိရန်။</p>
+                  <p class="launcher-desc">Monthly Budget Pool များ ညှိနှိုင်းရန်၊ Borrow/Transfer လုပ်ရန်နှင့် လကုန် Rollover လုပ်ရန်။</p>
                 </div>
                 <div class="launcher-meta" id="homeMetaPools">Manage Pools →</div>
               </button>
@@ -1072,7 +1097,7 @@
               <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
                   <h3 style="margin: 0;" id="poolBarTitle">Pool Budget vs Spent (Bar Chart)</h3>
-                  <span class="muted">Budget vs Actual Spent</span>
+                  <span class="muted">Effective Budget vs Actual Spent</span>
                 </div>
                 <div class="chart-canvas-wrap">
                   <canvas id="poolBarCanvas"></canvas>
@@ -1246,10 +1271,12 @@
                 <div>
                   <h2 style="margin: 0;">Pool Management (<span id="poolManageMonthLabel">-</span>)</h2>
                   <p class="muted" style="margin: 4px 0 0;">
-                    <strong>Edit All Pools</strong> ကိုနှိပ်ပြီး Pool အားလုံးရဲ့ နာမည်၊ အရောင်၊ Monthly Default နဲ့ This Month Budget တွေကို တစ်ခါတည်းပြင်ကာ <strong>Save All Changes</strong> ခလုပ်တစ်ခုတည်းနဲ့ Save လုပ်နိုင်ပါတယ်။
+                    Base Budget၊ လက်ကျန်ပိုငွေ (Rollover) နှင့် ချေးငွေညှိနှိုင်းမှု (Borrow / Transfer) များကို တစ်နေရာတည်း တွက်ချက်ပြသပေးပါသည်။
                   </p>
                 </div>
                 <div class="inline-form">
+                  <button type="button" class="small warn-btn" id="autoBalanceDeficitsBtn" title="လိုငွေပြနေသော Pool များကို ပိုနေသော Pool များမှ အလိုအလျောက် Borrow ညှိပေးရန်">⚡ Auto-Cover Over Budget</button>
+                  <button type="button" class="small" id="rolloverSurplusBtn" title="ယခုလ ပိုထွက်လာသော လက်ကျန်ငွေများကို နောက်လ Budget ထဲသို့ ပေါင်းထည့်ရန်">↪ Rollover Surplus to Next Month</button>
                   <button type="button" class="primary" id="toggleEditAllPoolsBtn" onclick="togglePoolBulkEditMode()">Edit All Pools</button>
                   <button type="button" class="hidden" id="cancelEditAllPoolsBtn" onclick="cancelPoolBulkEditMode()">Cancel</button>
                 </div>
@@ -1257,9 +1284,9 @@
 
               <div class="kpi-grid" id="poolManageSummaryGrid" style="margin-bottom: 16px;">
                 <div class="kpi">
-                  <div class="label">Total Pool Budget</div>
+                  <div class="label">Effective Pool Budget</div>
                   <div class="val" id="poolMgrTotalBudget">0</div>
-                  <div class="sub" id="poolMgrTotalBudgetSub">This month allocated total</div>
+                  <div class="sub" id="poolMgrTotalBudgetSub">Base + Rollover + Net Borrow</div>
                 </div>
                 <div class="kpi exp-border">
                   <div class="label">Total Pool Spent</div>
@@ -1269,7 +1296,7 @@
                 <div class="kpi inc-border">
                   <div class="label">Remaining Pool Balance</div>
                   <div class="val inc" id="poolMgrTotalRemaining">0</div>
-                  <div class="sub" id="poolMgrTotalRemainingSub">Available balance</div>
+                  <div class="sub" id="poolMgrTotalRemainingSub">Effective Budget − Spent</div>
                 </div>
               </div>
 
@@ -1298,42 +1325,53 @@
               </form>
 
               <div class="preview-box" style="margin-bottom: 16px;">
-                <strong style="display:block; margin-bottom:8px;">Pool-to-Pool Budget Transfer (လက်ရှိလအတွင်း ညှိလွှဲရန်)</strong>
-                <form id="poolTransferForm" class="grid-4" style="align-items: end;">
+                <strong style="display:block; margin-bottom:8px;">Pool-to-Pool Adjustment (လိုငွေ Borrow / Budget Transfer ညှိရန်)</strong>
+                <form id="poolTransferForm" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap:10px; align-items: end;">
                   <div>
-                    <label for="transferFromPool">From Pool</label>
+                    <label for="transferMode">Action Type</label>
+                    <select id="transferMode">
+                      <option value="borrow">Borrow (ယာယီချေးယူညှိရန်)</option>
+                      <option value="transfer">Permanent Transfer (အပြီးလွှဲရန်)</option>
+                      <option value="repay">Repay Borrowed (ချေးငွေပြန်ဆပ်ရန်)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="transferFromPool">From Pool (Source)</label>
                     <select id="transferFromPool" required></select>
                   </div>
                   <div>
-                    <label for="transferToPool">To Pool</label>
+                    <label for="transferToPool">To Pool (Target)</label>
                     <select id="transferToPool" required></select>
                   </div>
                   <div>
-                    <label for="transferAmount">Transfer Amount</label>
+                    <label for="transferAmount">Amount</label>
                     <input type="number" id="transferAmount" min="0.01" step="any" required placeholder="0" />
                   </div>
                   <div>
-                    <button type="submit" class="small primary" style="width:100%; padding:10px 12px;">Transfer Budget</button>
+                    <button type="submit" class="small primary" style="width:100%; padding:10px 12px;">Apply Adjustment</button>
                   </div>
                 </form>
+                <div id="poolAdjustmentLogWrap" style="margin-top: 10px;"></div>
               </div>
 
               <div class="table-wrap">
                 <table class="pool-mgr-table">
                   <colgroup>
-                    <col style="width: 240px;" />
-                    <col style="width: 130px;" />
-                    <col style="width: 185px;" />
+                    <col style="width: 230px;" />
                     <col style="width: 120px;" />
-                    <col style="width: 140px;" />
-                    <col style="width: 110px;" />
-                    <col style="width: 82px;" />
+                    <col style="width: 165px;" />
+                    <col style="width: 125px;" />
+                    <col style="width: 115px;" />
+                    <col style="width: 135px;" />
+                    <col style="width: 105px;" />
+                    <col style="width: 78px;" />
                   </colgroup>
                   <thead>
                     <tr>
                       <th>Budget Pool</th>
                       <th>Monthly Default</th>
-                      <th>This Month Budget</th>
+                      <th>Base Month Budget</th>
+                      <th>Rollover / Borrow</th>
                       <th>Spent</th>
                       <th>Remaining Balance</th>
                       <th>Status</th>
@@ -1648,7 +1686,8 @@
       wsId: 'sayin_active_ws_id',
       theme: 'sayin_theme',
       period: 'sayin_dashboard_period',
-      sound: 'sayin_sound_enabled'
+      sound: 'sayin_sound_enabled',
+      poolLedger: 'sayin_pool_ledger_v1'
     };
 
     const state = {
@@ -1664,6 +1703,7 @@
       settings: null,
       categories: [],
       pools: [],
+      yearlyPoolsByMonth: {},
       transactions: [],
       yearlyTransactions: [],
       summary: null,
@@ -1687,6 +1727,120 @@
     };
 
     const $ = (id) => document.getElementById(id);
+
+    /* ============================================================================
+     * Pool Ledger Store (Rollover Surplus + Internal Borrow / Transfer Tracking)
+     * Formula:
+     *   Effective Budget = Base Monthly Budget + Topup + RolloverIn + BorrowedIn - LentOut
+     *   Remaining Balance = Effective Budget - Actual Spent
+     * ========================================================================== */
+    function readFullLedger() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.poolLedger);
+        const parsed = raw ? JSON.parse(raw) : {};
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function writeFullLedger(data) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.poolLedger, JSON.stringify(data));
+      } catch {}
+    }
+
+    function getMonthLedger(wsId, month) {
+      const all = readFullLedger();
+      const wsMap = all[String(wsId || '')] || {};
+      const entry = wsMap[String(month || '')] || {};
+      return {
+        rollovers: entry.rollovers && typeof entry.rollovers === 'object' ? entry.rollovers : {},
+        adjustments: Array.isArray(entry.adjustments) ? entry.adjustments : []
+      };
+    }
+
+    function saveMonthLedger(wsId, month, ledgerEntry) {
+      const all = readFullLedger();
+      const wKey = String(wsId || '');
+      const mKey = String(month || '');
+      if (!all[wKey]) all[wKey] = {};
+      all[wKey][mKey] = ledgerEntry;
+      writeFullLedger(all);
+    }
+
+    function getNextMonthStr(ym) {
+      const parts = String(ym || new Date().toISOString().slice(0, 7)).split('-');
+      const y = Number(parts[0]) || new Date().getFullYear();
+      const m = (Number(parts[1]) || 1) - 1;
+      return new Date(Date.UTC(y, m + 1, 1)).toISOString().slice(0, 7);
+    }
+
+    function getPrevMonthStr(ym) {
+      const parts = String(ym || new Date().toISOString().slice(0, 7)).split('-');
+      const y = Number(parts[0]) || new Date().getFullYear();
+      const m = (Number(parts[1]) || 1) - 1;
+      return new Date(Date.UTC(y, m - 1, 1)).toISOString().slice(0, 7);
+    }
+
+    function computePoolLedgerEffects(wsId, month) {
+      const ledger = getMonthLedger(wsId, month);
+      const effectsByPool = new Map();
+      const ensure = (pid) => {
+        const id = Number(pid);
+        if (!effectsByPool.has(id)) {
+          effectsByPool.set(id, { rolloverIn: 0, borrowedIn: 0, lentOut: 0, transferIn: 0, transferOut: 0, netDelta: 0 });
+        }
+        return effectsByPool.get(id);
+      };
+
+      for (const [pidStr, val] of Object.entries(ledger.rollovers || {})) {
+        const amt = Number(val || 0);
+        if (amt !== 0) {
+          const rec = ensure(Number(pidStr));
+          rec.rolloverIn += amt;
+          rec.netDelta += amt;
+        }
+      }
+
+      for (const adj of ledger.adjustments || []) {
+        const amt = Number(adj.amount || 0);
+        if (!(amt > 0)) continue;
+        const fromId = Number(adj.fromPoolId);
+        const toId = Number(adj.toPoolId);
+        const mode = adj.mode || 'borrow';
+
+        if (mode === 'repay') {
+          // Repaying a previous borrow: borrower (fromId) gives back to lender (toId)
+          const borrower = ensure(fromId);
+          borrower.borrowedIn -= amt;
+          borrower.netDelta -= amt;
+
+          const lender = ensure(toId);
+          lender.lentOut -= amt;
+          lender.netDelta += amt;
+        } else if (mode === 'transfer') {
+          const src = ensure(fromId);
+          src.transferOut += amt;
+          src.netDelta -= amt;
+
+          const dst = ensure(toId);
+          dst.transferIn += amt;
+          dst.netDelta += amt;
+        } else {
+          // 'borrow'
+          const lender = ensure(fromId);
+          lender.lentOut += amt;
+          lender.netDelta -= amt;
+
+          const borrower = ensure(toId);
+          borrower.borrowedIn += amt;
+          borrower.netDelta += amt;
+        }
+      }
+
+      return { effectsByPool, adjustments: ledger.adjustments || [], rollovers: ledger.rollovers || {} };
+    }
 
     /* Subtle Aqua / Glass Sound Effects (Web Audio API) */
     const SoundFX = (() => {
@@ -1802,7 +1956,7 @@
       if (tone === 'success') SoundFX.success();
       else if (tone === 'error') SoundFX.error();
       clearTimeout(toast._t);
-      toast._t = setTimeout(() => { el.className = ''; }, 3400);
+      toast._t = setTimeout(() => { el.className = ''; }, 3600);
     }
 
     function setStatus(id, msg, kind = '') {
@@ -2190,13 +2344,17 @@
           ),
           ...otherYearMonths.map((ym) =>
             apiFetch(`/api/workspaces/${ws}/transactions?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] }))
+          ),
+          ...otherYearMonths.map((ym) =>
+            apiFetch(`/api/workspaces/${ws}/pools?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] }))
           )
         ]);
 
         if (reqId !== wsLoadSeq) return;
 
         const prevSumResults = restResults.slice(0, prevFiveMonths.length);
-        const otherYearTxResults = restResults.slice(prevFiveMonths.length);
+        const otherYearTxResults = restResults.slice(prevFiveMonths.length, prevFiveMonths.length + otherYearMonths.length);
+        const otherYearPoolResults = restResults.slice(prevFiveMonths.length + otherYearMonths.length);
 
         state.settings = setRes.data;
         state.categories = catRes.data || [];
@@ -2210,6 +2368,19 @@
         };
         state.categorySummary = sumRes.categories || [];
         state.pools = poolRes.data || sumRes.pools || [];
+
+        const poolsByMonthMap = {};
+        yearMonths.forEach((ym) => {
+          if (ym === state.month) {
+            poolsByMonthMap[ym] = state.pools;
+          } else {
+            const idx = otherYearMonths.indexOf(ym);
+            poolsByMonthMap[ym] = idx >= 0 && Array.isArray(otherYearPoolResults[idx]?.data)
+              ? otherYearPoolResults[idx].data
+              : state.pools;
+          }
+        });
+        state.yearlyPoolsByMonth = poolsByMonthMap;
 
         const yearTxMap = new Map();
         yearMonths.forEach((ym) => {
@@ -2236,7 +2407,7 @@
             saving: Number(s.total_saving || 0)
           });
         });
-        const activeMonthAgg = aggregateTransactions(state.transactions || [], state.pools || [], 1);
+        const activeMonthAgg = aggregateMonthlyTransactions(state.transactions || [], state.pools || [], state.month);
         const hasActiveTx = (state.transactions || []).length > 0;
         trendMap.set(state.month, {
           month: state.month,
@@ -2283,7 +2454,7 @@
         .join('');
 
       const poolOpts = pools
-        .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.pool_name)} (Alloc: ${fmtNum(p.allocated_amount)})</option>`)
+        .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.pool_name)} (Rem: ${fmtNum(p.remaining_balance)})</option>`)
         .join('');
       if ($('transferFromPool')) $('transferFromPool').innerHTML = poolOpts;
       if ($('transferToPool')) {
@@ -2372,6 +2543,70 @@
       renderPoolManager();
     };
 
+    function renderAdjustmentLog(cur) {
+      const wrap = $('poolAdjustmentLogWrap');
+      if (!wrap) return;
+      const ledger = getMonthLedger(state.wsId, state.month);
+      const adjs = ledger.adjustments || [];
+      const rollEntries = Object.entries(ledger.rollovers || {}).filter(([, v]) => Number(v || 0) !== 0);
+
+      if (!adjs.length && !rollEntries.length) {
+        wrap.innerHTML = '<span class="muted">ယခုလအတွက် Borrow / Transfer / Rollover မှတ်တမ်း မရှိသေးပါ။</span>';
+        return;
+      }
+
+      const poolNameById = new Map((state.pools || []).map((p) => [Number(p.id), p.pool_name]));
+      const itemsHtml = [];
+
+      rollEntries.forEach(([pidStr, amt]) => {
+        const pName = poolNameById.get(Number(pidStr)) || `Pool #${pidStr}`;
+        itemsHtml.push(`
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 0; border-bottom:1px dashed var(--border-soft);">
+            <span>↪ <strong>Rollover Surplus:</strong> ${escapeHtml(pName)} <span style="color:var(--income);">+${fmtNum(amt)} ${escapeHtml(cur)}</span></span>
+            <button type="button" class="small danger" onclick="clearPoolRollover(${Number(pidStr)})">Undo</button>
+          </div>
+        `);
+      });
+
+      adjs.forEach((a, idx) => {
+        const fromName = poolNameById.get(Number(a.fromPoolId)) || `Pool #${a.fromPoolId}`;
+        const toName = poolNameById.get(Number(a.toPoolId)) || `Pool #${a.toPoolId}`;
+        const tag = a.mode === 'transfer' ? 'Transfer' : a.mode === 'repay' ? 'Repay Borrow' : 'Borrow';
+        itemsHtml.push(`
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 0; border-bottom:1px dashed var(--border-soft);">
+            <span>⇄ <strong>${escapeHtml(tag)}:</strong> ${escapeHtml(fromName)} → ${escapeHtml(toName)} (<strong>${fmtNum(a.amount)} ${escapeHtml(cur)}</strong>)</span>
+            <button type="button" class="small danger" onclick="removePoolAdjustment(${idx})">Undo</button>
+          </div>
+        `);
+      });
+
+      wrap.innerHTML = itemsHtml.join('');
+    }
+
+    window.removePoolAdjustment = function(idx) {
+      const ledger = getMonthLedger(state.wsId, state.month);
+      if (idx >= 0 && idx < ledger.adjustments.length) {
+        ledger.adjustments.splice(idx, 1);
+        saveMonthLedger(state.wsId, state.month, ledger);
+        toast('Adjustment removed', 'success');
+        renderFormOptions();
+        renderPoolManager();
+        renderDashboard();
+        renderHomeSummary();
+      }
+    };
+
+    window.clearPoolRollover = function(poolId) {
+      const ledger = getMonthLedger(state.wsId, state.month);
+      delete ledger.rollovers[String(poolId)];
+      saveMonthLedger(state.wsId, state.month, ledger);
+      toast('Rollover entry removed', 'success');
+      renderFormOptions();
+      renderPoolManager();
+      renderDashboard();
+      renderHomeSummary();
+    };
+
     function renderPoolManager() {
       const cur = state.settings?.currency || 'MMK';
       if ($('poolManageMonthLabel')) $('poolManageMonthLabel').textContent = state.month;
@@ -2390,6 +2625,7 @@
       }
 
       syncPoolBulkButtons();
+      renderAdjustmentLog(cur);
 
       const tbody = $('poolManageTableBody');
       if (!tbody) return;
@@ -2405,6 +2641,20 @@
               : p.status === 'warning'
                 ? `<span class="pill Saving">${p.utilization_pct}% Used</span>`
                 : `<span class="pill Income">${p.utilization_pct}% Used</span>`;
+
+            const delta = Number(p.ledger_delta || 0);
+            const deltaText = delta > 0
+              ? `<span style="color:var(--income); font-weight:700;">+${fmtNum(delta)}</span>`
+              : delta < 0
+                ? `<span style="color:var(--warn); font-weight:700;">${fmtNum(delta)}</span>`
+                : '<span class="muted">0</span>';
+
+            const subNotes = [];
+            if (Number(p.rollover_in || 0) !== 0) subNotes.push(`Rollover: ${p.rollover_in > 0 ? '+' : ''}${fmtNum(p.rollover_in)}`);
+            if (Number(p.borrowed_in || 0) !== 0) subNotes.push(`Borrowed: ${p.borrowed_in > 0 ? '+' : ''}${fmtNum(p.borrowed_in)}`);
+            if (Number(p.lent_out || 0) > 0) subNotes.push(`Lent: -${fmtNum(p.lent_out)}`);
+            if (Number(p.transfer_in || 0) > 0) subNotes.push(`In: +${fmtNum(p.transfer_in)}`);
+            if (Number(p.transfer_out || 0) > 0) subNotes.push(`Out: -${fmtNum(p.transfer_out)}`);
 
             return `
               <tr data-pool-id="${pid}" data-is-custom="${isCustom ? '1' : '0'}" class="${isDirty ? 'is-dirty-pool' : ''}">
@@ -2437,10 +2687,14 @@
                   <div class="row-actions">
                     <input type="number" step="any" min="0" id="poolMonthInput_${pid}"
                            class="pool-amt-input"
-                           value="${escapeHtml(p.allocated_amount)}"
+                           value="${escapeHtml(p.base_allocated_amount)}"
                            oninput="markPoolDirty(${pid})" />
                     ${isCustom ? `<button type="button" class="small" onclick="resetPoolMonthBudget(${pid})">Reset</button>` : ''}
                   </div>
+                </td>
+                <td>
+                  <div>${deltaText}</div>
+                  ${subNotes.length ? `<div class="muted" style="font-size:10px;">${escapeHtml(subNotes.join(' · '))}</div>` : ''}
                 </td>
                 <td>${fmtNum(p.spent_amount)} ${escapeHtml(cur)}</td>
                 <td><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></td>
@@ -2451,7 +2705,7 @@
               </tr>
             `;
           }).join('')
-        : '<tr><td colspan="7" class="muted">No budget pools configured yet.</td></tr>';
+        : '<tr><td colspan="8" class="muted">No budget pools configured yet.</td></tr>';
     }
 
     window.syncPoolDefaultInput = function(poolId) {
@@ -2562,47 +2816,134 @@
       } catch (err) { toast(err.message, 'error'); }
     };
 
-    /* Sequential Pool Transfer to prevent race condition */
-    $('poolTransferForm')?.addEventListener('submit', async (e) => {
+    /* Pool-to-Pool Borrow / Transfer / Repay Handler */
+    $('poolTransferForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
+      const mode = $('transferMode')?.value || 'borrow';
       const fromId = Number($('transferFromPool')?.value || 0);
       const toId = Number($('transferToPool')?.value || 0);
       const amt = Number($('transferAmount')?.value || 0);
 
-      if (!fromId || !toId || fromId === toId) { toast('Select two different pools to transfer', 'error'); return; }
-      if (!(amt > 0)) { toast('Transfer amount must be greater than 0', 'error'); return; }
+      if (!fromId || !toId || fromId === toId) {
+        toast('Select two different pools to adjust', 'error');
+        return;
+      }
+      if (!(amt > 0)) {
+        toast('Amount must be greater than 0', 'error');
+        return;
+      }
 
       const normalizedPools = getNormalizedPoolsForMonth();
       const fromPool = normalizedPools.find((p) => Number(p.id) === fromId);
       const toPool = normalizedPools.find((p) => Number(p.id) === toId);
       if (!fromPool || !toPool) return;
 
-      const currentFromAlloc = Number(fromPool.allocated_amount || 0);
-      if (amt > currentFromAlloc) {
-        toast(`Transfer exceeds ${fromPool.pool_name} allocated budget (${fmtNum(currentFromAlloc)})`, 'error');
+      const availableRem = Number(fromPool.remaining_balance || 0);
+      if (amt > availableRem) {
+        toast(`${fromPool.pool_name} တွင် လက်ကျန် (${fmtNum(availableRem)}) သာ ရှိပါသည်`, 'error');
         return;
       }
 
-      const nextFromAlloc = Math.max(0, currentFromAlloc - amt);
-      const nextToAlloc = Number(toPool.allocated_amount || 0) + amt;
+      const ledger = getMonthLedger(state.wsId, state.month);
+      ledger.adjustments.push({
+        mode,
+        fromPoolId: fromId,
+        toPoolId: toId,
+        amount: amt,
+        createdAt: new Date().toISOString()
+      });
+      saveMonthLedger(state.wsId, state.month, ledger);
 
-      try {
-        const encWs = encodeURIComponent(state.wsId);
-        await apiFetch(`/api/workspaces/${encWs}/pools/${fromId}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ month: state.month, month_allocated_amount: nextFromAlloc })
-        });
-        await apiFetch(`/api/workspaces/${encWs}/pools/${toId}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ month: state.month, month_allocated_amount: nextToAlloc })
-        });
-        $('transferAmount').value = '';
-        toast(`Transferred ${fmtNum(amt)} to ${toPool.pool_name}`, 'success');
-        await loadWorkspaceDetails();
-      } catch (err) { toast(err.message, 'error'); }
+      $('transferAmount').value = '';
+      const labelMap = { borrow: 'Borrowed', transfer: 'Transferred', repay: 'Repaid' };
+      toast(`${labelMap[mode] || 'Adjusted'} ${fmtNum(amt)} from ${fromPool.pool_name} to ${toPool.pool_name}`, 'success');
+
+      renderFormOptions();
+      renderPoolManager();
+      renderDashboard();
+      renderHomeSummary();
     });
 
-    function aggregateTransactions(txList, basePools, multiplier = 1) {
+    /* Auto-Cover Over Budget Pools using Surplus Pools via Borrow */
+    $('autoBalanceDeficitsBtn')?.addEventListener('click', () => {
+      const pools = getNormalizedPoolsForMonth();
+      const deficits = pools.filter((p) => Number(p.remaining_balance || 0) < 0)
+        .map((p) => ({ id: Number(p.id), name: p.pool_name, need: Math.abs(Number(p.remaining_balance || 0)) }));
+      const surpluses = pools.filter((p) => Number(p.remaining_balance || 0) > 0)
+        .map((p) => ({ id: Number(p.id), name: p.pool_name, avail: Number(p.remaining_balance || 0) }))
+        .sort((a, b) => b.avail - a.avail);
+
+      if (!deficits.length) {
+        toast('Over Budget ဖြစ်နေသော Pool မရှိပါ', 'info');
+        return;
+      }
+      if (!surpluses.length) {
+        toast('ချေးယူနိုင်မည့် လက်ကျန်ပို Pool မရှိပါ', 'error');
+        return;
+      }
+
+      const ledger = getMonthLedger(state.wsId, state.month);
+      let coveredTotal = 0;
+
+      for (const def of deficits) {
+        let remainingNeed = def.need;
+        for (const sur of surpluses) {
+          if (remainingNeed <= 0) break;
+          if (sur.avail <= 0) continue;
+          const take = Math.min(remainingNeed, sur.avail);
+          ledger.adjustments.push({
+            mode: 'borrow',
+            fromPoolId: sur.id,
+            toPoolId: def.id,
+            amount: take,
+            createdAt: new Date().toISOString()
+          });
+          sur.avail -= take;
+          remainingNeed -= take;
+          coveredTotal += take;
+        }
+      }
+
+      if (coveredTotal <= 0) {
+        toast('လိုငွေညှိရန် လုံလောက်သော လက်ကျန်မရှိပါ', 'error');
+        return;
+      }
+
+      saveMonthLedger(state.wsId, state.month, ledger);
+      toast(`Auto-covered ${fmtNum(coveredTotal)} across over-budget pool(s)`, 'success');
+      renderFormOptions();
+      renderPoolManager();
+      renderDashboard();
+      renderHomeSummary();
+    });
+
+    /* Rollover Current Month Surplus to Next Month */
+    $('rolloverSurplusBtn')?.addEventListener('click', () => {
+      const pools = getNormalizedPoolsForMonth();
+      const surplusPools = pools.filter((p) => Number(p.remaining_balance || 0) > 0);
+      if (!surplusPools.length) {
+        toast('နောက်လသို့ ပေါင်းထည့်ရန် လက်ကျန်ပိုငွေ မရှိပါ', 'info');
+        return;
+      }
+
+      const nextMonth = getNextMonthStr(state.month);
+      const totalSurplus = surplusPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
+      if (!confirm(`${state.month} မှ ပိုထွက်ငွေ စုစုပေါင်း ${fmtNum(totalSurplus)} ကို ${nextMonth} ၏ Pool Budget များထဲသို့ Rollover ပေါင်းထည့်မလား?`)) {
+        return;
+      }
+
+      const nextLedger = getMonthLedger(state.wsId, nextMonth);
+      surplusPools.forEach((p) => {
+        nextLedger.rollovers[String(p.id)] = Number(p.remaining_balance || 0);
+      });
+      saveMonthLedger(state.wsId, nextMonth, nextLedger);
+      toast(`Rolled over ${fmtNum(totalSurplus)} to ${nextMonth}`, 'success');
+    });
+
+    /* ============================================================================
+     * Unified Single-Source-of-Truth Aggregation (Monthly & Yearly)
+     * ========================================================================== */
+    function aggregateMonthlyTransactions(txList, basePools, targetMonth) {
       let totalIncome = 0, totalExpense = 0, totalSaving = 0;
       const spentByPoolId = new Map(), spentByPoolName = new Map(), topupByPoolId = new Map(), catMap = new Map();
 
@@ -2628,26 +2969,42 @@
         catMap.get(catKey).total_mmk += amt;
       }
 
+      const { effectsByPool } = computePoolLedgerEffects(state.wsId, targetMonth);
+
       const computedPools = (basePools || []).map((p) => {
         const pid = Number(p.id);
         const pName = String(p.pool_name || '').trim().toLowerCase();
-        const monthlyAlloc = (p.override_amount !== null && p.override_amount !== undefined)
+        const baseAlloc = (p.override_amount !== null && p.override_amount !== undefined)
           ? Number(p.override_amount)
           : Number(p.allocated_amount ?? p.default_amount ?? 0);
-
-        const baseAlloc = multiplier === 1
-          ? monthlyAlloc
-          : Number(p.default_amount ?? monthlyAlloc) * multiplier;
 
         const txSpent = spentByPoolId.has(pid) ? spentByPoolId.get(pid) : (spentByPoolName.get(pName) || 0);
         const spent = (txList && txList.length > 0) ? txSpent : Number(p.spent_amount || 0);
         const topup = (txList && txList.length > 0) ? Number(topupByPoolId.get(pid) || 0) : Number(p.topup_amount || 0);
-        const available = baseAlloc + topup;
+
+        const fx = effectsByPool.get(pid) || { rolloverIn: 0, borrowedIn: 0, lentOut: 0, transferIn: 0, transferOut: 0, netDelta: 0 };
+        const available = Math.max(0, baseAlloc + topup + fx.netDelta);
         const remaining = available - spent;
-        const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : 0;
+        const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : (spent > 0 ? 100 : 0);
         const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
 
-        return { ...p, allocated_amount: baseAlloc, spent_amount: spent, topup_amount: topup, available_budget: available, remaining_balance: remaining, utilization_pct: util, status };
+        return {
+          ...p,
+          base_allocated_amount: baseAlloc,
+          allocated_amount: available,
+          spent_amount: spent,
+          topup_amount: topup,
+          rollover_in: fx.rolloverIn,
+          borrowed_in: fx.borrowedIn,
+          lent_out: fx.lentOut,
+          transfer_in: fx.transferIn,
+          transfer_out: fx.transferOut,
+          ledger_delta: fx.netDelta,
+          available_budget: available,
+          remaining_balance: remaining,
+          utilization_pct: util,
+          status
+        };
       });
 
       const totalAllocated = computedPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
@@ -2663,21 +3020,39 @@
       const sum = state.summary || {};
 
       if (txList.length > 0) {
-        const agg = aggregateTransactions(txList, basePools, 1);
+        const agg = aggregateMonthlyTransactions(txList, basePools, state.month);
         return { isYearly: false, periodLabel: state.month, ...agg, txList };
       }
 
+      const { effectsByPool } = computePoolLedgerEffects(state.wsId, state.month);
       const fallbackPools = basePools.map((p) => {
+        const pid = Number(p.id);
         const baseAlloc = (p.override_amount !== null && p.override_amount !== undefined)
           ? Number(p.override_amount)
           : Number(p.allocated_amount ?? p.default_amount ?? 0);
         const topup = Number(p.topup_amount || 0);
-        const available = baseAlloc + topup;
+        const fx = effectsByPool.get(pid) || { rolloverIn: 0, borrowedIn: 0, lentOut: 0, transferIn: 0, transferOut: 0, netDelta: 0 };
+        const available = Math.max(0, baseAlloc + topup + fx.netDelta);
         const spent = Number(p.spent_amount || 0);
         const remaining = available - spent;
-        const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : 0;
+        const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : (spent > 0 ? 100 : 0);
         const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
-        return { ...p, allocated_amount: baseAlloc, available_budget: available, spent_amount: spent, remaining_balance: remaining, utilization_pct: util, status };
+        return {
+          ...p,
+          base_allocated_amount: baseAlloc,
+          allocated_amount: available,
+          available_budget: available,
+          rollover_in: fx.rolloverIn,
+          borrowed_in: fx.borrowedIn,
+          lent_out: fx.lentOut,
+          transfer_in: fx.transferIn,
+          transfer_out: fx.transferOut,
+          ledger_delta: fx.netDelta,
+          spent_amount: spent,
+          remaining_balance: remaining,
+          utilization_pct: util,
+          status
+        };
       });
 
       const totalIncome = Number(sum.total_income || 0);
@@ -2691,10 +3066,92 @@
 
     function buildActiveDashboardViewModel() {
       if (state.periodMode !== 'yearly') return buildMonthlyViewModel();
-      const { year } = getYearMonths(state.month);
+
+      const { year, months } = getYearMonths(state.month);
       const yTx = state.yearlyTransactions || [];
-      const agg = aggregateTransactions(yTx, state.pools || [], 12);
-      return { isYearly: true, periodLabel: `${year} (Yearly)`, ...agg, txList: yTx };
+      let totalIncome = 0, totalExpense = 0, totalSaving = 0;
+      const catMap = new Map();
+
+      for (const tx of yTx) {
+        const amt = Number(tx.amount_mmk || 0);
+        const type = tx.entry_type;
+        if (type === 'Income') totalIncome += amt;
+        else if (type === 'Saving') totalSaving += amt;
+        else totalExpense += amt;
+
+        const catKey = `${tx.category || 'Uncategorized'}||${type}`;
+        if (!catMap.has(catKey)) catMap.set(catKey, { category: tx.category || 'Uncategorized', entry_type: type, total_mmk: 0 });
+        catMap.get(catKey).total_mmk += amt;
+      }
+
+      // Sum exact monthly allocations + ledger adjustments across all 12 months of the year
+      const poolAccMap = new Map();
+      (state.pools || []).forEach((p) => {
+        poolAccMap.set(Number(p.id), {
+          ...p,
+          base_allocated_amount: 0,
+          allocated_amount: 0,
+          available_budget: 0,
+          spent_amount: 0,
+          topup_amount: 0,
+          rollover_in: 0,
+          borrowed_in: 0,
+          lent_out: 0,
+          transfer_in: 0,
+          transfer_out: 0,
+          ledger_delta: 0
+        });
+      });
+
+      months.forEach((ym) => {
+        const mPools = state.yearlyPoolsByMonth[ym] || state.pools || [];
+        const mTx = yTx.filter((t) => getMonthFromDate(t.tx_date) === ym);
+        const mAgg = aggregateMonthlyTransactions(mTx, mPools, ym);
+
+        mAgg.pools.forEach((mp) => {
+          const pid = Number(mp.id);
+          if (!poolAccMap.has(pid)) {
+            poolAccMap.set(pid, { ...mp, base_allocated_amount: 0, allocated_amount: 0, available_budget: 0, spent_amount: 0, topup_amount: 0, rollover_in: 0, borrowed_in: 0, lent_out: 0, transfer_in: 0, transfer_out: 0, ledger_delta: 0 });
+          }
+          const acc = poolAccMap.get(pid);
+          acc.base_allocated_amount += Number(mp.base_allocated_amount || 0);
+          acc.allocated_amount += Number(mp.available_budget || 0);
+          acc.available_budget += Number(mp.available_budget || 0);
+          acc.spent_amount += Number(mp.spent_amount || 0);
+          acc.topup_amount += Number(mp.topup_amount || 0);
+          acc.rollover_in += Number(mp.rollover_in || 0);
+          acc.borrowed_in += Number(mp.borrowed_in || 0);
+          acc.lent_out += Number(mp.lent_out || 0);
+          acc.transfer_in += Number(mp.transfer_in || 0);
+          acc.transfer_out += Number(mp.transfer_out || 0);
+          acc.ledger_delta += Number(mp.ledger_delta || 0);
+        });
+      });
+
+      const yearlyPools = [...poolAccMap.values()].map((p) => {
+        const remaining = p.available_budget - p.spent_amount;
+        const util = p.available_budget > 0 ? Math.round((p.spent_amount / p.available_budget) * 1000) / 10 : (p.spent_amount > 0 ? 100 : 0);
+        const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
+        return { ...p, remaining_balance: remaining, utilization_pct: util, status };
+      });
+
+      const totalAllocated = yearlyPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
+      const totalRemaining = yearlyPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
+      const cats = [...catMap.values()].sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
+
+      return {
+        isYearly: true,
+        periodLabel: `${year} (Yearly)`,
+        totalIncome,
+        totalExpense,
+        totalSaving,
+        totalAllocated,
+        totalRemaining,
+        unalloc: totalIncome - totalAllocated,
+        pools: yearlyPools,
+        cats,
+        txList: yTx
+      };
     }
 
     function getChartTextColor() { return document.documentElement.getAttribute('data-theme') === 'light' ? '#334155' : '#cbd5e1'; }
@@ -2702,7 +3159,6 @@
     function getDoughnutLegendPosition() { return window.innerWidth < 640 ? 'bottom' : 'right'; }
     function destroyChart(key) { if (charts[key]) { charts[key].destroy(); charts[key] = null; } }
 
-    /* Vertical Linear Gradient Helpers for Richer Glass Charts */
     function makeVerticalGradient(ctx, topColor, bottomColor, height = 260) {
       const grad = ctx.createLinearGradient(0, 0, 0, height);
       grad.addColorStop(0, topColor);
@@ -2888,7 +3344,7 @@
             labels: poolList.map((p) => String(p.pool_name || '').replace(/\s*Pool$/i, '')),
             datasets: [
               {
-                label: `Budget (${cur})`,
+                label: `Effective Budget (${cur})`,
                 data: poolList.map((p) => Number(p.available_budget || 0)),
                 backgroundColor: budgetGrad,
                 borderColor: 'rgba(165, 243, 252, 0.65)',
@@ -3071,7 +3527,7 @@
 
       if ($('dashReportHeading')) $('dashReportHeading').textContent = isYearly ? `Yearly Budget Health Report (${periodLabel})` : `Monthly Budget Health Report (${periodLabel})`;
       if ($('kpiIncomeLabel')) $('kpiIncomeLabel').textContent = isYearly ? 'Total Income (Year)' : 'Total Income (Month)';
-      if ($('kpiPoolAllocLabel')) $('kpiPoolAllocLabel').textContent = isYearly ? 'Total Pool Budget (12M)' : 'Total Pool Budget';
+      if ($('kpiPoolAllocLabel')) $('kpiPoolAllocLabel').textContent = isYearly ? 'Total Pool Budget (Year)' : 'Total Pool Budget';
       if ($('kpiExpenseLabel')) $('kpiExpenseLabel').textContent = isYearly ? 'Total Expense (Year)' : 'Total Expense';
       if ($('kpiPoolRemLabel')) $('kpiPoolRemLabel').textContent = isYearly ? 'Remaining Pool Balance (Year)' : 'Remaining Pool Balance';
       if ($('cashflowPeriodTag')) $('cashflowPeriodTag').textContent = periodLabel;
@@ -3127,6 +3583,12 @@
             const pct = Math.min(100, Number(p.utilization_pct || 0));
             const barCls = p.status === 'over_budget' ? 'exp' : p.status === 'warning' ? 'warn' : 'inc';
             const remCls = p.status === 'over_budget' ? 'rem-over' : p.status === 'warning' ? 'rem-warn' : 'rem-ok';
+
+            const badges = [];
+            if (Number(p.rollover_in || 0) > 0) badges.push(`<span class="mini-badge rollover">+${fmtNum(p.rollover_in)} Rollover</span>`);
+            if (Number(p.borrowed_in || 0) > 0) badges.push(`<span class="mini-badge borrow">+${fmtNum(p.borrowed_in)} Borrowed</span>`);
+            if (Number(p.lent_out || 0) > 0) badges.push(`<span class="mini-badge">-${fmtNum(p.lent_out)} Lent</span>`);
+
             return `
               <div class="pool-card" role="button" tabindex="0" data-pool-id="${escapeHtml(p.id)}" data-pool-name="${escapeHtml(p.pool_name)}" title="Click to inspect ${escapeHtml(p.pool_name)} transactions">
                 <div class="pool-header">
@@ -3138,9 +3600,10 @@
                 </div>
                 <div class="pool-metrics">
                   <div><span class="m-lbl">Remaining</span><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></div>
-                  <div><span class="m-lbl">Spent / Budget</span><strong>${fmtNum(p.spent_amount)} / ${fmtNum(p.available_budget)}</strong></div>
+                  <div><span class="m-lbl">Spent / Effective Budget</span><strong>${fmtNum(p.spent_amount)} / ${fmtNum(p.available_budget)}</strong></div>
                 </div>
                 <div class="bar-track"><div class="bar-fill ${barCls}" style="width:${pct}%"></div></div>
+                ${badges.length ? `<div class="pool-badge-strip">${badges.join('')}</div>` : ''}
               </div>
             `;
           }).join('')
@@ -4130,15 +4593,14 @@
     $('resetForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const newPw = $('resetNewPassword').value, confirmPw = $('resetConfirmPassword').value;
-      if (newPw.length < 6) { const msg = 'Password must be at least 6 characters'; setStatus('forgotStatus', msg, 'err'); toast(msg, 'error'); return; }
       if (newPw !== confirmPw) { const msg = 'New passwords do not match'; setStatus('forgotStatus', msg, 'err'); toast(msg, 'error'); return; }
       const btn = $('resetSubmitBtn');
       btn.disabled = true; btn.textContent = 'Updating...';
       setStatus('forgotStatus', '');
       try {
-        const res = await apiFetch('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ email: $('forgotEmail').value.trim(), code: $('resetCode').value.trim(), new_password: newPw }) });
-        $('resetCode').value = ''; $('resetNewPassword').value = ''; $('resetConfirmPassword').value = '';
+        const res = await apiFetch('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ email: $('forgotEmail').value.trim(), reset_code: $('resetCode').value.trim(), new_password: newPw }) });
         toast(res.message || 'Password updated', 'success');
+        $('loginEmail').value = $('forgotEmail').value.trim();
         showAuthMode('login');
         setStatus('loginStatus', 'Password updated. Please sign in.', 'ok');
       } catch (err) { setStatus('forgotStatus', err.message, 'err'); toast(err.message, 'error'); }
@@ -4150,66 +4612,55 @@
     $('workspaceSelect').addEventListener('change', async (e) => {
       state.wsId = e.target.value;
       localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
-      selectedTxIds.clear();
-      inlineEditingTxId = null;
       dirtyPoolIds.clear();
       isPoolBulkEditMode = false;
       closeDashboardDrilldown();
-      closeTxModal(false);
-      await loadWorkspaceDetails({ force: true });
+      await loadWorkspaceDetails();
     });
 
-    $('monthFilter').value = state.month;
     $('monthFilter').addEventListener('change', async (e) => {
-      if (!e.target.value) return;
       state.month = e.target.value;
-      selectedTxIds.clear();
-      inlineEditingTxId = null;
       dirtyPoolIds.clear();
       isPoolBulkEditMode = false;
       closeDashboardDrilldown();
-      await loadWorkspaceDetails({ force: true });
+      await loadWorkspaceDetails();
     });
 
     $('txType').addEventListener('change', updateCategoryDropdown);
-    $('txPool').addEventListener('change', updatePoolBalanceHint);
+    $('txPool')?.addEventListener('change', updatePoolBalanceHint);
 
     $('txForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const ws = encodeURIComponent(state.wsId);
       const editId = $('editingTxId').value;
-      const selectedPoolId = $('txPool').value ? Number($('txPool').value) : null;
-      const submitBtn = $('txSubmitBtn');
-      submitBtn.disabled = true;
+      const btn = $('txSubmitBtn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      const poolVal = $('txPool').value;
+      const poolId = poolVal ? Number(poolVal) : null;
 
       try {
         if (editId) {
-          await apiFetch(`/api/workspaces/${ws}/transactions/${editId}`, {
+          await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${editId}`, {
             method: 'PATCH',
-            body: JSON.stringify({
-              tx_date: $('txDate').value, member_name: $('txMember').value, entry_type: $('txType').value,
-              category: $('txCategory').value, amount_mmk: Number($('txAmount').value),
-              payment_method: $('txPayment').value, notes: $('txNotes').value.trim(), pool_id: selectedPoolId
-            })
+            body: JSON.stringify({ tx_date: $('txDate').value, member_name: $('txMember').value, entry_type: $('txType').value, category: $('txCategory').value, amount_mmk: Number($('txAmount').value), payment_method: $('txPayment').value, notes: $('txNotes').value.trim(), pool_id: poolId })
           });
           toast('Transaction updated', 'success');
         } else {
           const fd = new FormData();
           fd.append('tx_date', $('txDate').value); fd.append('member_name', $('txMember').value);
           fd.append('entry_type', $('txType').value); fd.append('category', $('txCategory').value);
-          fd.append('amount_mmk', String(Number($('txAmount').value))); fd.append('payment_method', $('txPayment').value);
-          if (selectedPoolId) fd.append('pool_id', String(selectedPoolId));
+          fd.append('amount_mmk', $('txAmount').value); fd.append('payment_method', $('txPayment').value);
+          if (poolId) fd.append('pool_id', String(poolId));
           if ($('txNotes').value.trim()) fd.append('notes', $('txNotes').value.trim());
           const file = $('txReceipt').files[0];
           if (file) fd.append('receipt', file);
-
-          await apiFetch(`/api/workspaces/${ws}/transactions`, { method: 'POST', body: fd });
-          toast('Saved to D1 & R2', 'success');
+          await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions`, { method: 'POST', body: fd });
+          toast('Transaction added', 'success');
         }
         closeTxModal(false);
-        await loadWorkspaceDetails({ force: true });
+        await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
-      finally { submitBtn.disabled = false; }
+      finally { btn.disabled = false; btn.textContent = $('editingTxId').value ? 'Update Transaction' : 'Save Transaction'; }
     });
 
     $('txSearch').addEventListener('input', renderTransactions);
@@ -4217,8 +4668,8 @@
 
     $('exportCsvBtn').addEventListener('click', () => {
       const rows = getFilteredTransactions();
-      const headers = ['Date', 'Member', 'Type', 'Pool', 'Category', 'Amount', 'Payment', 'Notes', 'ReceiptKey'];
-      const lines = [headers.join(',')].concat(rows.map((r) => [r.tx_date, r.member_name, r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || '', r.receipt_key || ''].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')));
+      const headers = ['Date', 'Member', 'Type', 'Budget Pool', 'Category', 'Amount', 'Payment Method', 'Notes'];
+      const lines = [headers.join(',')].concat(rows.map((r) => [r.tx_date, r.member_name, r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')));
       const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -4232,11 +4683,11 @@
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools`, {
           method: 'POST',
-          body: JSON.stringify({ pool_name: $('newPoolName').value.trim(), default_amount: Number($('newPoolDefaultAmt').value), color_tag: $('newPoolColor').value })
+          body: JSON.stringify({ pool_name: $('newPoolName').value.trim(), default_amount: Number($('newPoolDefaultAmt').value || 0), color_tag: $('newPoolColor').value })
         });
         $('newPoolName').value = ''; $('newPoolDefaultAmt').value = '';
         toast('Budget pool saved', 'success');
-        await loadWorkspaceDetails({ force: true });
+        await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
     });
 
@@ -4245,10 +4696,11 @@
       try {
         const res = await apiFetch('/api/workspaces', {
           method: 'POST',
-          body: JSON.stringify({ workspace_name: $('newWsName').value.trim(), workspace_id: $('newWsId').value.trim() })
+          body: JSON.stringify({ workspace_name: $('newWsName').value.trim(), workspace_id: $('newWsId').value.trim() || undefined })
         });
-        state.wsId = res.workspace_id;
         $('newWsName').value = ''; $('newWsId').value = '';
+        state.wsId = res.data.workspace_id;
+        localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
         toast('Workspace created', 'success');
         await loadWorkspacesAndData();
       } catch (err) { toast(err.message, 'error'); }
@@ -4257,12 +4709,10 @@
     $('inviteMemberForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/invites`, {
-          method: 'POST',
-          body: JSON.stringify({ email: $('inviteEmail').value.trim(), app_url: window.location.origin })
-        });
+        const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/members`, { method: 'POST', body: JSON.stringify({ email: $('inviteEmail').value.trim() }) });
         $('inviteEmail').value = '';
-        toast(res.sent ? 'Invite email sent!' : 'Invite created! Share link: ' + res.invite_link, 'success');
+        toast(`Added ${res.added.display_name} to workspace`, 'success');
+        await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
     });
 
@@ -4271,113 +4721,42 @@
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/settings`, {
           method: 'PATCH',
-          body: JSON.stringify({
-            workspace_name: $('setWsName').value.trim(),
-            currency: $('setCurrency').value.trim().toUpperCase(),
-            members: $('setMembers').value.split(',').map((s) => s.trim()).filter(Boolean),
-            payment_methods: $('setPayments').value.split(',').map((s) => s.trim()).filter(Boolean)
-          })
+          body: JSON.stringify({ workspace_name: $('setWsName').value.trim(), currency: $('setCurrency').value.trim().toUpperCase(), members: $('setMembers').value.split(',').map((s) => s.trim()).filter(Boolean), payment_methods: $('setPayments').value.split(',').map((s) => s.trim()).filter(Boolean) })
         });
-        toast('Settings updated', 'success');
-        await loadWorkspaceDetails({ force: true });
+        toast('Settings saved', 'success');
+        await loadWorkspacesAndData();
       } catch (err) { toast(err.message, 'error'); }
     });
 
     $('addCategoryForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories`, {
-          method: 'POST',
-          body: JSON.stringify({ name: $('newCatName').value.trim(), entry_type: $('newCatType').value })
-        });
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories`, { method: 'POST', body: JSON.stringify({ name: $('newCatName').value.trim(), entry_type: $('newCatType').value }) });
         $('newCatName').value = '';
-        toast('Category saved', 'success');
-        await loadWorkspaceDetails({ force: true });
+        toast('Category added', 'success');
+        await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
     });
 
-    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-      const swCode = `
-        const CACHE_NAME = 'sayin-pwa-v2';
-        self.addEventListener('install', (event) => {
-          event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./sayin-logo-cropped-transparent.png']).catch(() => {})));
-          self.skipWaiting();
-        });
-        self.addEventListener('activate', (event) => {
-          event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))));
-          self.clients.claim();
-        });
-        self.addEventListener('fetch', (event) => {
-          const req = event.request;
-          if (req.method !== 'GET') return;
-          const url = new URL(req.url);
-          if (url.origin === self.location.origin && url.pathname.endsWith('.png')) {
-            event.respondWith(
-              fetch(req).then((res) => {
-                if (res && res.ok) { const copy = res.clone(); caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {}); }
-                return res;
-              }).catch(() => caches.match(req))
-            );
-          }
-        });
-      `;
-      const swBlob = new Blob([swCode], { type: 'application/javascript' });
-      const swUrl = URL.createObjectURL(swBlob);
-      navigator.serviceWorker.register(swUrl, { scope: './' }).catch(() => {});
-    }
+    (async function init() {
+      const savedTheme = localStorage.getItem(STORAGE_KEYS.theme) || 'dark';
+      applyTheme(savedTheme);
+      syncSoundButton();
+      syncSlicerButtons();
+      $('monthFilter').value = state.month;
+      $('txDate').value = new Date().toISOString().slice(0, 10);
 
-    syncSoundButton();
-    applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
-    syncSlicerButtons();
-    $('txDate').value = new Date().toISOString().slice(0, 10);
-
-    let lastAutoSyncAt = 0;
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && state.token && state.wsId) {
-        const now = Date.now();
-        if (now - lastAutoSyncAt > 4000) { lastAutoSyncAt = now; loadWorkspaceDetails({ force: true }).catch(() => {}); }
-      }
-    });
-
-    (function buildSquarePwaIcons() {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = function() {
-        try {
-          const size = 512;
-          const canvas = document.createElement('canvas');
-          canvas.width = size; canvas.height = size;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) return;
-          ctx.fillStyle = '#071b2e'; ctx.fillRect(0, 0, size, size);
-          const maxW = size * 0.76, maxH = size * 0.76;
-          const scale = Math.min(maxW / (img.naturalWidth || size), maxH / (img.naturalHeight || size));
-          const drawW = (img.naturalWidth || size) * scale, drawH = (img.naturalHeight || size) * scale;
-          ctx.drawImage(img, (size - drawW) / 2, (size - drawH) / 2, drawW, drawH);
-          const squareDataUrl = canvas.toDataURL('image/png');
-          if ($('appleTouchIconLink')) $('appleTouchIconLink').href = squareDataUrl;
-          if ($('pwaManifestLink')) {
-            const manifestObj = {
-              name: 'Sayin — Budget Pool Portal', short_name: 'Sayin', start_url: './', scope: './',
-              display: 'standalone', orientation: 'portrait-primary', background_color: '#051221', theme_color: '#071b2e',
-              icons: [{ src: squareDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any' }]
-            };
-            $('pwaManifestLink').href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifestObj));
-          }
-        } catch {}
-      };
-      img.src = './sayin-logo-cropped-transparent.png';
-    })();
-
-    (async function boot() {
       if (!state.token) { setAuthUi(false); return; }
+
       try {
         const me = await apiFetch('/api/auth/me');
         state.user = me.user;
         setAuthUi(true);
         await activateTab('home', false);
         await loadWorkspacesAndData();
-      } catch { handleLogout(false); }
+      } catch {
+        handleLogout(false);
+      }
     })();
   </script>
 </body>
