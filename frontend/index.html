@@ -1811,6 +1811,7 @@
       workspaces: [],
       wsId: localStorage.getItem(STORAGE_KEYS.wsId) || '',
       month: new Date().toISOString().slice(0, 7),
+      anchorDate: new Date().toISOString().slice(0, 10),
       periodMode: localStorage.getItem(STORAGE_KEYS.period) === 'yearly' ? 'yearly' : 'monthly',
       soundEnabled: localStorage.getItem(STORAGE_KEYS.sound) !== 'off',
       settings: null,
@@ -1828,7 +1829,36 @@
       adminTransactions: [],
       preparedCsvRows: []
     };
+   function getWeekRangeFromDate(dateStr) {
+  const iso = normalizeIsoDate(dateStr) || new Date().toISOString().slice(0, 10);
+  const [y, m, d] = iso.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  const dayOfWeek = dt.getUTCDay();
+  const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const startDt = new Date(Date.UTC(y, m - 1, d + diffToMon));
+  const endDt = new Date(Date.UTC(y, m - 1, d + diffToMon + 6));
+  const start = startDt.toISOString().slice(0, 10);
+  const end = endDt.toISOString().slice(0, 10);
+  return { start, end, label: `${start} ~ ${end}` };
+}
 
+function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
+  const anchorMonth = monthStr || getMonthFromDate(dateStr) || new Date().toISOString().slice(0, 7);
+  if (mode === 'yearly') {
+    return getYearMonths(anchorMonth).months;
+  }
+  if (mode === 'week') {
+    const { start, end } = getWeekRangeFromDate(dateStr);
+    const m1 = start.slice(0, 7);
+    const m2 = end.slice(0, 7);
+    return m1 === m2 ? [m1] : [m1, m2];
+  }
+  if (mode === 'day') {
+    const dMonth = getMonthFromDate(dateStr) || anchorMonth;
+    return [dMonth];
+  }
+  return [anchorMonth];
+}
     const selectedTxIds = new Set();
 
     const charts = {
