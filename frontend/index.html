@@ -1685,6 +1685,21 @@
         : '<span class="muted">No categories</span>';
     }
 
+    const editingPoolMetaIds = new Set();
+
+    window.toggleEditPoolMeta = function(poolId) {
+      const pid = Number(poolId);
+      if (editingPoolMetaIds.has(pid)) {
+        editingPoolMetaIds.delete(pid);
+      } else {
+        editingPoolMetaIds.add(pid);
+      }
+      renderPoolManager();
+      if (editingPoolMetaIds.has(pid)) {
+        $(`poolNameInput_${pid}`)?.focus();
+      }
+    };
+
     function renderPoolManager() {
       const cur = state.settings?.currency || 'MMK';
       if ($('poolManageMonthLabel')) $('poolManageMonthLabel').textContent = state.month;
@@ -1695,6 +1710,8 @@
       const pools = state.pools || [];
       tbody.innerHTML = pools.length
         ? pools.map((p) => {
+            const pid = Number(p.id);
+            const isEditingMeta = editingPoolMetaIds.has(pid);
             const isCustom = p.override_amount !== null;
             const remCls = p.status === 'over_budget' ? 'rem-over' : p.status === 'warning' ? 'rem-warn' : 'rem-ok';
             const statusPill = p.status === 'over_budget'
@@ -1704,27 +1721,41 @@
                 : `<span class="pill Income">${p.utilization_pct}% Used</span>`;
 
             return `
-              <tr data-pool-id="${p.id}" data-is-custom="${isCustom ? '1' : '0'}">
+              <tr data-pool-id="${pid}" data-is-custom="${isCustom ? '1' : '0'}">
                 <td>
-                  <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#10b981')}; margin-right:6px;"></span>
-                  <strong>${escapeHtml(p.pool_name)}</strong>
-                  <div class="muted">${isCustom ? `Custom for ${escapeHtml(state.month)}` : 'Using Monthly Default'}</div>
+                  <div class="row-actions" style="align-items:center;">
+                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#10b981')};"></span>
+                    ${isEditingMeta
+                      ? `<input type="text" id="poolNameInput_${pid}" value="${escapeHtml(p.pool_name)}" style="min-width:140px; padding:6px 8px;" oninput="markPoolDirty(${pid})" placeholder="Pool Name" />
+                         <select id="poolColorInput_${pid}" style="max-width:105px; padding:6px 6px;" onchange="markPoolDirty(${pid})">
+                           <option value="#10b981" ${(p.color_tag || '#10b981') === '#10b981' ? 'selected' : ''}>Emerald</option>
+                           <option value="#38bdf8" ${p.color_tag === '#38bdf8' ? 'selected' : ''}>Sky</option>
+                           <option value="#f59e0b" ${p.color_tag === '#f59e0b' ? 'selected' : ''}>Amber</option>
+                           <option value="#a855f7" ${p.color_tag === '#a855f7' ? 'selected' : ''}>Purple</option>
+                           <option value="#f43f5e" ${p.color_tag === '#f43f5e' ? 'selected' : ''}>Rose</option>
+                         </select>`
+                      : `<div>
+                           <strong>${escapeHtml(p.pool_name)}</strong>
+                           <div class="muted">${isCustom ? `Custom for ${escapeHtml(state.month)}` : 'Using Monthly Default'}</div>
+                         </div>`
+                    }
+                  </div>
                 </td>
                 <td>
-                  <input type="number" step="any" min="0" id="poolDefInput_${p.id}"
+                  <input type="number" step="any" min="0" id="poolDefInput_${pid}"
                          class="pool-amt-input"
                          value="${escapeHtml(p.default_amount)}"
-                         oninput="syncPoolDefaultInput(${p.id}); markPoolDirty(${p.id})"
+                         oninput="syncPoolDefaultInput(${pid}); markPoolDirty(${pid})"
                          title="လတိုင်း သုံးမည့် ပုံသေပမာဏ" />
                 </td>
                 <td>
                   <div class="row-actions">
-                    <input type="number" step="any" min="0" id="poolMonthInput_${p.id}"
+                    <input type="number" step="any" min="0" id="poolMonthInput_${pid}"
                            class="pool-amt-input"
                            value="${escapeHtml(p.allocated_amount)}"
-                           oninput="markPoolDirty(${p.id})"
+                           oninput="markPoolDirty(${pid})"
                            title="${escapeHtml(state.month)} တစ်လတည်းအတွက် ပမာဏ" />
-                    ${isCustom ? `<button type="button" class="small" onclick="resetPoolMonthBudget(${p.id})" title="Default အတိုင်း ပြန်ထားရန်">Reset</button>` : ''}
+                    ${isCustom ? `<button type="button" class="small" onclick="resetPoolMonthBudget(${pid})" title="Default အတိုင်း ပြန်ထားရန်">Reset</button>` : ''}
                   </div>
                 </td>
                 <td>${fmtNum(p.spent_amount)} ${escapeHtml(cur)}</td>
@@ -1732,8 +1763,9 @@
                 <td>${statusPill}</td>
                 <td>
                   <div class="row-actions">
-                    <button type="button" class="small primary" onclick="savePoolRow(${p.id})">Save</button>
-                    <button type="button" class="small danger" onclick="disablePoolRow(${p.id})">Hide</button>
+                    <button type="button" class="small" onclick="toggleEditPoolMeta(${pid})">${isEditingMeta ? 'Done' : 'Edit'}</button>
+                    <button type="button" class="small primary" onclick="savePoolRow(${pid})">Save</button>
+                    <button type="button" class="small danger" onclick="disablePoolRow(${pid})">Hide</button>
                   </div>
                 </td>
               </tr>
@@ -1762,11 +1794,21 @@
       const pool = (state.pools || []).find((p) => Number(p.id) === Number(poolId));
       const defEl = $(`poolDefInput_${poolId}`);
       const monthEl = $(`poolMonthInput_${poolId}`);
+      const nameEl = $(`poolNameInput_${poolId}`);
+      const colorEl = $(`poolColorInput_${poolId}`);
+
       const defVal = Number(defEl?.value);
       const monthVal = Number(monthEl?.value);
       if (!(defVal >= 0) || !(monthVal >= 0)) {
         return { error: 'Budget amounts must be 0 or greater' };
       }
+
+      const poolName = nameEl ? nameEl.value.trim() : String(pool?.pool_name || '').trim();
+      if (!poolName) {
+        return { error: 'Pool name cannot be empty' };
+      }
+
+      const colorTag = colorEl ? colorEl.value : (pool?.color_tag || '#10b981');
 
       const row = document.querySelector(`tr[data-pool-id="${poolId}"]`);
       const wasCustom = row?.dataset.isCustom === '1' || (pool && pool.override_amount !== null && pool.override_amount !== undefined);
@@ -1774,12 +1816,12 @@
       const prevAlloc = Number(pool?.allocated_amount ?? prevDef);
 
       const payload = {
+        pool_name: poolName,
+        color_tag: colorTag,
         default_amount: defVal,
         month: state.month
       };
 
-      // If user explicitly set a different month amount or it was already custom and changed, send month_allocated_amount;
-      // if only default changed and month matches new default (or wasn't custom), keep in sync with default.
       if (monthVal !== defVal && (monthVal !== prevAlloc || defVal === prevDef)) {
         payload.month_allocated_amount = monthVal;
       } else if (wasCustom && monthVal !== defVal) {
@@ -1804,6 +1846,7 @@
           body: JSON.stringify(payload)
         });
         dirtyPoolIds.delete(Number(poolId));
+        editingPoolMetaIds.delete(Number(poolId));
         toast('Budget pool updated', 'success');
         await loadWorkspaceDetails();
       } catch (err) {
@@ -1849,6 +1892,7 @@
         btn.textContent = 'Save All Pools';
       }
 
+      editingPoolMetaIds.clear();
       if (errCount > 0) {
         toast(`Saved ${savedCount} pool(s), ${errCount} failed`, 'error');
       } else {
