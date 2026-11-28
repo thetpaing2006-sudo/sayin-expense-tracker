@@ -150,6 +150,10 @@
       inline-size: 100%;
       max-inline-size: 100%;
       min-inline-size: 0;
+      -webkit-appearance: none;
+      appearance: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .grid-4 > div, .grid-2 > div, .pool-grid > div {
       min-width: 0;
@@ -395,11 +399,12 @@
       .brand { flex: 1 1 100%; }
       .brand-logo-box img { height: 26px; max-width: 96px; }
       .brand h1 { font-size: 15px; }
-      .topbar-actions { width: 100%; display: grid; grid-template-columns: 1fr; gap: 8px; }
-      #wsSelectorWrap { width: 100%; min-width: 0 !important; }
-      #wsSelectorWrap select { width: 100%; font-size: 13px; padding: 9px 10px; }
-      #monthWrap { width: 100%; min-width: 0 !important; }
-      #monthWrap input[type="month"] { width: 100%; max-width: 100%; min-width: 0; font-size: 13px; padding: 8px 10px; }
+      .topbar { overflow: hidden; }
+      .topbar-actions { width: 100%; max-width: 100%; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+      #wsSelectorWrap { width: 100%; max-width: 100%; min-width: 0 !important; overflow: hidden; }
+      #wsSelectorWrap select { width: 100%; max-width: 100%; min-width: 0; font-size: 13px; padding: 9px 10px; }
+      #monthWrap { width: 100%; max-width: 100%; min-width: 0 !important; overflow: hidden; }
+      #monthWrap input[type="month"] { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; font-size: 13px; padding: 8px 10px; }
       .topbar-btn-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 6px; width: 100%; }
       .topbar-btn-row > button { width: 100%; padding: 9px 8px; font-size: 12px; text-align: center; }
 
