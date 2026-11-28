@@ -944,6 +944,73 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     .chart-canvas-wrap canvas { cursor: pointer; }
+    .chart-extremes-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 8px;
+      font-size: 11.5px;
+    }
+    .extreme-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .extreme-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 11px;
+      cursor: pointer;
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      background: rgba(15, 23, 42, 0.62);
+      color: var(--text);
+      transition: transform 0.12s ease, border-color 0.15s ease;
+    }
+    .extreme-chip:hover {
+      transform: translateY(-1px);
+      border-color: var(--aqua);
+    }
+    .extreme-chip.max {
+      border-color: rgba(16, 185, 129, 0.42);
+      background: rgba(16, 185, 129, 0.14);
+      color: var(--income);
+    }
+    .extreme-chip.min {
+      border-color: rgba(244, 63, 94, 0.42);
+      background: rgba(244, 63, 94, 0.14);
+      color: var(--expense);
+    }
+    [data-theme="light"] .extreme-chip {
+      background: rgba(241, 245, 249, 0.95);
+      border-color: rgba(15, 23, 42, 0.16);
+      color: #0f172a;
+    }
+    [data-theme="light"] .extreme-chip.max {
+      background: rgba(5, 150, 105, 0.12);
+      border-color: rgba(5, 150, 105, 0.36);
+      color: #065f46;
+    }
+    [data-theme="light"] .extreme-chip.min {
+      background: rgba(225, 29, 72, 0.12);
+      border-color: rgba(225, 29, 72, 0.36);
+      color: #9f1239;
+    }
+    .scale-mode-select {
+      width: auto !important;
+      min-width: 118px !important;
+      max-width: 150px !important;
+      padding: 3px 8px !important;
+      height: 26px !important;
+      font-size: 11px !important;
+      border-radius: 8px !important;
+    }
 
     .drilldown-card {
       border: 1px solid rgba(34, 211, 238, 0.55);
@@ -1474,13 +1541,20 @@
             </div>
 
             <div class="card">
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
                 <div>
                   <h3 style="margin: 0;" id="sixMonthTrendTitle">6-Month Trend</h3>
                   <span class="muted" id="sixMonthRangeLabel">Last 6 Months Comparison</span>
                 </div>
-                <span class="muted">Income · Expense · Saving</span>
+                <div class="inline-form" style="gap:6px;">
+                  <select id="trendScaleSelect" class="scale-mode-select" title="Y-Axis Scale Mode">
+                    <option value="auto">Scale: Auto Fit</option>
+                    <option value="tight">Scale: Min-Max Zoom</option>
+                    <option value="zero">Scale: From 0</option>
+                  </select>
+                </div>
               </div>
+              <div class="chart-extremes-bar" id="trendExtremesBar"></div>
               <div class="chart-canvas-wrap" style="height: 270px;">
                 <canvas id="sixMonthTrendCanvas"></canvas>
               </div>
@@ -1488,20 +1562,26 @@
 
             <div class="grid-2">
               <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
                   <h3 style="margin: 0;" id="poolBarTitle">Pool Budget vs Spent (Bar Chart)</h3>
-                  <span class="muted">Effective Budget vs Actual Spent</span>
+                  <select id="poolBarScaleSelect" class="scale-mode-select" title="Pool Chart Y-Axis Scale">
+                    <option value="auto">Scale: Auto Fit</option>
+                    <option value="spent">Scale: Focus Spent</option>
+                    <option value="zero">Scale: From 0</option>
+                  </select>
                 </div>
+                <div class="chart-extremes-bar" id="poolBarExtremesBar"></div>
                 <div class="chart-canvas-wrap">
                   <canvas id="poolBarCanvas"></canvas>
                 </div>
               </div>
 
               <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
                   <h3 style="margin: 0;">Budget Pool Allocation Mix</h3>
                   <span class="muted">Pool Share %</span>
                 </div>
+                <div class="chart-extremes-bar" id="poolMixExtremesBar"></div>
                 <div class="chart-canvas-wrap">
                   <canvas id="poolMixDonutCanvas"></canvas>
                 </div>
@@ -1510,20 +1590,22 @@
 
             <div class="grid-2">
               <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
                   <h3 style="margin: 0;" id="catDonutTitle">Expense Mix by Category</h3>
                   <span class="muted">Category Share %</span>
                 </div>
+                <div class="chart-extremes-bar" id="catDonutExtremesBar"></div>
                 <div class="chart-canvas-wrap">
                   <canvas id="categoryDonutCanvas"></canvas>
                 </div>
               </div>
 
               <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
                   <h3 style="margin: 0;" id="cashflowTitle">Cashflow & Saving Overview</h3>
                   <span class="muted" id="cashflowPeriodTag">Selected Period</span>
                 </div>
+                <div class="chart-extremes-bar" id="cashflowExtremesBar"></div>
                 <div class="chart-canvas-wrap" style="height: 190px;">
                   <canvas id="cashflowBarCanvas"></canvas>
                 </div>
@@ -2398,6 +2480,8 @@
     $('slicerWeekBtn')?.addEventListener('click', () => setPeriodMode('week'));
     $('slicerMonthlyBtn')?.addEventListener('click', () => setPeriodMode('monthly'));
     $('slicerYearlyBtn')?.addEventListener('click', () => setPeriodMode('yearly'));
+    $('trendScaleSelect')?.addEventListener('change', () => renderDashboard());
+    $('poolBarScaleSelect')?.addEventListener('change', () => renderDashboard());
 
     function getApiUrl(path) {
       const base = (state.apiBase || '').replace(/\/+$/, '');
@@ -3578,6 +3662,112 @@
       };
     }
 
+    function computeSmartAxisBounds(values, mode = 'auto') {
+      const nums = (values || []).map((v) => Number(v || 0)).filter((v) => Number.isFinite(v));
+      if (!nums.length) return { suggestedMin: 0, suggestedMax: 100 };
+      const maxVal = Math.max(...nums);
+      const nonZero = nums.filter((v) => v > 0);
+      const minNonZero = nonZero.length ? Math.min(...nonZero) : 0;
+
+      if (maxVal <= 0) return { suggestedMin: 0, suggestedMax: 100 };
+
+      if (mode === 'tight' && nonZero.length >= 2 && maxVal > minNonZero) {
+        const span = maxVal - minNonZero;
+        const pad = Math.max(span * 0.16, maxVal * 0.05);
+        return {
+          suggestedMin: Math.max(0, Math.floor(minNonZero - pad)),
+          suggestedMax: Math.ceil(maxVal + pad)
+        };
+      }
+
+      // Auto fit adds clean 14% headroom above dynamic max so peak labels never clip
+      const headRoom = Math.ceil(maxVal * 1.14);
+      return { suggestedMin: 0, suggestedMax: headRoom };
+    }
+
+    function getSeriesMaxMin(items, valueKey = 'val', labelKey = 'label') {
+      const valid = (items || []).filter((it) => Number.isFinite(Number(it[valueKey])));
+      if (!valid.length) return { maxItem: null, minItem: null };
+      let maxItem = valid[0];
+      let minItem = valid[0];
+      const positiveItems = valid.filter((it) => Number(it[valueKey]) > 0);
+      if (positiveItems.length) minItem = positiveItems[0];
+
+      for (const it of valid) {
+        const v = Number(it[valueKey]);
+        if (v > Number(maxItem[valueKey])) maxItem = it;
+        if (positiveItems.length) {
+          if (v > 0 && v < Number(minItem[valueKey])) minItem = it;
+        } else if (v < Number(minItem[valueKey])) {
+          minItem = it;
+        }
+      }
+      return { maxItem, minItem };
+    }
+
+    const maxMinBadgePlugin = {
+      id: 'maxMinBadgePlugin',
+      afterDatasetsDraw(chart) {
+        const opts = chart.options?.plugins?.maxMinBadges;
+        if (!opts || !opts.enabled) return;
+        const { ctx, chartArea } = chart;
+        if (!chartArea) return;
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+        (opts.targets || []).forEach((t) => {
+          const meta = chart.getDatasetMeta(t.datasetIndex);
+          if (!meta || meta.hidden) return;
+          const el = meta.data?.[t.index];
+          if (!el || typeof el.getProps !== 'function') return;
+          const props = el.getProps(['x', 'y'], true);
+          const text = t.badgeText;
+          if (!text) return;
+
+          ctx.save();
+          ctx.font = '700 10px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          const textW = ctx.measureText(text).width;
+          const padX = 6;
+          const boxW = textW + padX * 2;
+          const boxH = 18;
+          let bx = props.x - boxW / 2;
+          bx = Math.max(chartArea.left + 2, Math.min(chartArea.right - boxW - 2, bx));
+          let by = props.y - boxH - 6;
+          if (by < chartArea.top + 2) by = props.y + 6;
+
+          ctx.fillStyle = t.kind === 'max'
+            ? (isLight ? 'rgba(6, 95, 70, 0.92)' : 'rgba(16, 185, 129, 0.92)')
+            : (isLight ? 'rgba(159, 18, 57, 0.92)' : 'rgba(244, 63, 94, 0.92)');
+          ctx.beginPath();
+          ctx.roundRect(bx, by, boxW, boxH, 6);
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(text, bx + boxW / 2, by + boxH / 2 + 0.5);
+          ctx.restore();
+        });
+      }
+    };
+
+    function renderExtremesChips(containerId, maxInfo, minInfo, cur) {
+      const box = $(containerId);
+      if (!box) return;
+      if (!maxInfo && !minInfo) {
+        box.innerHTML = '<span class="muted">No numeric range for this period</span>';
+        return;
+      }
+      const maxHtml = maxInfo
+        ? `<button type="button" class="extreme-chip max" data-extreme="max" title="Click to inspect Max transactions">▲ Max: ${escapeHtml(maxInfo.label)} · ${fmtNum(maxInfo.val)} ${escapeHtml(cur)}</button>`
+        : '';
+      const minHtml = minInfo
+        ? `<button type="button" class="extreme-chip min" data-extreme="min" title="Click to inspect Min transactions">▼ Min: ${escapeHtml(minInfo.label)} · ${fmtNum(minInfo.val)} ${escapeHtml(cur)}</button>`
+        : '';
+      box.innerHTML = `<div class="extreme-pills">${maxHtml}${minHtml}</div>`;
+      if (maxInfo?.onClick) box.querySelector('[data-extreme="max"]')?.addEventListener('click', maxInfo.onClick);
+      if (minInfo?.onClick) box.querySelector('[data-extreme="min"]')?.addEventListener('click', minInfo.onClick);
+    }
+
     function renderPowerBiCharts(pools, cats, sum, cur) {
       if (typeof Chart === 'undefined') return;
       const mode = state.periodMode || 'monthly';
@@ -3599,7 +3789,6 @@
         if (evt?.native?.target) evt.native.target.style.cursor = elements && elements.length ? 'pointer' : 'default';
       };
 
-      // Translucent Crystal Aqua Glass Palette
       const aquaGlassPalette = [
         { top: 'rgba(103, 232, 249, 0.78)', mid: 'rgba(34, 211, 238, 0.56)', bot: 'rgba(6, 182, 212, 0.34)', border: 'rgba(165, 243, 252, 0.85)' },
         { top: 'rgba(110, 231, 183, 0.78)', mid: 'rgba(16, 185, 129, 0.56)', bot: 'rgba(5, 150, 105, 0.34)', border: 'rgba(167, 243, 208, 0.85)' },
@@ -3610,7 +3799,6 @@
         { top: 'rgba(94, 234, 212, 0.78)', mid: 'rgba(20, 184, 166, 0.56)', bot: 'rgba(13, 148, 136, 0.34)', border: 'rgba(153, 246, 228, 0.85)' }
       ];
 
-      // Update dynamic chart headings for Day / Week / Month / Year
       const trendSeries = buildPeriodTrendSeries(mode);
       if ($('sixMonthTrendTitle')) $('sixMonthTrendTitle').textContent = trendSeries.title;
       if ($('sixMonthRangeLabel')) $('sixMonthRangeLabel').textContent = `${trendSeries.rangeText} (${cur})`;
@@ -3619,24 +3807,52 @@
           ? `Pool Budget vs ${mode === 'day' ? 'Daily' : 'Weekly'} Spent (${periodShortLabel})`
           : 'Pool Budget vs Spent (Bar Chart)';
       }
-      if ($('catDonutTitle')) {
-        $('catDonutTitle').textContent = `Expense Mix by Category (${periodShortLabel})`;
-      }
-      if ($('cashflowTitle')) {
-        $('cashflowTitle').textContent = `Cashflow & Saving Overview (${periodShortLabel})`;
-      }
+      if ($('catDonutTitle')) $('catDonutTitle').textContent = `Expense Mix by Category (${periodShortLabel})`;
+      if ($('cashflowTitle')) $('cashflowTitle').textContent = `Cashflow & Saving Overview (${periodShortLabel})`;
 
+      // 1. Trend Chart (Interactive Max/Min on Income & Expense)
       destroyChart('sixMonthTrend');
       const trendCtx = $('sixMonthTrendCanvas')?.getContext('2d');
       if (trendCtx) {
         const trendData = trendSeries.items || [];
+        const trendScaleMode = $('trendScaleSelect')?.value || 'auto';
         const incFill = makeAquaGlassGradient(trendCtx, 'rgba(34, 211, 238, 0.36)', 'rgba(6, 182, 212, 0.14)', 'rgba(16, 185, 129, 0.02)', 270);
         const expGrad = makeAquaGlassGradient(trendCtx, 'rgba(253, 164, 175, 0.80)', 'rgba(244, 63, 94, 0.56)', 'rgba(225, 29, 72, 0.32)', 270);
         const savGrad = makeAquaGlassGradient(trendCtx, 'rgba(110, 231, 183, 0.80)', 'rgba(16, 185, 129, 0.56)', 'rgba(6, 182, 212, 0.32)', 270);
 
+        const allTrendVals = trendData.flatMap((d) => [Number(d.income || 0), Number(d.expense || 0), Number(d.saving || 0)]);
+        const yBounds = computeSmartAxisBounds(allTrendVals, trendScaleMode);
+
+        // Compute Max/Min across active Expense (or Income if Expense is 0)
+        const hasAnyExp = trendData.some((d) => Number(d.expense || 0) > 0);
+        const targetMetric = hasAnyExp ? 'expense' : 'income';
+        const targetType = hasAnyExp ? 'Expense' : 'Income';
+        const targetDsIdx = hasAnyExp ? 1 : 0;
+
+        const indexedTrend = trendData.map((d, idx) => ({ ...d, idx, val: Number(d[targetMetric] || 0) }));
+        const { maxItem: maxTrend, minItem: minTrend } = getSeriesMaxMin(indexedTrend, 'val', 'label');
+
+        const openTrendItem = (item, entryType) => {
+          if (!item) return;
+          if (item.filterDate) showDashboardDrilldown({ title: `${item.filterDate} · ${entryType} Transactions`, dateExact: item.filterDate, entryType });
+          else if (item.dateStart && item.dateEnd) showDashboardDrilldown({ title: `${item.key} · ${entryType} Transactions`, dateStart: item.dateStart, dateEnd: item.dateEnd, entryType });
+          else showDashboardDrilldown({ title: `${item.month} · ${entryType} Transactions`, month: item.month, entryType });
+        };
+
+        renderExtremesChips(
+          'trendExtremesBar',
+          maxTrend && maxTrend.val > 0 ? { label: `${targetType} (${maxTrend.label})`, val: maxTrend.val, onClick: () => openTrendItem(maxTrend, targetType) } : null,
+          minTrend && minTrend.val > 0 && (!maxTrend || minTrend.idx !== maxTrend.idx) ? { label: `${targetType} (${minTrend.label})`, val: minTrend.val, onClick: () => openTrendItem(minTrend, targetType) } : null,
+          cur
+        );
+
+        const badgeTargets = [];
+        if (maxTrend && maxTrend.val > 0) badgeTargets.push({ datasetIndex: targetDsIdx, index: maxTrend.idx, kind: 'max', badgeText: `MAX ${fmtNum(maxTrend.val)}` });
+        if (minTrend && minTrend.val > 0 && (!maxTrend || minTrend.idx !== maxTrend.idx)) badgeTargets.push({ datasetIndex: targetDsIdx, index: minTrend.idx, kind: 'min', badgeText: `MIN ${fmtNum(minTrend.val)}` });
+
         charts.sixMonthTrend = new Chart(trendCtx, {
           type: 'bar',
-          plugins: [aquaGlassChartPlugin],
+          plugins: [aquaGlassChartPlugin, maxMinBadgePlugin],
           data: {
             labels: trendData.map((d) => d.label),
             datasets: [
@@ -3687,42 +3903,77 @@
               if (!elements || !elements.length) return;
               const { datasetIndex, index } = elements[0];
               const item = trendData[index];
-              if (!item) return;
               const typeMap = ['Income', 'Expense', 'Saving'];
-              const entryType = typeMap[datasetIndex] || '';
-              if (item.filterDate) {
-                showDashboardDrilldown({ title: `${item.filterDate} · ${entryType} Transactions`, dateExact: item.filterDate, entryType });
-              } else if (item.dateStart && item.dateEnd) {
-                showDashboardDrilldown({ title: `${item.key} · ${entryType} Transactions`, dateStart: item.dateStart, dateEnd: item.dateEnd, entryType });
-              } else {
-                showDashboardDrilldown({ title: `${item.month} · ${entryType} Transactions`, month: item.month, entryType });
-              }
+              openTrendItem(item, typeMap[datasetIndex] || 'Expense');
             },
-            plugins: { legend: { labels: { color: textCol, boxWidth: 10, usePointStyle: true, pointStyle: 'rectRounded' } } },
+            plugins: {
+              maxMinBadges: { enabled: true, targets: badgeTargets },
+              legend: { labels: { color: textCol, boxWidth: 10, usePointStyle: true, pointStyle: 'rectRounded' } }
+            },
             scales: {
               x: { ticks: { color: textCol, font: { size: 11 } }, grid: { display: false } },
-              y: { ticks: { color: textCol, font: { size: 11 } }, grid: { color: gridCol }, beginAtZero: true }
+              y: {
+                ticks: { color: textCol, font: { size: 11 } },
+                grid: { color: gridCol },
+                suggestedMin: yBounds.suggestedMin,
+                suggestedMax: yBounds.suggestedMax
+              }
             }
           }
         });
       }
 
+      // 2. Pool Budget vs Spent (Interactive Max/Min Spent + Dynamic Scale)
       destroyChart('poolBar');
       const poolCtx = $('poolBarCanvas')?.getContext('2d');
       if (poolCtx) {
         const poolList = pools || [];
+        const poolScaleMode = $('poolBarScaleSelect')?.value || 'auto';
         const budgetGrad = makeAquaGlassGradient(poolCtx, 'rgba(103, 232, 249, 0.82)', 'rgba(34, 211, 238, 0.56)', 'rgba(6, 182, 212, 0.30)', 260);
         const spentGrad = makeAquaGlassGradient(poolCtx, 'rgba(253, 164, 175, 0.82)', 'rgba(244, 63, 94, 0.56)', 'rgba(225, 29, 72, 0.30)', 260);
 
+        const indexedPools = poolList.map((p, idx) => ({
+          ...p,
+          idx,
+          shortName: String(p.pool_name || '').replace(/\s*Pool$/i, ''),
+          spentVal: Number(p.spent_amount || 0),
+          budgetVal: Number(p.available_budget || 0)
+        }));
+
+        const { maxItem: maxSpentPool, minItem: minSpentPool } = getSeriesMaxMin(indexedPools, 'spentVal', 'shortName');
+        const axisPoolVals = poolScaleMode === 'spent'
+          ? indexedPools.map((p) => p.spentVal)
+          : indexedPools.flatMap((p) => [p.budgetVal, p.spentVal]);
+        const poolYBounds = computeSmartAxisBounds(axisPoolVals, poolScaleMode === 'spent' ? 'auto' : poolScaleMode);
+
+        renderExtremesChips(
+          'poolBarExtremesBar',
+          maxSpentPool && maxSpentPool.spentVal > 0 ? {
+            label: `Spent: ${maxSpentPool.shortName}`,
+            val: maxSpentPool.spentVal,
+            onClick: () => showDashboardDrilldown({ title: `${maxSpentPool.pool_name} (${periodShortLabel}) · Expense Transactions`, entryType: 'Expense', poolId: maxSpentPool.id, poolName: maxSpentPool.pool_name })
+          } : null,
+          minSpentPool && minSpentPool.spentVal > 0 && (!maxSpentPool || minSpentPool.idx !== maxSpentPool.idx) ? {
+            label: `Spent: ${minSpentPool.shortName}`,
+            val: minSpentPool.spentVal,
+            onClick: () => showDashboardDrilldown({ title: `${minSpentPool.pool_name} (${periodShortLabel}) · Expense Transactions`, entryType: 'Expense', poolId: minSpentPool.id, poolName: minSpentPool.pool_name })
+          } : null,
+          cur
+        );
+
+        const poolBadges = [];
+        if (maxSpentPool && maxSpentPool.spentVal > 0) poolBadges.push({ datasetIndex: 1, index: maxSpentPool.idx, kind: 'max', badgeText: `MAX ${fmtNum(maxSpentPool.spentVal)}` });
+        if (minSpentPool && minSpentPool.spentVal > 0 && (!maxSpentPool || minSpentPool.idx !== maxSpentPool.idx)) poolBadges.push({ datasetIndex: 1, index: minSpentPool.idx, kind: 'min', badgeText: `MIN ${fmtNum(minSpentPool.spentVal)}` });
+
         charts.poolBar = new Chart(poolCtx, {
           type: 'bar',
-          plugins: [aquaGlassChartPlugin],
+          plugins: [aquaGlassChartPlugin, maxMinBadgePlugin],
           data: {
-            labels: poolList.map((p) => String(p.pool_name || '').replace(/\s*Pool$/i, '')),
+            labels: indexedPools.map((p) => p.shortName),
             datasets: [
               {
                 label: mode === 'yearly' ? `Yearly Budget (${cur})` : `Monthly Pool Budget (${cur})`,
-                data: poolList.map((p) => Number(p.available_budget || 0)),
+                data: indexedPools.map((p) => p.budgetVal),
                 backgroundColor: budgetGrad,
                 borderColor: 'rgba(103, 232, 249, 0.78)',
                 borderWidth: 1,
@@ -3733,7 +3984,7 @@
               },
               {
                 label: `Spent · ${periodShortLabel} (${cur})`,
-                data: poolList.map((p) => Number(p.spent_amount || 0)),
+                data: indexedPools.map((p) => p.spentVal),
                 backgroundColor: spentGrad,
                 borderColor: 'rgba(253, 164, 175, 0.78)',
                 borderWidth: 1,
@@ -3752,15 +4003,24 @@
               if (!p) return;
               showDashboardDrilldown({ title: `${p.pool_name} (${periodShortLabel}) · Expense Transactions`, entryType: 'Expense', poolId: p.id, poolName: p.pool_name });
             },
-            plugins: { legend: { labels: { color: textCol, boxWidth: 10, usePointStyle: true, pointStyle: 'rectRounded' } } },
+            plugins: {
+              maxMinBadges: { enabled: true, targets: poolBadges },
+              legend: { labels: { color: textCol, boxWidth: 10, usePointStyle: true, pointStyle: 'rectRounded' } }
+            },
             scales: {
               x: { ticks: { color: textCol, font: { size: 11 } }, grid: { display: false } },
-              y: { ticks: { color: textCol, font: { size: 11 } }, grid: { color: gridCol }, beginAtZero: true }
+              y: {
+                ticks: { color: textCol, font: { size: 11 } },
+                grid: { color: gridCol },
+                suggestedMin: poolYBounds.suggestedMin,
+                suggestedMax: poolYBounds.suggestedMax
+              }
             }
           }
         });
       }
 
+      // 3. Budget Pool Allocation / Spend Mix Donut (Interactive Max/Min Slice)
       destroyChart('poolMixDonut');
       const poolMixCtx = $('poolMixDonutCanvas')?.getContext('2d');
       if (poolMixCtx) {
@@ -3769,6 +4029,29 @@
         const activePools = hasSubSpend
           ? (pools || []).filter((p) => Number(p.spent_amount || 0) > 0)
           : (pools || []).filter((p) => Number(p.available_budget || 0) > 0);
+
+        const indexedMix = activePools.map((p, idx) => ({
+          ...p,
+          idx,
+          shortName: String(p.pool_name || '').replace(/\s*Pool$/i, ''),
+          metricVal: Number(hasSubSpend ? p.spent_amount : p.available_budget || 0)
+        }));
+        const { maxItem: maxMix, minItem: minMix } = getSeriesMaxMin(indexedMix, 'metricVal', 'shortName');
+
+        renderExtremesChips(
+          'poolMixExtremesBar',
+          maxMix && maxMix.metricVal > 0 ? {
+            label: maxMix.shortName,
+            val: maxMix.metricVal,
+            onClick: () => showDashboardDrilldown({ title: `${maxMix.pool_name} (${periodShortLabel}) · Expense Transactions`, entryType: 'Expense', poolId: maxMix.id, poolName: maxMix.pool_name })
+          } : null,
+          minMix && minMix.metricVal > 0 && (!maxMix || minMix.idx !== maxMix.idx) ? {
+            label: minMix.shortName,
+            val: minMix.metricVal,
+            onClick: () => showDashboardDrilldown({ title: `${minMix.pool_name} (${periodShortLabel}) · Expense Transactions`, entryType: 'Expense', poolId: minMix.id, poolName: minMix.pool_name })
+          } : null,
+          cur
+        );
 
         const bgFills = activePools.length
           ? activePools.map((p, idx) => {
@@ -3810,6 +4093,7 @@
         });
       }
 
+      // 4. Category Donut (Interactive Max/Min Category)
       destroyChart('categoryDonut');
       const donutCtx = $('categoryDonutCanvas')?.getContext('2d');
       if (donutCtx) {
@@ -3817,6 +4101,23 @@
           .filter((c) => c.entry_type === 'Expense' && Number(c.total_mmk || 0) > 0)
           .sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0))
           .slice(0, 7);
+
+        const maxCat = expCats.length ? expCats[0] : null;
+        const minCat = expCats.length > 1 ? expCats[expCats.length - 1] : null;
+        renderExtremesChips(
+          'catDonutExtremesBar',
+          maxCat ? {
+            label: maxCat.category,
+            val: Number(maxCat.total_mmk || 0),
+            onClick: () => showDashboardDrilldown({ title: `Category: ${maxCat.category} (${periodShortLabel}) · Expense Transactions`, entryType: 'Expense', category: maxCat.category })
+          } : null,
+          minCat ? {
+            label: minCat.category,
+            val: Number(minCat.total_mmk || 0),
+            onClick: () => showDashboardDrilldown({ title: `Category: ${minCat.category} (${periodShortLabel}) · Expense Transactions`, entryType: 'Expense', category: minCat.category })
+          } : null,
+          cur
+        );
 
         const catFills = expCats.length
           ? expCats.map((_, idx) => {
@@ -3851,10 +4152,37 @@
         });
       }
 
+      // 5. Cashflow & Saving Bar (Interactive Max/Min Flow + Dynamic Headroom)
       destroyChart('cashflowBar');
       const cfCtx = $('cashflowBarCanvas')?.getContext('2d');
       if (cfCtx) {
-        const flowTypes = ['Income', 'Expense', 'Saving'];
+        const flowItems = [
+          { label: 'Income', val: Number(sum.total_income || 0), idx: 0 },
+          { label: 'Expense', val: Number(sum.total_expense || 0), idx: 1 },
+          { label: 'Saving', val: Number(sum.total_saving || 0), idx: 2 }
+        ];
+        const { maxItem: maxCf, minItem: minCf } = getSeriesMaxMin(flowItems, 'val', 'label');
+        const cfYBounds = computeSmartAxisBounds(flowItems.map((f) => f.val), 'auto');
+
+        renderExtremesChips(
+          'cashflowExtremesBar',
+          maxCf && maxCf.val > 0 ? {
+            label: maxCf.label,
+            val: maxCf.val,
+            onClick: () => showDashboardDrilldown({ title: `${maxCf.label} Transactions (${periodShortLabel})`, entryType: maxCf.label })
+          } : null,
+          minCf && minCf.val > 0 && (!maxCf || minCf.idx !== maxCf.idx) ? {
+            label: minCf.label,
+            val: minCf.val,
+            onClick: () => showDashboardDrilldown({ title: `${minCf.label} Transactions (${periodShortLabel})`, entryType: minCf.label })
+          } : null,
+          cur
+        );
+
+        const cfBadges = [];
+        if (maxCf && maxCf.val > 0) cfBadges.push({ datasetIndex: 0, index: maxCf.idx, kind: 'max', badgeText: `MAX ${fmtNum(maxCf.val)}` });
+        if (minCf && minCf.val > 0 && (!maxCf || minCf.idx !== maxCf.idx)) cfBadges.push({ datasetIndex: 0, index: minCf.idx, kind: 'min', badgeText: `MIN ${fmtNum(minCf.val)}` });
+
         const cfGrads = [
           makeAquaGlassGradient(cfCtx, 'rgba(110, 231, 183, 0.82)', 'rgba(16, 185, 129, 0.56)', 'rgba(5, 150, 105, 0.30)', 190),
           makeAquaGlassGradient(cfCtx, 'rgba(253, 164, 175, 0.82)', 'rgba(244, 63, 94, 0.56)', 'rgba(225, 29, 72, 0.30)', 190),
@@ -3863,12 +4191,12 @@
 
         charts.cashflowBar = new Chart(cfCtx, {
           type: 'bar',
-          plugins: [aquaGlassChartPlugin],
+          plugins: [aquaGlassChartPlugin, maxMinBadgePlugin],
           data: {
-            labels: flowTypes,
+            labels: flowItems.map((f) => f.label),
             datasets: [{
               label: `Amount (${cur})`,
-              data: [Number(sum.total_income || 0), Number(sum.total_expense || 0), Number(sum.total_saving || 0)],
+              data: flowItems.map((f) => f.val),
               backgroundColor: cfGrads,
               borderColor: ['rgba(110, 231, 183, 0.78)', 'rgba(253, 164, 175, 0.78)', 'rgba(216, 180, 254, 0.78)'],
               borderWidth: 1,
@@ -3882,14 +4210,22 @@
             responsive: true, maintainAspectRatio: false, onHover: commonHover,
             onClick: (_evt, elements) => {
               if (!elements || !elements.length) return;
-              const entryType = flowTypes[elements[0].index];
-              if (!entryType) return;
-              showDashboardDrilldown({ title: `${entryType} Transactions (${periodShortLabel})`, entryType });
+              const item = flowItems[elements[0].index];
+              if (!item) return;
+              showDashboardDrilldown({ title: `${item.label} Transactions (${periodShortLabel})`, entryType: item.label });
             },
-            plugins: { legend: { display: false } },
+            plugins: {
+              maxMinBadges: { enabled: true, targets: cfBadges },
+              legend: { display: false }
+            },
             scales: {
               x: { ticks: { color: textCol, font: { size: 11 } }, grid: { display: false } },
-              y: { ticks: { color: textCol, font: { size: 11 } }, grid: { color: gridCol }, beginAtZero: true }
+              y: {
+                ticks: { color: textCol, font: { size: 11 } },
+                grid: { color: gridCol },
+                suggestedMin: cfYBounds.suggestedMin,
+                suggestedMax: cfYBounds.suggestedMax
+              }
             }
           }
         });
