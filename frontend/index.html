@@ -816,6 +816,30 @@
         flex-direction: column;
         gap: 8px;
       }
+      .slicer-group {
+        margin-left: 0;
+        flex-shrink: 1;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        box-sizing: border-box;
+      }
+
+      .slicer-group .slicer-btn,
+      .slicer-group button {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        padding: 7px 8px;
+        box-sizing: border-box;
+      }
     #wsSelectorWrap,
       #monthWrap {
         width: 100%;
