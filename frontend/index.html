@@ -899,7 +899,7 @@
     }
 
     /* ၂။ KPI Card ၅ ခုထဲက Amount တွေ တစ်တန်းတည်း ညီနေအောင် ညှိခြင်း */
-    .kpi-grid,
+   .kpi-grid,
     .central-kpi-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -916,11 +916,8 @@
       height: 100%;
     }
 
-    .kpi .kpi-value,
-    .kpi .kpi-amount,
-    .kpi .amount,
-    .kpi h2,
-    .kpi h3 {
+    .kpi .val,
+    .card .val {
       margin-top: auto;
     }
 
@@ -932,12 +929,6 @@
     }
 
     @media (max-width: 640px) {
-      .slicer-group {
-        margin-left: 0;
-        width: 100%;
-        flex-wrap: wrap;
-      }
-
       .kpi-grid,
       .central-kpi-grid {
         grid-template-columns: 1fr;
