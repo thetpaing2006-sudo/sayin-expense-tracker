@@ -381,30 +381,38 @@
     .print-header { display: none; }
 
     @media (max-width: 640px) {
-      .container { padding: 12px 10px 44px; }
-      .topbar { padding: 12px; gap: 10px; }
-      .brand-logo-box img { height: 28px; max-width: 106px; }
-      .topbar-actions { width: 100%; }
+      .container { padding: 10px 8px 44px; width: 100%; max-width: 100vw; overflow-x: clip; }
+      .topbar { padding: 10px 12px; gap: 8px; }
+      .brand { flex: 1 1 100%; }
+      .brand-logo-box img { height: 26px; max-width: 96px; }
+      .brand h1 { font-size: 15px; }
+      .topbar-actions { width: 100%; gap: 6px; }
       #wsSelectorWrap { flex: 1 1 100%; min-width: 0 !important; width: 100%; }
-      #monthWrap { flex: 1 1 150px; min-width: 0 !important; width: auto !important; }
-      #monthWrap input[type="month"] { width: 100%; max-width: 100%; min-width: 0; font-size: 13px; padding: 8px 10px; }
-      .topbar-actions > button { flex: 0 1 auto; }
+      #wsSelectorWrap select { font-size: 13px; padding: 8px 10px; }
+      #monthWrap { flex: 1 1 135px; min-width: 0 !important; width: auto !important; }
+      #monthWrap input[type="month"] { width: 100%; max-width: 100%; min-width: 0; font-size: 12px; padding: 8px 8px; }
+      .topbar-actions > button { flex: 0 1 auto; padding: 8px 10px; font-size: 12px; }
+
+      .slicer-group { width: 100%; }
+      .slicer-btn { flex: 1 1 50%; padding: 6px 8px; font-size: 11px; text-align: center; }
 
       .nav-tabs { gap: 6px; }
-      .nav-tabs button { flex: 1 1 calc(50% - 6px); min-width: 0; text-align: center; padding: 8px 10px; }
+      .nav-tabs button { flex: 1 1 calc(50% - 6px); min-width: 0; text-align: center; padding: 8px 8px; font-size: 12px; }
 
-      .card { padding: 14px; border-radius: 13px; }
+      .card { padding: 12px; border-radius: 13px; max-width: 100%; }
+      .kpi-grid { grid-template-columns: 1fr; gap: 10px; }
       .kpi { padding: 12px; }
-      .kpi .val { font-size: 19px; }
+      .kpi .val { font-size: 18px; }
 
       .grid-2, .grid-4, .pool-grid { grid-template-columns: 1fr; }
-      .chart-canvas-wrap { height: 220px; }
+      .chart-canvas-wrap { height: 210px; max-width: 100%; }
 
       .inline-form button[type="submit"] { width: 100%; }
-      .pool-amt-input { width: 105px; min-width: 84px; }
+      .pool-amt-input { width: 100px; min-width: 76px; }
 
-      th, td { padding: 8px 7px; font-size: 12px; }
-      #toast { left: 12px; right: 12px; bottom: 12px; max-width: none; }
+      .table-wrap { max-width: 100%; }
+      th, td { padding: 7px 6px; font-size: 11px; }
+      #toast { left: 10px; right: 10px; bottom: 10px; max-width: none; }
     }
 
     @media print {
@@ -561,7 +569,7 @@
     </section>
 
     <!-- Main App Section -->
-    <main id="appSection" class="hidden">
+    <main id="appSection" class="hidden" style="max-width: 100%; overflow-x: clip;">
       <nav class="nav-tabs">
         <button type="button" data-tab="dashboard" class="active">Dashboard</button>
         <button type="button" data-tab="transactions">Transactions & Add</button>
@@ -1419,9 +1427,25 @@
       return Number.isFinite(num) && num > 0 ? num : 0;
     }
 
+    function resetMobileZoomIfNeeded() {
+      if (window.innerWidth <= 640 && window.visualViewport && window.visualViewport.scale > 1.01) {
+        const vp = document.querySelector('meta[name="viewport"]');
+        if (vp) {
+          vp.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover');
+          setTimeout(() => {
+            vp.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
+          }, 250);
+        }
+      }
+    }
+
     function setAuthUi(loggedIn) {
       $('authSection').classList.toggle('hidden', loggedIn);
       $('appSection').classList.toggle('hidden', !loggedIn);
+      if (loggedIn) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        resetMobileZoomIfNeeded();
+      }
       $('wsSelectorWrap').classList.toggle('hidden', !loggedIn);
       $('monthWrap').classList.toggle('hidden', !loggedIn);
       $('logoutBtn').classList.toggle('hidden', !loggedIn);
