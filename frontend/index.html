@@ -18,7 +18,7 @@
       --bg-glow-1: rgba(34, 211, 238, 0.44);
       --bg-glow-2: rgba(16, 185, 129, 0.38);
       --bg-glow-3: rgba(56, 189, 248, 0.30);
-      --bg-glow-4: rgba(99, 102, 241, 0.22);
+      --bg-glow-4: rgba(99, 102, 241, 0.24);
       --surface: rgba(11, 34, 59, 0.36);
       --surface-solid: rgba(8, 25, 44, 0.90);
       --surface-2: rgba(18, 52, 86, 0.32);
@@ -38,6 +38,7 @@
       --saving: #c084fc;
       --warn: #facc15;
       --radius: 18px;
+      --sidebar-w: 240px;
       --shadow:
         0 20px 44px rgba(2, 10, 22, 0.46),
         inset 0 1px 0 var(--aqua-shine),
@@ -99,15 +100,78 @@
       content: "";
       position: fixed;
       inset: 0;
-      z-index: -1;
+      z-index: -2;
       pointer-events: none;
       background-image:
         radial-gradient(circle at 26% 62%, rgba(16, 185, 129, 0.24), transparent 42%),
         radial-gradient(circle at 76% 68%, rgba(34, 211, 238, 0.26), transparent 44%),
         radial-gradient(circle at 56% 32%, var(--bg-glow-4), transparent 48%);
     }
+    /* Crystal Ambient Glass Orbs */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 8% 85%, rgba(34, 211, 238, 0.28) 0%, rgba(16, 185, 129, 0.14) 12%, transparent 22%),
+        radial-gradient(circle at 92% 14%, rgba(16, 185, 129, 0.28) 0%, rgba(34, 211, 238, 0.14) 11%, transparent 20%),
+        radial-gradient(circle at 88% 88%, rgba(99, 102, 241, 0.22) 0%, rgba(34, 211, 238, 0.12) 10%, transparent 18%);
+    }
 
-    .container { max-width: 1240px; width: 100%; margin: 0 auto; padding: 20px 16px 56px; }
+    .container { max-width: 1320px; width: 100%; margin: 0 auto; padding: 20px 16px 56px; }
+
+    /* Desktop Left Glass Sidebar + Main Content Layout */
+    .app-shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .sidebar {
+      position: sticky;
+      top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: linear-gradient(170deg, rgba(255, 255, 255, 0.20) 0%, var(--surface) 45%, rgba(16, 185, 129, 0.12) 100%);
+      backdrop-filter: blur(22px) saturate(165%);
+      -webkit-backdrop-filter: blur(22px) saturate(165%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 2px 6px;
+    }
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sidebar-nav button {
+      width: 100%;
+      justify-content: flex-start;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+    }
+    .sidebar-nav button.active {
+      background: linear-gradient(175deg, rgba(224, 242, 254, 0.55) 0%, rgba(34, 211, 238, 0.80) 50%, rgba(16, 185, 129, 0.88) 100%);
+      color: #ffffff;
+      border-color: rgba(224, 242, 254, 0.82);
+      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.34), inset 0 1.5px 0 rgba(255, 255, 255, 0.75);
+    }
+    .main-content { min-width: 0; }
 
     /* Aqua Glass Topbar */
     .topbar {
@@ -643,6 +707,13 @@
 
     .print-header { display: none; }
 
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+      .sidebar { position: static; padding: 10px; }
+      .sidebar-nav { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+      .sidebar-nav button { width: auto; flex: 1 1 calc(33.3% - 6px); justify-content: center; text-align: center; }
+    }
+
     @media (max-width: 640px) {
       .container { padding: 10px 8px 44px; width: 100%; max-width: 100vw; overflow-x: clip; }
       .topbar { padding: 10px 12px; gap: 8px; overflow: hidden; }
@@ -658,6 +729,7 @@
       .slicer-group { width: 100%; }
       .slicer-btn { flex: 1 1 50%; padding: 6px 8px; font-size: 11px; text-align: center; }
 
+      .sidebar-nav button { flex: 1 1 calc(33.3% - 6px); min-width: 0; padding: 8px 6px; font-size: 11px; }
       .nav-bar { padding: 8px; }
       .nav-tabs { width: 100%; gap: 6px; }
       .nav-tabs button { flex: 1 1 calc(33.3% - 6px); min-width: 0; text-align: center; padding: 8px 6px; font-size: 11px; }
@@ -689,7 +761,9 @@
 
     @media print {
       body { background: #ffffff !important; color: #0f172a !important; }
-      body::before { display: none !important; }
+      body::before, body::after { display: none !important; }
+      .app-shell { display: block !important; }
+      .sidebar { display: none !important; }
       .container { max-width: 100% !important; padding: 0 !important; }
       .topbar, .nav-bar, button, .slicer-group, #toast, #authSection, #tab-home, #tab-transactions, #tab-workspace, #tab-admin, #txModalBackdrop {
         display: none !important;
