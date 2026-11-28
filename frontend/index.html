@@ -490,6 +490,7 @@
         <div id="monthWrap" class="hidden">
           <input type="month" id="monthFilter" />
         </div>
+        <button type="button" id="globalRefreshBtn" class="hidden" title="Reload fresh data from server">↻ Refresh</button>
         <button type="button" id="themeToggleBtn">Light / Dark</button>
         <button type="button" id="logoutBtn" class="danger hidden">Logout</button>
         <button type="button" id="closeAppBtn" class="danger">Close App</button>
@@ -1467,6 +1468,7 @@
       }
       $('wsSelectorWrap').classList.toggle('hidden', !loggedIn);
       $('monthWrap').classList.toggle('hidden', !loggedIn);
+      $('globalRefreshBtn')?.classList.toggle('hidden', !loggedIn);
       $('logoutBtn').classList.toggle('hidden', !loggedIn);
       $('userSubtitle').textContent = loggedIn && state.user
         ? `${state.user.display_name} (${state.user.email})`
@@ -1523,50 +1525,68 @@
       await loadWorkspaceDetails();
     }
 
-    async function loadWorkspaceDetails() {
+    let wsLoadSeq = 0;
+
+    async function loadWorkspaceDetails(options = {}) {
       if (!state.wsId) return;
-      const ws = encodeURIComponent(state.wsId);
-      const m = encodeURIComponent(state.month);
-      const sixMonths = getLastSixMonths(state.month);
-      const prevFiveMonths = sixMonths.slice(0, 5);
-      const { months: yearMonths } = getYearMonths(state.month);
-      const otherYearMonths = yearMonths.filter((ym) => ym !== state.month);
+      const reqId = ++wsLoadSeq;
+      const refreshBtn = $('globalRefreshBtn');
+      const dashRefreshBtn = $('dashRefreshBtn');
+      if (refreshBtn) {
+        refreshBtn.disabled = true;
+        refreshBtn.textContent = '↻ Syncing...';
+      }
+      if (dashRefreshBtn) {
+        dashRefreshBtn.disabled = true;
+      }
 
-      const [setRes, catRes, txRes, sumRes, memRes, poolRes, ...restResults] = await Promise.all([
-        apiFetch(`/api/workspaces/${ws}/settings`),
-        apiFetch(`/api/workspaces/${ws}/categories`),
-        apiFetch(`/api/workspaces/${ws}/transactions?month=${m}`),
-        apiFetch(`/api/workspaces/${ws}/summary?month=${m}`),
-        apiFetch(`/api/workspaces/${ws}/members`),
-        apiFetch(`/api/workspaces/${ws}/pools?month=${m}`),
-        ...prevFiveMonths.map((pm) =>
-          apiFetch(`/api/workspaces/${ws}/summary?month=${encodeURIComponent(pm)}`).catch(() => ({
-            month: pm,
-            summary: { total_income: 0, total_expense: 0, total_saving: 0 }
-          }))
-        ),
-        ...otherYearMonths.map((ym) =>
-          apiFetch(`/api/workspaces/${ws}/transactions?month=${encodeURIComponent(ym)}`).catch(() => ({ data: [] }))
-        )
-      ]);
+      try {
+        const ws = encodeURIComponent(state.wsId);
+        const m = encodeURIComponent(state.month);
+        const bust = options.force ? `&_t=${Date.now()}` : '';
+        const sixMonths = getLastSixMonths(state.month);
+        const prevFiveMonths = sixMonths.slice(0, 5);
+        const { months: yearMonths } = getYearMonths(state.month);
+        const otherYearMonths = yearMonths.filter((ym) => ym !== state.month);
 
-      const prevSumResults = restResults.slice(0, prevFiveMonths.length);
-      const otherYearTxResults = restResults.slice(prevFiveMonths.length);
+        const [setRes, catRes, txRes, sumRes, memRes, poolRes, ...restResults] = await Promise.all([
+          apiFetch(`/api/workspaces/${ws}/settings${bust ? '?' + bust.slice(1) : ''}`),
+          apiFetch(`/api/workspaces/${ws}/categories${bust ? '?' + bust.slice(1) : ''}`),
+          apiFetch(`/api/workspaces/${ws}/transactions?month=${m}${bust}`),
+          apiFetch(`/api/workspaces/${ws}/summary?month=${m}${bust}`),
+          apiFetch(`/api/workspaces/${ws}/members${bust ? '?' + bust.slice(1) : ''}`),
+          apiFetch(`/api/workspaces/${ws}/pools?month=${m}${bust}`),
+          ...prevFiveMonths.map((pm) =>
+            apiFetch(`/api/workspaces/${ws}/summary?month=${encodeURIComponent(pm)}${bust}`).catch(() => ({
+              month: pm,
+              summary: { total_income: 0, total_expense: 0, total_saving: 0 }
+            }))
+          ),
+          ...otherYearMonths.map((ym) =>
+            apiFetch(`/api/workspaces/${ws}/transactions?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] }))
+          )
+        ]);
 
-      state.settings = setRes.data;
-      state.categories = catRes.data || [];
-      state.transactions = txRes.data || [];
-      state.summary = sumRes.summary || {
-        total_income: 0,
-        total_expense: 0,
-        total_saving: 0,
-        net_balance: 0,
-        total_pool_allocated: 0,
-        total_pool_remaining: 0,
-        unallocated_income: 0
-      };
-      state.categorySummary = sumRes.categories || [];
-      state.pools = poolRes.data || sumRes.pools || [];
+        // Ignore stale response if a newer month/workspace/refresh request started
+        if (reqId !== wsLoadSeq) return;
+
+        const prevSumResults = restResults.slice(0, prevFiveMonths.length);
+        const otherYearTxResults = restResults.slice(prevFiveMonths.length);
+
+        state.settings = setRes.data;
+        state.categories = catRes.data || [];
+        state.transactions = txRes.data || [];
+        state.summary = sumRes.summary || {
+          total_income: 0,
+          total_expense: 0,
+          total_saving: 0,
+          net_balance: 0,
+          total_pool_allocated: 0,
+          total_pool_remaining: 0,
+          unallocated_income: 0
+        };
+        state.categorySummary = sumRes.categories || [];
+        state.pools = poolRes.data || sumRes.pools || [];
 
       const yearTxMap = new Map();
       yearMonths.forEach((ym) => {
@@ -1599,13 +1619,24 @@
       });
       state.sixMonthTrend = sixMonths.map((ym) => trendMap.get(ym) || { month: ym, income: 0, expense: 0, saving: 0 });
 
-      renderFormOptions();
-      renderSettingsForm(memRes.data || []);
-      renderCategories();
-      renderPoolManager();
-      syncSlicerButtons();
-      renderDashboard();
-      renderTransactions();
+        renderFormOptions();
+        renderSettingsForm(memRes.data || []);
+        renderCategories();
+        renderPoolManager();
+        syncSlicerButtons();
+        renderDashboard();
+        renderTransactions();
+      } finally {
+        if (reqId === wsLoadSeq) {
+          if (refreshBtn) {
+            refreshBtn.disabled = false;
+            refreshBtn.textContent = '↻ Refresh';
+          }
+          if (dashRefreshBtn) {
+            dashRefreshBtn.disabled = false;
+          }
+        }
+      }
     }
 
     function renderFormOptions() {
@@ -2691,10 +2722,28 @@
     $('slicerMonthlyBtn')?.addEventListener('click', () => setPeriodMode('monthly'));
     $('slicerYearlyBtn')?.addEventListener('click', () => setPeriodMode('yearly'));
 
+    async function runCleanRefresh(showToast = true) {
+      dirtyPoolIds.clear();
+      editingPoolMetaIds.clear();
+      closeDashboardDrilldown();
+      await loadWorkspaceDetails({ force: true });
+      if (!$('tab-admin')?.classList.contains('hidden') && isAnyAdmin()) {
+        await loadFullAdminConsole();
+      }
+      if (showToast) toast('Latest data synced from server', 'success');
+    }
+
+    $('globalRefreshBtn')?.addEventListener('click', async () => {
+      try {
+        await runCleanRefresh(true);
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
     $('dashRefreshBtn')?.addEventListener('click', async () => {
       try {
-        await loadWorkspaceDetails();
-        toast('Dashboard report updated', 'success');
+        await runCleanRefresh(true);
       } catch (err) {
         toast(err.message, 'error');
       }
@@ -4131,9 +4180,14 @@
     syncSlicerButtons();
     $('txDate').value = new Date().toISOString().slice(0, 10);
 
+    let lastAutoSyncAt = 0;
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && state.token && state.wsId) {
-        loadWorkspaceDetails().catch(() => {});
+        const now = Date.now();
+        if (now - lastAutoSyncAt > 4000) {
+          lastAutoSyncAt = now;
+          loadWorkspaceDetails({ force: true }).catch(() => {});
+        }
       }
     });
 
