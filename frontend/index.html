@@ -912,6 +912,24 @@
             </div>
           </div>
 
+          <div class="kpi-grid" id="poolManageSummaryGrid" style="margin-bottom: 16px;">
+            <div class="kpi">
+              <div class="label">Total Pool Budget</div>
+              <div class="val" id="poolMgrTotalBudget">0</div>
+              <div class="sub" id="poolMgrTotalBudgetSub">This month allocated total</div>
+            </div>
+            <div class="kpi exp-border">
+              <div class="label">Total Pool Spent</div>
+              <div class="val exp" id="poolMgrTotalSpent">0</div>
+              <div class="sub" id="poolMgrTotalSpentSub">Spent across active pools</div>
+            </div>
+            <div class="kpi inc-border">
+              <div class="label">Remaining Pool Balance</div>
+              <div class="val inc" id="poolMgrTotalRemaining">0</div>
+              <div class="sub" id="poolMgrTotalRemainingSub">Available balance</div>
+            </div>
+          </div>
+
           <form id="createPoolForm" class="grid-4" style="margin-bottom: 16px; align-items: end;">
             <div>
               <label for="newPoolName">Pool Name</label>
@@ -1744,10 +1762,22 @@
       const cur = state.settings?.currency || 'MMK';
       if ($('poolManageMonthLabel')) $('poolManageMonthLabel').textContent = state.month;
 
+      const pools = state.pools || [];
+      const totalBudget = pools.reduce((acc, p) => acc + Number(p.available_budget ?? p.allocated_amount ?? p.default_amount ?? 0), 0);
+      const totalSpent = pools.reduce((acc, p) => acc + Number(p.spent_amount || 0), 0);
+      const totalRemaining = pools.reduce((acc, p) => acc + Number(p.remaining_balance ?? (Number(p.available_budget ?? p.allocated_amount ?? p.default_amount ?? 0) - Number(p.spent_amount || 0))), 0);
+
+      if ($('poolMgrTotalBudget')) $('poolMgrTotalBudget').textContent = `${fmtNum(totalBudget)} ${cur}`;
+      if ($('poolMgrTotalBudgetSub')) $('poolMgrTotalBudgetSub').textContent = `${pools.length} active pools (${state.month})`;
+      if ($('poolMgrTotalSpent')) $('poolMgrTotalSpent').textContent = `${fmtNum(totalSpent)} ${cur}`;
+      if ($('poolMgrTotalRemaining')) {
+        $('poolMgrTotalRemaining').textContent = `${fmtNum(totalRemaining)} ${cur}`;
+        $('poolMgrTotalRemaining').className = `val ${totalRemaining < 0 ? 'exp' : totalRemaining === 0 ? 'warn' : 'inc'}`;
+      }
+
       const tbody = $('poolManageTableBody');
       if (!tbody) return;
 
-      const pools = state.pools || [];
       tbody.innerHTML = pools.length
         ? pools.map((p) => {
             const pid = Number(p.id);
