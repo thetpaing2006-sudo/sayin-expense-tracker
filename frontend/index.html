@@ -45,32 +45,33 @@
         inset 0 -1px 0 rgba(34, 211, 238, 0.12);
     }
 
- [data-theme="light"] {
-      --bg: #eef2f6;
-      --bg-glow-1: rgba(2, 132, 199, 0.14);
-      --bg-glow-2: rgba(124, 58, 237, 0.10);
-      --bg-glow-3: rgba(5, 150, 105, 0.10);
-      --bg-glow-4: rgba(79, 70, 229, 0.08);
-      --surface: rgba(255, 255, 255, 0.88);
+    /* ================= LIGHT MODE OVERRIDES (HIGH CONTRAST & CRISP AQUA GLASS) ================= */
+    [data-theme="light"] {
+      --bg: #e7eef6;
+      --bg-glow-1: rgba(2, 132, 199, 0.16);
+      --bg-glow-2: rgba(13, 148, 136, 0.13);
+      --bg-glow-3: rgba(59, 130, 246, 0.12);
+      --bg-glow-4: rgba(14, 165, 233, 0.10);
+      --surface: rgba(255, 255, 255, 0.92);
       --surface-solid: #ffffff;
-      --surface-2: #f8fafc;
-      --border: rgba(15, 23, 42, 0.12);
-      --border-soft: rgba(15, 23, 42, 0.08);
-      --aqua-shine: rgba(255, 255, 255, 0.95);
+      --surface-2: #f1f5f9;
+      --border: rgba(15, 23, 42, 0.15);
+      --border-soft: rgba(15, 23, 42, 0.10);
+      --aqua-shine: rgba(255, 255, 255, 1);
       --text: #0f172a;
-      --muted: #475569;
+      --muted: #334155;
       --primary: #0284c7;
-      --aqua: #0284c7;
-      --emerald: #059669;
-      --gold: #d97706;
+      --aqua: #0369a1;
+      --emerald: #047857;
+      --gold: #b45309;
       --navy: #0f172a;
       --primary-ink: #ffffff;
-      --income: #059669;
-      --expense: #e11d48;
-      --saving: #7e22ce;
-      --warn: #d97706;
+      --income: #047857;
+      --expense: #be123c;
+      --saving: #6d28d9;
+      --warn: #b45309;
       --shadow:
-        0 8px 24px -4px rgba(15, 23, 42, 0.08),
+        0 10px 26px -4px rgba(15, 23, 42, 0.08),
         inset 0 1px 0 var(--aqua-shine);
     }
 
@@ -80,97 +81,202 @@
     [data-theme="light"] .launcher-card,
     [data-theme="light"] .kpi,
     [data-theme="light"] .modal-dialog {
-      background: linear-gradient(155deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.96) 100%);
-      border-color: rgba(15, 23, 42, 0.12);
-      border-top-color: rgba(255, 255, 255, 0.98);
+      background: linear-gradient(155deg, rgba(255, 255, 255, 0.96) 0%, rgba(244, 248, 253, 0.98) 100%);
+      border-color: rgba(15, 23, 42, 0.14);
+      border-top-color: #ffffff;
+      color: #0f172a;
+    }
+
+    [data-theme="light"] .drilldown-card {
+      background: linear-gradient(155deg, rgba(240, 249, 255, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%);
+      border-color: rgba(2, 132, 199, 0.45);
       color: #0f172a;
     }
 
     [data-theme="light"] .pool-card,
     [data-theme="light"] .preview-box {
-      background: rgba(255, 255, 255, 0.94);
-      border-color: rgba(15, 23, 42, 0.11);
+      background: rgba(255, 255, 255, 0.97);
+      border-color: rgba(15, 23, 42, 0.13);
       border-top-color: #ffffff;
       color: #0f172a;
       box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
     }
 
-    [data-theme="light"] button {
-      background: rgba(255, 255, 255, 0.92);
-      border-color: rgba(15, 23, 42, 0.14);
-      color: #0f172a;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06), inset 0 1px 0 #ffffff;
+    [data-theme="light"] .brand-logo-box {
+      background: linear-gradient(145deg, rgba(2, 132, 199, 0.14), rgba(13, 148, 136, 0.12));
+      border-color: rgba(2, 132, 199, 0.35);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12), inset 0 1px 0 #ffffff;
     }
+    [data-theme="light"] .brand-fallback { color: #0369a1; }
+    [data-theme="light"] .launcher-icon {
+      background: rgba(2, 132, 199, 0.12);
+      border-color: rgba(2, 132, 199, 0.32);
+    }
+    [data-theme="light"] .launcher-meta { color: #0369a1; }
 
+    [data-theme="light"] button {
+      background: rgba(255, 255, 255, 0.96);
+      border-color: rgba(15, 23, 42, 0.16);
+      color: #0f172a;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06), inset 0 1px 0 #ffffff;
+    }
     [data-theme="light"] button:hover:not(:disabled) {
       background: #ffffff;
-      border-color: rgba(2, 132, 199, 0.45);
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
+      border-color: rgba(2, 132, 199, 0.55);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.14);
     }
-
     [data-theme="light"] button.primary {
-      background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+      background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
       border-color: transparent;
       color: #ffffff;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
       box-shadow: 0 6px 16px rgba(2, 132, 199, 0.24);
     }
-
     [data-theme="light"] button.danger {
       background: rgba(225, 29, 72, 0.10);
-      border-color: rgba(225, 29, 72, 0.28);
+      border-color: rgba(225, 29, 72, 0.32);
       color: #be123c;
+    }
+    [data-theme="light"] button.warn-btn {
+      background: rgba(217, 119, 6, 0.12);
+      border-color: rgba(217, 119, 6, 0.34);
+      color: #92400e;
+    }
+    [data-theme="light"] button.link-btn {
+      background: none;
+      border: none;
+      box-shadow: none;
+      color: #0369a1;
     }
 
     [data-theme="light"] .sidebar-nav button {
       background: transparent;
       border-color: transparent;
       box-shadow: none;
-      color: #475569;
+      color: #334155;
     }
-
     [data-theme="light"] .sidebar-nav button:hover:not(.active) {
-      background: rgba(15, 23, 42, 0.04);
+      background: rgba(15, 23, 42, 0.05);
       color: #0f172a;
     }
-
     [data-theme="light"] .sidebar-nav button.active {
-      background: rgba(2, 132, 199, 0.14);
-      border-color: rgba(2, 132, 199, 0.34);
+      background: linear-gradient(90deg, rgba(2, 132, 199, 0.16) 0%, rgba(13, 148, 136, 0.14) 100%);
+      border-color: rgba(2, 132, 199, 0.42);
       color: #0369a1;
+      font-weight: 800;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
+    }
+
+    /* Slicer Group in Light Mode */
+    [data-theme="light"] .slicer-group {
+      background: rgba(226, 232, 240, 0.88);
+      border-color: rgba(15, 23, 42, 0.14);
+    }
+    [data-theme="light"] .slicer-btn {
+      background: transparent;
+      border-color: transparent;
+      color: #334155;
       box-shadow: none;
+    }
+    [data-theme="light"] .slicer-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.65);
+      color: #0f172a;
+    }
+    [data-theme="light"] .slicer-btn.active {
+      background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.25);
+    }
+
+    /* KPI Tags & Status Chips in Light Mode */
+    [data-theme="light"] .kpi .kpi-tag {
+      background: #e2e8f0;
+      color: #1e293b;
+      border-color: rgba(15, 23, 42, 0.14);
+    }
+    [data-theme="light"] .kpi .kpi-tag.safe {
+      background: rgba(5, 150, 105, 0.14);
+      color: #065f46;
+      border-color: rgba(5, 150, 105, 0.35);
+    }
+    [data-theme="light"] .kpi .kpi-tag.over {
+      background: rgba(225, 29, 72, 0.14);
+      color: #9f1239;
+      border-color: rgba(225, 29, 72, 0.35);
+    }
+
+    [data-theme="light"] .pool-status-chip.healthy {
+      background: rgba(5, 150, 105, 0.14);
+      color: #065f46;
+      border-color: rgba(5, 150, 105, 0.35);
+    }
+    [data-theme="light"] .pool-status-chip.warning {
+      background: rgba(217, 119, 6, 0.15);
+      color: #92400e;
+      border-color: rgba(217, 119, 6, 0.36);
+    }
+    [data-theme="light"] .pool-status-chip.over_budget {
+      background: rgba(225, 29, 72, 0.14);
+      color: #9f1239;
+      border-color: rgba(225, 29, 72, 0.36);
+    }
+    [data-theme="light"] .mini-badge {
+      background: rgba(2, 132, 199, 0.14);
+      color: #0369a1;
+      border-color: rgba(2, 132, 199, 0.34);
+    }
+    [data-theme="light"] .mini-badge.borrow {
+      background: rgba(217, 119, 6, 0.15);
+      color: #92400e;
+      border-color: rgba(217, 119, 6, 0.36);
+    }
+    [data-theme="light"] .mini-badge.rollover {
+      background: rgba(5, 150, 105, 0.14);
+      color: #065f46;
+      border-color: rgba(5, 150, 105, 0.36);
+    }
+
+    [data-theme="light"] .pill.Income { background: rgba(5, 150, 105, 0.14); color: #065f46; border-color: rgba(5, 150, 105, 0.34); }
+    [data-theme="light"] .pill.Expense { background: rgba(225, 29, 72, 0.14); color: #9f1239; border-color: rgba(225, 29, 72, 0.34); }
+    [data-theme="light"] .pill.Saving { background: rgba(109, 40, 217, 0.14); color: #5b21b6; border-color: rgba(109, 40, 217, 0.34); }
+    [data-theme="light"] .pill.Pool { background: rgba(2, 132, 199, 0.14); color: #0369a1; border-color: rgba(2, 132, 199, 0.34); }
+
+    [data-theme="light"] .chart-canvas-wrap {
+      background: linear-gradient(180deg, rgba(240, 249, 255, 0.72) 0%, rgba(255, 255, 255, 0.85) 100%);
+      border-color: rgba(2, 132, 199, 0.16);
+      box-shadow: inset 0 1px 0 #ffffff;
     }
 
     [data-theme="light"] input,
     [data-theme="light"] select {
-      background: rgba(255, 255, 255, 0.96);
-      border-color: rgba(15, 23, 42, 0.16);
+      background: #ffffff;
+      border-color: rgba(15, 23, 42, 0.18);
       color: #0f172a;
     }
-
     [data-theme="light"] th {
-      color: #475569;
-      border-bottom-color: rgba(15, 23, 42, 0.10);
+      color: #334155;
+      border-bottom-color: rgba(15, 23, 42, 0.12);
     }
-
     [data-theme="light"] td {
-      border-bottom-color: rgba(15, 23, 42, 0.07);
+      border-bottom-color: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
     }
-
     [data-theme="light"] tbody tr:hover,
     [data-theme="light"] tbody tr.is-editing-row,
     [data-theme="light"] tr.is-dirty-pool {
-      background: rgba(2, 132, 199, 0.06);
+      background: rgba(2, 132, 199, 0.07);
     }
-
     [data-theme="light"] .bar-track {
-      background: rgba(15, 23, 42, 0.09);
+      background: rgba(203, 213, 225, 0.65);
+      border-color: rgba(15, 23, 42, 0.12);
+      box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.12);
     }
-
     [data-theme="light"] #toast {
       background: #ffffff;
       color: #0f172a;
-      border-color: rgba(15, 23, 42, 0.14);
-      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+      border-color: rgba(15, 23, 42, 0.16);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.15);
     }
 
     * { box-sizing: border-box; }
@@ -202,8 +308,8 @@
       z-index: -2;
       pointer-events: none;
       background-image:
-        radial-gradient(circle at 26% 62%, rgba(16, 185, 129, 0.16), transparent 42%),
-        radial-gradient(circle at 76% 68%, rgba(34, 211, 238, 0.16), transparent 44%),
+        radial-gradient(circle at 26% 62%, rgba(16, 185, 129, 0.14), transparent 42%),
+        radial-gradient(circle at 76% 68%, rgba(34, 211, 238, 0.14), transparent 44%),
         radial-gradient(circle at 56% 32%, var(--bg-glow-4), transparent 48%);
     }
 
@@ -402,28 +508,67 @@
       font-size: 12px; font-weight: 600; text-decoration: underline; box-shadow: none;
     }
 
+    /* ================= LOCKED / NON-SHIFTING SLICER BAR ================= */
+    .dash-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .dash-title-zone {
+      flex: 1 1 320px;
+      min-width: 0;
+    }
+    .dash-title-zone h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+    .dash-title-zone p {
+      margin: 5px 0 0;
+      min-height: 18px;
+      line-height: 1.4;
+    }
+    .dash-controls-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      flex-shrink: 0;
+    }
     .slicer-group {
-      display: inline-flex;
-      padding: 3px;
-      border-radius: 11px;
-      background: rgba(15, 23, 42, 0.72);
-      border: 1px solid rgba(148, 163, 184, 0.24);
-      gap: 3px;
+      display: inline-grid;
+      grid-template-columns: repeat(4, minmax(112px, 1fr));
+      padding: 4px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.76);
+      border: 1px solid rgba(56, 189, 248, 0.26);
+      gap: 4px;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 2px rgba(2, 6, 16, 0.45);
     }
     .slicer-btn {
       border: 1px solid transparent;
       background: transparent;
-      padding: 5px 11px;
+      padding: 6px 10px;
       border-radius: 8px;
       font-size: 12px;
       font-weight: 700;
       color: var(--muted);
       box-shadow: none;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
     }
     .slicer-btn.active {
-      background: linear-gradient(135deg, rgba(6, 182, 212, 0.32), rgba(16, 185, 129, 0.28));
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.34), rgba(16, 185, 129, 0.30));
       color: #e0f2fe;
-      border-color: rgba(34, 211, 238, 0.55);
+      border-color: rgba(34, 211, 238, 0.58);
+      box-shadow: 0 2px 8px rgba(6, 182, 212, 0.22);
     }
 
     .auth-wrap { max-width: 440px; margin: 36px auto; }
@@ -450,6 +595,7 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 14px;
       margin-bottom: 18px;
+      align-items: stretch;
     }
     .launcher-card {
       text-align: left;
@@ -464,6 +610,7 @@
       box-shadow: var(--shadow);
       cursor: pointer;
       white-space: normal;
+      height: 100%;
       transition: transform 0.16s ease, border-color 0.2s ease;
     }
     .launcher-card:hover {
@@ -482,9 +629,9 @@
       background: rgba(34, 211, 238, 0.14);
       border: 1px solid rgba(34, 211, 238, 0.36);
     }
-    .launcher-title { font-size: 16px; font-weight: 800; margin: 0 0 4px; }
+    .launcher-title { font-size: 16px; font-weight: 800; margin: 12px 0 4px; }
     .launcher-desc { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.45; }
-    .launcher-meta { font-size: 12px; font-weight: 700; color: var(--aqua); }
+    .launcher-meta { font-size: 12px; font-weight: 700; color: var(--aqua); margin-top: auto; }
 
     .card {
       background: linear-gradient(165deg, rgba(16, 29, 54, 0.78) 0%, rgba(9, 17, 34, 0.84) 100%);
@@ -533,9 +680,31 @@
       border-bottom: 1px solid var(--border-soft);
     }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 13px; margin-bottom: 16px; }
+    /* ================= UNIFORM ALIGNED KPI CARDS ================= */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 13px;
+      margin-bottom: 16px;
+      align-items: stretch;
+    }
+    #tab-dashboard .kpi-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    #tab-home .kpi-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    #tab-workspace .kpi-grid,
+    #tab-admin .kpi-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .kpi {
       position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
       background: linear-gradient(160deg, rgba(17, 32, 60, 0.84) 0%, rgba(9, 17, 34, 0.88) 100%);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
@@ -562,12 +731,26 @@
     }
     .kpi .kpi-head-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 8px;
+      min-height: 34px;
       margin-bottom: 6px;
     }
-    .kpi .label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .kpi > .label:first-child {
+      min-height: 22px;
+      margin-bottom: 8px;
+    }
+    .kpi .label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 650;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
     .kpi .kpi-tag {
       font-size: 10px;
       font-weight: 700;
@@ -576,6 +759,8 @@
       background: rgba(30, 41, 59, 0.85);
       color: #cbd5e1;
       border: 1px solid rgba(148, 163, 184, 0.22);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .kpi .kpi-tag.over {
       background: rgba(159, 18, 57, 0.35);
@@ -587,22 +772,40 @@
       color: #6ee7b7;
       border-color: rgba(52, 211, 153, 0.38);
     }
-    .kpi .val { font-size: 21px; font-weight: 800; margin-top: 2px; overflow-wrap: anywhere; letter-spacing: -0.01em; }
-    .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .kpi .val {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-top: auto;
+      overflow-wrap: anywhere;
+      letter-spacing: -0.01em;
+    }
+    .kpi .sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      min-height: 16px;
+      line-height: 1.35;
+    }
     .val.inc { color: var(--income); }
     .val.exp { color: var(--expense); }
     .val.sav { color: var(--saving); }
     .val.warn { color: var(--warn); }
 
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; align-items: stretch; }
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-    .pool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 13px; }
+    .pool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 13px; align-items: stretch; }
 
+    /* ================= UNIFORM ALIGNED BUDGET POOL CARDS ================= */
     .pool-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
       background: linear-gradient(165deg, rgba(16, 30, 56, 0.78) 0%, rgba(10, 19, 36, 0.86) 100%);
       border: 1px solid rgba(100, 116, 139, 0.25);
       border-radius: 14px;
-      padding: 14px;
+      padding: 15px;
       cursor: pointer;
       box-shadow: 0 8px 20px rgba(2, 8, 20, 0.35);
       transition: transform 0.14s ease, border-color 0.2s ease;
@@ -611,14 +814,44 @@
       transform: translateY(-2px);
       border-color: rgba(34, 211, 238, 0.62);
     }
-    .pool-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .pool-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .pool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      min-height: 36px;
+      margin-bottom: 8px;
+    }
+    .pool-title {
+      font-weight: 750;
+      font-size: 14px;
+      line-height: 1.3;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
     .pool-dot { width: 9px; height: 9px; border-radius: 999px; display: inline-block; flex-shrink: 0; }
-    .pool-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; margin-bottom: 10px; }
-    .pool-metrics span.m-lbl { color: var(--muted); display: block; font-size: 11px; }
+    .pool-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      font-size: 12px;
+      margin-bottom: 10px;
+      align-items: end;
+    }
+    .pool-metrics > div {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .pool-metrics span.m-lbl { color: var(--muted); display: block; font-size: 11px; margin-bottom: 2px; }
+    .pool-metrics strong { font-size: 13px; line-height: 1.3; overflow-wrap: anywhere; }
     .pool-metrics strong.rem-ok { color: var(--income); font-size: 13.5px; }
     .pool-metrics strong.rem-warn { color: var(--warn); font-size: 13.5px; }
     .pool-metrics strong.rem-over { color: var(--expense); font-size: 13.5px; }
+    .pool-footer-zone {
+      margin-top: auto;
+    }
     .pool-status-chip {
       display: inline-block;
       margin-top: 8px;
@@ -663,47 +896,52 @@
       border-color: rgba(16, 185, 129, 0.36);
     }
 
-    /* Pill / Capsule Bar Chart & Recessed Doughnut Styling */
+    /* ================= TRANSLUCENT AQUA PROGRESS BARS ================= */
     .bar-row { margin-bottom: 12px; }
-    .bar-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; margin-bottom: 5px; }
+    .bar-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; margin-bottom: 5px; }
     .bar-track {
-      height: 10px;
+      height: 11px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      box-shadow: inset 0 2px 4px rgba(2, 6, 16, 0.75);
+      background: rgba(15, 23, 42, 0.58);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      box-shadow: inset 0 2px 4px rgba(2, 6, 16, 0.65);
       overflow: hidden;
-      padding: 0;
+      padding: 1px;
     }
     .bar-fill {
       position: relative;
       height: 100%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #0891b2 0%, #22d3ee 60%, #67e8f9 100%);
-      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.45);
-      transition: width 0.3s ease;
+      background: linear-gradient(180deg, rgba(165, 243, 252, 0.92) 0%, rgba(34, 211, 238, 0.78) 48%, rgba(6, 182, 212, 0.92) 100%);
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.42), inset 0 1px 1px rgba(255, 255, 255, 0.72);
+      transition: width 0.35s ease;
     }
     .bar-fill.inc {
-      background: linear-gradient(90deg, #059669 0%, #10b981 55%, #6ee7b7 100%);
+      background: linear-gradient(180deg, rgba(167, 243, 208, 0.92) 0%, rgba(52, 211, 153, 0.78) 48%, rgba(5, 150, 105, 0.92) 100%);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.72);
     }
     .bar-fill.exp {
-      background: linear-gradient(90deg, #be123c 0%, #f43f5e 55%, #fda4af 100%);
+      background: linear-gradient(180deg, rgba(254, 205, 211, 0.92) 0%, rgba(251, 113, 133, 0.78) 48%, rgba(225, 29, 72, 0.92) 100%);
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.72);
     }
     .bar-fill.sav {
-      background: linear-gradient(90deg, #6b21a8 0%, #a855f7 55%, #d8b4fe 100%);
+      background: linear-gradient(180deg, rgba(233, 213, 255, 0.92) 0%, rgba(192, 132, 252, 0.78) 48%, rgba(126, 34, 206, 0.92) 100%);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.72);
     }
     .bar-fill.warn {
-      background: linear-gradient(90deg, #b45309 0%, #f59e0b 55%, #fde047 100%);
+      background: linear-gradient(180deg, rgba(254, 240, 138, 0.92) 0%, rgba(251, 191, 36, 0.80) 48%, rgba(217, 119, 6, 0.92) 100%);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.72);
     }
 
     .chart-canvas-wrap {
       position: relative;
       height: 260px;
       width: 100%;
-      padding: 6px 6px 2px;
-      border-radius: 12px;
-      background: rgba(6, 14, 28, 0.36);
-      border: 1px solid rgba(148, 163, 184, 0.10);
+      padding: 8px 8px 4px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(8, 22, 42, 0.44) 0%, rgba(4, 12, 26, 0.56) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     .chart-canvas-wrap canvas { cursor: pointer; }
 
@@ -792,6 +1030,16 @@
 
     .print-header { display: none; }
 
+    @media (max-width: 1180px) {
+      #tab-dashboard .kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .dash-controls-zone {
+        width: 100%;
+        align-items: flex-start;
+      }
+    }
+
     @media (max-width: 900px) {
       .app-shell { grid-template-columns: minmax(0, 1fr); gap: 12px; }
       .sidebar { position: static; padding: 10px; }
@@ -800,6 +1048,12 @@
       .sidebar-nav button { width: auto; flex: 1 1 calc(33.3% - 6px); justify-content: center; text-align: center; }
       .sidebar-footer { border-top: 0; padding-top: 0; }
       .sidebar-footer button { width: 100%; }
+      #tab-dashboard .kpi-grid,
+      #tab-home .kpi-grid,
+      #tab-workspace .kpi-grid,
+      #tab-admin .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 640px) {
@@ -808,7 +1062,7 @@
       .brand { flex: 1 1 100%; }
       .brand-logo-box img { height: 26px; max-width: 96px; }
       .brand h1 { font-size: 15px; }
-  .topbar-actions {
+      .topbar-actions {
         width: 100%;
         max-width: 100%;
         min-width: 0;
@@ -817,8 +1071,6 @@
         gap: 8px;
       }
       .slicer-group {
-        margin-left: 0;
-        flex-shrink: 1;
         width: 100%;
         max-width: 100%;
         min-width: 0;
@@ -827,60 +1079,25 @@
         gap: 6px;
         box-sizing: border-box;
       }
-.card-head,
-      .section-head,
-      .kpi-header-row,
-      .card-head > *,
-      .section-head > *,
-      .kpi-header-row > * {
-        min-width: 0 !important;
-        max-width: 100% !important;
-      }
-
-      .slicer-group {
-        margin-left: 0 !important;
-        flex: 0 0 100% !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 6px !important;
-        box-sizing: border-box !important;
-      }
-
-      .slicer-group .slicer-btn,
-      .slicer-group button {
-        min-width: 0 !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 12px;
-        padding: 7px 8px;
-        box-sizing: border-box;
-      }
-      .slicer-group .slicer-btn,
-      .slicer-group button {
+      .slicer-btn {
         min-width: 0;
         max-width: 100%;
         width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 12px;
-        padding: 7px 8px;
+        font-size: 11.5px;
+        padding: 7px 6px;
         box-sizing: border-box;
       }
-    #wsSelectorWrap,
+      #wsSelectorWrap,
       #monthWrap {
         width: 100%;
         max-width: 100%;
         min-width: 0;
         overflow: hidden;
       }
-     #monthWrap input[type="month"],
+      #monthWrap input[type="month"],
       #wsSelectorWrap select {
         display: block;
         width: 100%;
@@ -892,14 +1109,20 @@
       }
       .topbar-btn-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px; width: 100%; }
       .topbar-btn-row > button { width: 100%; padding: 8px 7px; font-size: 11px; text-align: center; }
-      .slicer-group { width: 100%; }
-      .slicer-btn { flex: 1 1 50%; padding: 6px 8px; font-size: 11px; text-align: center; }
       .sidebar-nav button { flex: 1 1 calc(33.3% - 6px); min-width: 0; padding: 8px 6px; font-size: 11px; }
       .home-launcher-grid { grid-template-columns: 1fr; gap: 10px; }
       .card { padding: 12px; border-radius: 14px; max-width: 100%; }
       .modal-dialog { padding: 14px; border-radius: 16px; }
-      .kpi-grid { grid-template-columns: 1fr; gap: 10px; }
+      #tab-dashboard .kpi-grid,
+      #tab-home .kpi-grid,
+      #tab-workspace .kpi-grid,
+      #tab-admin .kpi-grid,
+      .kpi-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
       .kpi { padding: 12px; }
+      .kpi .kpi-head-row { min-height: auto; }
       .kpi .val { font-size: 18px; }
       .grid-2, .grid-4, .pool-grid { grid-template-columns: minmax(0, 1fr); width: 100%; max-width: 100%; }
       .chart-canvas-wrap { height: 210px; max-width: 100%; }
@@ -935,61 +1158,6 @@
       }
       .muted, .label, .sub, .m-lbl, th { color: #475569 !important; }
       .chart-canvas-wrap { height: 220px !important; }
-    }
-    /* ၁။ Slicer ခလုပ်တွေ ညာဘက်အစွန်မှာ ငြိမ်နေအောင် ညှိခြင်း */
-    .card-head,
-    .section-head,
-    .kpi-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .slicer-group {
-      margin-left: auto;
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* ၂။ KPI Card ၅ ခုထဲက Amount တွေ တစ်တန်းတည်း ညီနေအောင် ညှိခြင်း */
-   .kpi-grid,
-    .central-kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 12px;
-      align-items: stretch;
-    }
-
-    .kpi-grid > .kpi,
-    .central-kpi-grid > .kpi,
-    .kpi-grid > .card,
-    .central-kpi-grid > .card {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .kpi .val,
-    .card .val {
-      margin-top: auto;
-    }
-
-    @media (max-width: 900px) {
-      .kpi-grid,
-      .central-kpi-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 640px) {
-      .kpi-grid,
-      .central-kpi-grid {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
@@ -1152,7 +1320,7 @@
                     <span class="launcher-icon">📊</span>
                     <span class="pill Income">Analytics</span>
                   </div>
-                  <h3 class="launcher-title" style="margin-top:12px;">Dashboard</h3>
+                  <h3 class="launcher-title">Dashboard</h3>
                   <p class="launcher-desc">ဝင်ငွေ၊ အသုံးစရိတ်၊ Pool လက်ကျန်နဲ့ 6-Month / Yearly chart များကို ကြည့်ရန်။</p>
                 </div>
                 <div class="launcher-meta" id="homeMetaDashboard">Open Dashboard →</div>
@@ -1164,7 +1332,7 @@
                     <span class="launcher-icon">💳</span>
                     <span class="pill Pool">Records</span>
                   </div>
-                  <h3 class="launcher-title" style="margin-top:12px;">Transaction</h3>
+                  <h3 class="launcher-title">Transaction</h3>
                   <p class="launcher-desc">စာရင်းမှတ်တမ်းများ ရှာဖွေရန်၊ ပြင်ရန်၊ ဖျက်ရန် သို့မဟုတ် Userform ဖြင့် စာရင်းသစ်ထည့်ရန်။</p>
                 </div>
                 <div class="launcher-meta" id="homeMetaTx">Open Transactions →</div>
@@ -1176,7 +1344,7 @@
                     <span class="launcher-icon">💧</span>
                     <span class="pill Saving">Budgets</span>
                   </div>
-                  <h3 class="launcher-title" style="margin-top:12px;">Pool Management</h3>
+                  <h3 class="launcher-title">Pool Management</h3>
                   <p class="launcher-desc">Monthly Budget Pool များ ညှိနှိုင်းရန်၊ Borrow/Transfer လုပ်ရန်နှင့် လကုန် Rollover လုပ်ရန်။</p>
                 </div>
                 <div class="launcher-meta" id="homeMetaPools">Manage Pools →</div>
@@ -1188,7 +1356,7 @@
                     <span class="launcher-icon">⚙</span>
                     <span class="pill Pool">Console</span>
                   </div>
-                  <h3 class="launcher-title" style="margin-top:12px;">Admin</h3>
+                  <h3 class="launcher-title">Admin</h3>
                   <p class="launcher-desc">Users၊ Workspaces၊ CSV Import နဲ့ System-wide transactions များကို စီမံရန်။</p>
                 </div>
                 <div class="launcher-meta">Open Admin Console →</div>
@@ -1238,26 +1406,26 @@
             </div>
 
             <div class="card" id="budgetHealthCard">
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                <div>
-                  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                    <h2 style="margin: 0;" id="dashReportHeading">Central KPI Grid</h2>
-                    <div class="slicer-group" role="group" aria-label="Period Slicer">
-                      <button type="button" class="slicer-btn" id="slicerDayBtn" data-period="day">နေ့ချုပ် (Day)</button>
-                      <button type="button" class="slicer-btn" id="slicerWeekBtn" data-period="week">အပတ်စဉ် (Week)</button>
-                      <button type="button" class="slicer-btn active" id="slicerMonthlyBtn" data-period="monthly">လချုပ် (Monthly)</button>
-                      <button type="button" class="slicer-btn" id="slicerYearlyBtn" data-period="yearly">နှစ်ချုပ် (Yearly)</button>
-                    </div>
-                  </div>
-                  <p class="muted" id="poolPlanNote" style="margin: 6px 0 0;">
+              <div class="dash-header-bar">
+                <div class="dash-title-zone">
+                  <h2 id="dashReportHeading">Central KPI Grid</h2>
+                  <p class="muted" id="poolPlanNote">
                     လစဉ် ဝင်ငွေ၊ Budget Pool ခွဲဝေမှုနှင့် လက်ကျန်အခြေအနေ။
                   </p>
                 </div>
-                <div class="inline-form">
-                  <span class="pill Income" id="dashHealthBadge">Healthy</span>
-                  <button type="button" class="small" id="dashRefreshBtn">Refresh</button>
-                  <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
-                  <button type="button" class="small primary" id="dashPrintBtn">Print / PDF</button>
+                <div class="dash-controls-zone">
+                  <div class="slicer-group" role="group" aria-label="Period Slicer">
+                    <button type="button" class="slicer-btn" id="slicerDayBtn" data-period="day">နေ့ချုပ် (Day)</button>
+                    <button type="button" class="slicer-btn" id="slicerWeekBtn" data-period="week">အပတ်စဉ် (Week)</button>
+                    <button type="button" class="slicer-btn active" id="slicerMonthlyBtn" data-period="monthly">လချုပ် (Monthly)</button>
+                    <button type="button" class="slicer-btn" id="slicerYearlyBtn" data-period="yearly">နှစ်ချုပ် (Yearly)</button>
+                  </div>
+                  <div class="inline-form">
+                    <span class="pill Income" id="dashHealthBadge">Healthy</span>
+                    <button type="button" class="small" id="dashRefreshBtn">Refresh</button>
+                    <button type="button" class="small" id="dashManagePoolsBtn">Manage Pools</button>
+                    <button type="button" class="small primary" id="dashPrintBtn">Print / PDF</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1915,6 +2083,9 @@
       poolLedger: 'sayin_pool_ledger_v1'
     };
 
+    const VALID_PERIOD_MODES = ['day', 'week', 'monthly', 'yearly'];
+    const savedPeriodMode = localStorage.getItem(STORAGE_KEYS.period);
+
     const state = {
       apiBase: DEFAULT_API_BASE,
       token: localStorage.getItem(STORAGE_KEYS.token) || '',
@@ -1924,7 +2095,7 @@
       wsId: localStorage.getItem(STORAGE_KEYS.wsId) || '',
       month: new Date().toISOString().slice(0, 7),
       anchorDate: new Date().toISOString().slice(0, 10),
-      periodMode: localStorage.getItem(STORAGE_KEYS.period) === 'yearly' ? 'yearly' : 'monthly',
+      periodMode: VALID_PERIOD_MODES.includes(savedPeriodMode) ? savedPeriodMode : 'monthly',
       soundEnabled: localStorage.getItem(STORAGE_KEYS.sound) !== 'off',
       settings: null,
       categories: [],
@@ -1941,36 +2112,7 @@
       adminTransactions: [],
       preparedCsvRows: []
     };
-   function getWeekRangeFromDate(dateStr) {
-  const iso = normalizeIsoDate(dateStr) || new Date().toISOString().slice(0, 10);
-  const [y, m, d] = iso.split('-').map(Number);
-  const dt = new Date(Date.UTC(y, m - 1, d));
-  const dayOfWeek = dt.getUTCDay();
-  const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  const startDt = new Date(Date.UTC(y, m - 1, d + diffToMon));
-  const endDt = new Date(Date.UTC(y, m - 1, d + diffToMon + 6));
-  const start = startDt.toISOString().slice(0, 10);
-  const end = endDt.toISOString().slice(0, 10);
-  return { start, end, label: `${start} ~ ${end}` };
-}
 
-function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
-  const anchorMonth = monthStr || getMonthFromDate(dateStr) || new Date().toISOString().slice(0, 7);
-  if (mode === 'yearly') {
-    return getYearMonths(anchorMonth).months;
-  }
-  if (mode === 'week') {
-    const { start, end } = getWeekRangeFromDate(dateStr);
-    const m1 = start.slice(0, 7);
-    const m2 = end.slice(0, 7);
-    return m1 === m2 ? [m1] : [m1, m2];
-  }
-  if (mode === 'day') {
-    const dMonth = getMonthFromDate(dateStr) || anchorMonth;
-    return [dMonth];
-  }
-  return [anchorMonth];
-}
     const selectedTxIds = new Set();
 
     const charts = {
@@ -1982,6 +2124,48 @@ function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
     };
 
     const $ = (id) => document.getElementById(id);
+
+    function normalizeIsoDate(raw) {
+      const s = String(raw || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+      return '';
+    }
+
+    function getMonthFromDate(raw) {
+      const iso = normalizeIsoDate(raw);
+      return iso ? iso.slice(0, 7) : '';
+    }
+
+    function getWeekRangeFromDate(dateStr) {
+      const iso = normalizeIsoDate(dateStr) || new Date().toISOString().slice(0, 10);
+      const [y, m, d] = iso.split('-').map(Number);
+      const dt = new Date(Date.UTC(y, m - 1, d));
+      const dayOfWeek = dt.getUTCDay();
+      const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      const startDt = new Date(Date.UTC(y, m - 1, d + diffToMon));
+      const endDt = new Date(Date.UTC(y, m - 1, d + diffToMon + 6));
+      const start = startDt.toISOString().slice(0, 10);
+      const end = endDt.toISOString().slice(0, 10);
+      return { start, end, label: `${start} ~ ${end}` };
+    }
+
+    function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
+      const anchorMonth = monthStr || getMonthFromDate(dateStr) || new Date().toISOString().slice(0, 7);
+      if (mode === 'yearly') {
+        return getYearMonths(anchorMonth).months;
+      }
+      if (mode === 'week') {
+        const { start, end } = getWeekRangeFromDate(dateStr);
+        const m1 = start.slice(0, 7);
+        const m2 = end.slice(0, 7);
+        return m1 === m2 ? [m1] : [m1, m2];
+      }
+      if (mode === 'day') {
+        const dMonth = getMonthFromDate(dateStr) || anchorMonth;
+        return [dMonth];
+      }
+      return [anchorMonth];
+    }
 
     function readFullLedger() {
       try {
@@ -2146,17 +2330,6 @@ function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
         .replace(/'/g, '&#39;');
     }
 
-    function normalizeIsoDate(raw) {
-      const s = String(raw || '').trim();
-      if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
-      return '';
-    }
-
-    function getMonthFromDate(raw) {
-      const iso = normalizeIsoDate(raw);
-      return iso ? iso.slice(0, 7) : '';
-    }
-
     function isGlobalAdmin() { return normalizeEmail(state.user?.email) === GLOBAL_ADMIN_EMAIL; }
     function isAnyAdmin() { return isGlobalAdmin() || Boolean(state.isAdmin); }
 
@@ -2195,7 +2368,7 @@ function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
       }
     }
 
-   function syncSlicerButtons() {
+    function syncSlicerButtons() {
       const mode = state.periodMode || 'monthly';
       $('slicerDayBtn')?.classList.toggle('active', mode === 'day');
       $('slicerWeekBtn')?.classList.toggle('active', mode === 'week');
@@ -2203,21 +2376,17 @@ function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
       $('slicerYearlyBtn')?.classList.toggle('active', mode === 'yearly');
     }
 
-function setPeriodMode(mode) {
-      const allowed = ['day', 'week', 'monthly', 'yearly'];
-      state.periodMode = allowed.includes(mode) ? mode : 'monthly';
-      if (STORAGE_KEYS?.period) {
-        localStorage.setItem(STORAGE_KEYS.period, state.periodMode);
-      }
-      if (typeof syncSlicerButtons === 'function') {
-        syncSlicerButtons();
-      } else {
-        $('slicerDayBtn')?.classList.toggle('active', state.periodMode === 'day');
-        $('slicerWeekBtn')?.classList.toggle('active', state.periodMode === 'week');
-        $('slicerMonthlyBtn')?.classList.toggle('active', state.periodMode === 'monthly');
-        $('slicerYearlyBtn')?.classList.toggle('active', state.periodMode === 'yearly');
-      }
+    async function setPeriodMode(mode) {
+      state.periodMode = VALID_PERIOD_MODES.includes(mode) ? mode : 'monthly';
+      localStorage.setItem(STORAGE_KEYS.period, state.periodMode);
+      syncSlicerButtons();
+      closeDashboardDrilldown();
       renderDashboard();
+      const needed = getNeededMonthsForPeriod(state.periodMode, state.month, state.anchorDate);
+      const hasAllNeeded = needed.every((ym) => Array.isArray(state.yearlyPoolsByMonth?.[ym]));
+      if (state.wsId && !hasAllNeeded) {
+        try { await loadWorkspaceDetails(); } catch (err) { toast(err.message, 'error'); }
+      }
     }
 
     $('slicerDayBtn')?.addEventListener('click', () => setPeriodMode('day'));
@@ -2495,10 +2664,9 @@ function setPeriodMode(mode) {
         const bust = options.force ? `&_t=${Date.now()}` : '';
         const sixMonths = getLastSixMonths(state.month);
         const prevFiveMonths = sixMonths.slice(0, 5);
-        const { months: yearMonths } = getYearMonths(state.month);
-        const otherYearMonths = state.periodMode === 'yearly'
-  ? yearMonths.filter((ym) => ym !== state.month)
-  : [];
+        const neededMonths = getNeededMonthsForPeriod(state.periodMode, state.month, state.anchorDate);
+        const extraMonths = neededMonths.filter((ym) => ym !== state.month);
+
         const [setRes, catRes, txRes, sumRes, memRes, poolRes, ...restResults] = await Promise.all([
           apiFetch(`/api/workspaces/${ws}/settings${bust ? '?' + bust.slice(1) : ''}`),
           apiFetch(`/api/workspaces/${ws}/categories${bust ? '?' + bust.slice(1) : ''}`),
@@ -2511,15 +2679,15 @@ function setPeriodMode(mode) {
               month: pm, summary: { total_income: 0, total_expense: 0, total_saving: 0 }
             }))
           ),
-          ...otherYearMonths.map((ym) => apiFetch(`/api/workspaces/${ws}/transactions?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] }))),
-          ...otherYearMonths.map((ym) => apiFetch(`/api/workspaces/${ws}/pools?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] })))
+          ...extraMonths.map((ym) => apiFetch(`/api/workspaces/${ws}/transactions?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] }))),
+          ...extraMonths.map((ym) => apiFetch(`/api/workspaces/${ws}/pools?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] })))
         ]);
 
         if (reqId !== wsLoadSeq) return;
 
         const prevSumResults = restResults.slice(0, prevFiveMonths.length);
-        const otherYearTxResults = restResults.slice(prevFiveMonths.length, prevFiveMonths.length + otherYearMonths.length);
-        const otherYearPoolResults = restResults.slice(prevFiveMonths.length + otherYearMonths.length);
+        const extraTxResults = restResults.slice(prevFiveMonths.length, prevFiveMonths.length + extraMonths.length);
+        const extraPoolResults = restResults.slice(prevFiveMonths.length + extraMonths.length);
 
         state.settings = setRes.data;
         state.categories = catRes.data || [];
@@ -2529,25 +2697,25 @@ function setPeriodMode(mode) {
         state.pools = poolRes.data || sumRes.pools || [];
 
         const poolsByMonthMap = {};
-        yearMonths.forEach((ym) => {
+        neededMonths.forEach((ym) => {
           if (ym === state.month) poolsByMonthMap[ym] = state.pools;
           else {
-            const idx = otherYearMonths.indexOf(ym);
-            poolsByMonthMap[ym] = idx >= 0 && Array.isArray(otherYearPoolResults[idx]?.data) ? otherYearPoolResults[idx].data : state.pools;
+            const idx = extraMonths.indexOf(ym);
+            poolsByMonthMap[ym] = idx >= 0 && Array.isArray(extraPoolResults[idx]?.data) ? extraPoolResults[idx].data : state.pools;
           }
         });
         state.yearlyPoolsByMonth = poolsByMonthMap;
 
-        const yearTxMap = new Map();
-        yearMonths.forEach((ym) => {
-          if (ym === state.month) yearTxMap.set(ym, state.transactions);
+        const multiTxMap = new Map();
+        neededMonths.forEach((ym) => {
+          if (ym === state.month) multiTxMap.set(ym, state.transactions);
           else {
-            const idx = otherYearMonths.indexOf(ym);
-            const rawList = idx >= 0 ? (otherYearTxResults[idx]?.data || []) : [];
-            yearTxMap.set(ym, rawList.filter((t) => { const tm = getMonthFromDate(t.tx_date); return !tm || tm === ym; }));
+            const idx = extraMonths.indexOf(ym);
+            const rawList = idx >= 0 ? (extraTxResults[idx]?.data || []) : [];
+            multiTxMap.set(ym, rawList.filter((t) => { const tm = getMonthFromDate(t.tx_date); return !tm || tm === ym; }));
           }
         });
-        state.yearlyTransactions = yearMonths.flatMap((ym) => yearTxMap.get(ym) || []);
+        state.yearlyTransactions = neededMonths.flatMap((ym) => multiTxMap.get(ym) || []);
 
         const trendMap = new Map();
         prevFiveMonths.forEach((pm, idx) => {
@@ -3000,7 +3168,7 @@ function setPeriodMode(mode) {
       const basePools = state.pools || [];
       const txList = state.transactions || [];
       const sum = state.summary || {};
-      if (txList.length > 0) return { isYearly: false, periodLabel: state.month, ...aggregateMonthlyTransactions(txList, basePools, state.month), txList };
+      if (txList.length > 0) return { isYearly: false, periodMode: 'monthly', periodLabel: state.month, ...aggregateMonthlyTransactions(txList, basePools, state.month), txList };
 
       const { effectsByPool } = computePoolLedgerEffects(state.wsId, state.month);
       const fallbackPools = basePools.map((p) => {
@@ -3021,10 +3189,10 @@ function setPeriodMode(mode) {
       const totalSaving = Number(sum.total_saving || 0);
       const totalAllocated = fallbackPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
       const totalRemaining = fallbackPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
-      return { isYearly: false, periodLabel: state.month, totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining, unalloc: totalIncome - totalAllocated, pools: fallbackPools, cats: state.categorySummary || [], txList };
+      return { isYearly: false, periodMode: 'monthly', periodLabel: state.month, totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining, unalloc: totalIncome - totalAllocated, pools: fallbackPools, cats: state.categorySummary || [], txList };
     }
 
-   function buildActiveDashboardViewModel() {
+    function buildActiveDashboardViewModel() {
       const mode = state.periodMode || 'monthly';
       if (mode === 'monthly') return buildMonthlyViewModel();
 
@@ -3102,7 +3270,7 @@ function setPeriodMode(mode) {
         };
       }
 
-      // Day or Week filtering over available loaded transactions
+      // Day or Week filtering
       const anchorDate = state.anchorDate || `${state.month}-01`;
       const weekInfo = getWeekRangeFromDate(anchorDate);
       const sourceTx = (state.yearlyTransactions && state.yearlyTransactions.length)
@@ -3129,15 +3297,16 @@ function setPeriodMode(mode) {
       };
     }
 
-    function getChartTextColor() { return document.documentElement.getAttribute('data-theme') === 'light' ? '#334155' : '#cbd5e1'; }
+    function getChartTextColor() { return document.documentElement.getAttribute('data-theme') === 'light' ? '#1e293b' : '#cbd5e1'; }
     function getChartGridColor() { return document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(15, 23, 42, 0.08)' : 'rgba(148, 163, 184, 0.14)'; }
     function getDoughnutLegendPosition() { return window.innerWidth < 640 ? 'bottom' : 'right'; }
     function destroyChart(key) { if (charts[key]) { charts[key].destroy(); charts[key] = null; } }
 
-    function makeVerticalGradient(ctx, topColor, bottomColor, height = 260) {
+    function makeAquaGlassGradient(ctx, topColor, midColor, botColor, height = 260) {
       const grad = ctx.createLinearGradient(0, 0, 0, height);
       grad.addColorStop(0, topColor);
-      grad.addColorStop(1, bottomColor);
+      grad.addColorStop(0.55, midColor);
+      grad.addColorStop(1, botColor);
       return grad;
     }
 
@@ -3214,27 +3383,32 @@ function setPeriodMode(mode) {
       renderTransactions();
     });
 
-    const telemetryChartEffectsPlugin = {
-      id: 'telemetryChartEffectsPlugin',
+    /* ================= TRANSLUCENT AQUA CRYSTAL CHART PLUGIN ================= */
+    const aquaGlassChartPlugin = {
+      id: 'aquaGlassChartPlugin',
       afterDatasetsDraw(chart) {
         const { ctx } = chart;
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
         if (chart.config.type === 'doughnut') {
           const meta = chart.getDatasetMeta(0);
           const firstArc = meta?.data?.[0];
           if (firstArc && firstArc.outerRadius > 0) {
             const { x, y, innerRadius, outerRadius } = firstArc;
             ctx.save();
-            const innerRing = ctx.createRadialGradient(x, y, Math.max(0, innerRadius - 3), x, y, innerRadius + 9);
-            innerRing.addColorStop(0, 'rgba(2, 6, 16, 0.75)');
-            innerRing.addColorStop(0.55, 'rgba(2, 6, 16, 0.28)');
-            innerRing.addColorStop(1, 'rgba(2, 6, 16, 0)');
+            // Soft translucent glass halo inside cutout
+            const innerRing = ctx.createRadialGradient(x, y, Math.max(0, innerRadius - 2), x, y, innerRadius + 10);
+            innerRing.addColorStop(0, isLight ? 'rgba(2, 132, 199, 0.14)' : 'rgba(34, 211, 238, 0.18)');
+            innerRing.addColorStop(0.65, 'rgba(34, 211, 238, 0.04)');
+            innerRing.addColorStop(1, 'rgba(0, 0, 0, 0)');
             ctx.fillStyle = innerRing;
             ctx.beginPath();
-            ctx.arc(x, y, innerRadius + 9, 0, Math.PI * 2);
+            ctx.arc(x, y, innerRadius + 10, 0, Math.PI * 2);
             ctx.arc(x, y, Math.max(0, innerRadius - 2), 0, Math.PI * 2, true);
             ctx.fill();
 
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+            // Specular crystal rim highlight
+            ctx.strokeStyle = isLight ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.32)';
             ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.arc(x, y, outerRadius - 1, 0, Math.PI * 2);
@@ -3244,6 +3418,7 @@ function setPeriodMode(mode) {
           return;
         }
 
+        // Translucent Aqua Glass Capsule Highlight for Bar Charts
         chart.data.datasets.forEach((ds, idx) => {
           if (ds.type === 'line') return;
           const meta = chart.getDatasetMeta(idx);
@@ -3252,20 +3427,39 @@ function setPeriodMode(mode) {
             if (!el || typeof el.getProps !== 'function') return;
             const { x, y, base, width } = el.getProps(['x', 'y', 'base', 'width'], true);
             const h = Math.abs(base - y);
-            if (h < 3 || width < 4) return;
+            if (h < 4 || width < 4) return;
             const topY = Math.min(y, base);
             const left = x - width / 2;
+            const r = Math.min(12, width / 2, h / 2);
 
             ctx.save();
-            const sheen = ctx.createLinearGradient(left, 0, left + width, 0);
-            sheen.addColorStop(0, 'rgba(255, 255, 255, 0.26)');
-            sheen.addColorStop(0.3, 'rgba(255, 255, 255, 0.05)');
-            sheen.addColorStop(0.8, 'rgba(2, 6, 16, 0.05)');
-            sheen.addColorStop(1, 'rgba(2, 6, 16, 0.28)');
-            ctx.fillStyle = sheen;
             ctx.beginPath();
-            ctx.roundRect(left, topY, width, h, Math.min(999, width / 2));
-            ctx.fill();
+            ctx.roundRect(left, topY, width, h, r);
+            ctx.clip();
+
+            // Vertical glass refraction sheen (bright left edge, clear center, subtle rim)
+            const glassSheen = ctx.createLinearGradient(left, 0, left + width, 0);
+            glassSheen.addColorStop(0, 'rgba(255, 255, 255, 0.44)');
+            glassSheen.addColorStop(0.24, 'rgba(255, 255, 255, 0.14)');
+            glassSheen.addColorStop(0.75, 'rgba(255, 255, 255, 0.02)');
+            glassSheen.addColorStop(1, 'rgba(255, 255, 255, 0.22)');
+            ctx.fillStyle = glassSheen;
+            ctx.fillRect(left, topY, width, h);
+
+            // Top water-droplet meniscus highlight
+            const topGlow = ctx.createLinearGradient(0, topY, 0, topY + Math.min(18, h * 0.45));
+            topGlow.addColorStop(0, 'rgba(255, 255, 255, 0.52)');
+            topGlow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = topGlow;
+            ctx.fillRect(left, topY, width, Math.min(18, h * 0.45));
+
+            // Crisp translucent crystal outline
+            ctx.strokeStyle = isLight ? 'rgba(255, 255, 255, 0.75)' : 'rgba(224, 242, 254, 0.48)';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.roundRect(left + 0.5, topY + 0.5, Math.max(0, width - 1), Math.max(0, h - 1), r);
+            ctx.stroke();
+
             ctx.restore();
           });
         });
@@ -3277,18 +3471,20 @@ function setPeriodMode(mode) {
       const textCol = getChartTextColor();
       const gridCol = getChartGridColor();
       const legendPos = getDoughnutLegendPosition();
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
       const commonHover = (evt, elements) => {
         if (evt?.native?.target) evt.native.target.style.cursor = elements && elements.length ? 'pointer' : 'default';
       };
 
-      const richPalette = [
-        { top: 'rgba(34, 211, 238, 0.96)', bot: 'rgba(16, 185, 129, 0.85)', border: 'rgba(165, 243, 252, 0.5)' },
-        { top: 'rgba(52, 211, 153, 0.96)', bot: 'rgba(5, 150, 105, 0.85)', border: 'rgba(167, 243, 208, 0.5)' },
-        { top: 'rgba(251, 113, 133, 0.96)', bot: 'rgba(190, 24, 93, 0.85)', border: 'rgba(253, 164, 175, 0.5)' },
-        { top: 'rgba(192, 132, 252, 0.96)', bot: 'rgba(109, 40, 217, 0.85)', border: 'rgba(233, 213, 255, 0.5)' },
-        { top: 'rgba(251, 191, 36, 0.96)', bot: 'rgba(180, 83, 9, 0.85)', border: 'rgba(253, 230, 138, 0.5)' },
-        { top: 'rgba(56, 189, 248, 0.96)', bot: 'rgba(3, 105, 161, 0.85)', border: 'rgba(186, 230, 253, 0.5)' },
-        { top: 'rgba(251, 146, 60, 0.96)', bot: 'rgba(154, 52, 18, 0.85)', border: 'rgba(254, 215, 170, 0.5)' }
+      // Translucent Crystal Aqua Glass Palette
+      const aquaGlassPalette = [
+        { top: 'rgba(103, 232, 249, 0.78)', mid: 'rgba(34, 211, 238, 0.56)', bot: 'rgba(6, 182, 212, 0.34)', border: 'rgba(165, 243, 252, 0.85)' },
+        { top: 'rgba(110, 231, 183, 0.78)', mid: 'rgba(16, 185, 129, 0.56)', bot: 'rgba(5, 150, 105, 0.34)', border: 'rgba(167, 243, 208, 0.85)' },
+        { top: 'rgba(253, 164, 175, 0.78)', mid: 'rgba(244, 63, 94, 0.56)', bot: 'rgba(225, 29, 72, 0.34)', border: 'rgba(254, 205, 211, 0.85)' },
+        { top: 'rgba(216, 180, 254, 0.78)', mid: 'rgba(168, 85, 247, 0.56)', bot: 'rgba(126, 34, 206, 0.34)', border: 'rgba(233, 213, 255, 0.85)' },
+        { top: 'rgba(253, 224, 71, 0.78)', mid: 'rgba(245, 158, 11, 0.56)', bot: 'rgba(217, 119, 6, 0.34)', border: 'rgba(254, 240, 138, 0.85)' },
+        { top: 'rgba(125, 211, 252, 0.78)', mid: 'rgba(56, 189, 248, 0.56)', bot: 'rgba(2, 132, 199, 0.34)', border: 'rgba(186, 230, 253, 0.85)' },
+        { top: 'rgba(94, 234, 212, 0.78)', mid: 'rgba(20, 184, 166, 0.56)', bot: 'rgba(13, 148, 136, 0.34)', border: 'rgba(153, 246, 228, 0.85)' }
       ];
 
       destroyChart('sixMonthTrend');
@@ -3298,13 +3494,13 @@ function setPeriodMode(mode) {
         if ($('sixMonthRangeLabel') && trendData.length) {
           $('sixMonthRangeLabel').textContent = `${trendData[0].month} to ${trendData[trendData.length - 1].month} (${cur})`;
         }
-        const incFill = makeVerticalGradient(trendCtx, 'rgba(34, 211, 238, 0.42)', 'rgba(16, 185, 129, 0.03)', 270);
-        const expGrad = makeVerticalGradient(trendCtx, 'rgba(251, 113, 133, 0.96)', 'rgba(190, 24, 93, 0.78)', 270);
-        const savGrad = makeVerticalGradient(trendCtx, 'rgba(52, 211, 153, 0.96)', 'rgba(6, 182, 212, 0.78)', 270);
+        const incFill = makeAquaGlassGradient(trendCtx, 'rgba(34, 211, 238, 0.36)', 'rgba(6, 182, 212, 0.14)', 'rgba(16, 185, 129, 0.02)', 270);
+        const expGrad = makeAquaGlassGradient(trendCtx, 'rgba(253, 164, 175, 0.80)', 'rgba(244, 63, 94, 0.56)', 'rgba(225, 29, 72, 0.32)', 270);
+        const savGrad = makeAquaGlassGradient(trendCtx, 'rgba(110, 231, 183, 0.80)', 'rgba(16, 185, 129, 0.56)', 'rgba(6, 182, 212, 0.32)', 270);
 
         charts.sixMonthTrend = new Chart(trendCtx, {
           type: 'bar',
-          plugins: [telemetryChartEffectsPlugin],
+          plugins: [aquaGlassChartPlugin],
           data: {
             labels: trendData.map((d) => d.month),
             datasets: [
@@ -3312,26 +3508,27 @@ function setPeriodMode(mode) {
                 type: 'line',
                 label: `Income (${cur})`,
                 data: trendData.map((d) => d.income),
-                borderColor: '#22d3ee',
+                borderColor: isLight ? '#0284c7' : '#22d3ee',
                 backgroundColor: incFill,
                 borderWidth: 2.5,
-                tension: 0.38,
+                tension: 0.4,
                 fill: true,
                 pointBackgroundColor: '#34d399',
-                pointBorderColor: '#04111f',
+                pointBorderColor: isLight ? '#ffffff' : '#04111f',
                 pointBorderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6
+                pointRadius: 4.5,
+                pointHoverRadius: 6.5
               },
               {
                 type: 'bar',
                 label: `Expense (${cur})`,
                 data: trendData.map((d) => d.expense),
                 backgroundColor: expGrad,
-                borderWidth: 0,
-                borderRadius: 999,
+                borderColor: 'rgba(253, 164, 175, 0.72)',
+                borderWidth: 1,
+                borderRadius: 10,
                 borderSkipped: false,
-                barPercentage: 0.52,
+                barPercentage: 0.54,
                 categoryPercentage: 0.72
               },
               {
@@ -3339,10 +3536,11 @@ function setPeriodMode(mode) {
                 label: `Saving (${cur})`,
                 data: trendData.map((d) => d.saving),
                 backgroundColor: savGrad,
-                borderWidth: 0,
-                borderRadius: 999,
+                borderColor: 'rgba(110, 231, 183, 0.72)',
+                borderWidth: 1,
+                borderRadius: 10,
                 borderSkipped: false,
-                barPercentage: 0.52,
+                barPercentage: 0.54,
                 categoryPercentage: 0.72
               }
             ]
@@ -3370,12 +3568,12 @@ function setPeriodMode(mode) {
       const poolCtx = $('poolBarCanvas')?.getContext('2d');
       if (poolCtx) {
         const poolList = pools || [];
-        const budgetGrad = makeVerticalGradient(poolCtx, 'rgba(34, 211, 238, 0.96)', 'rgba(16, 185, 129, 0.80)', 260);
-        const spentGrad = makeVerticalGradient(poolCtx, 'rgba(251, 113, 133, 0.96)', 'rgba(190, 24, 93, 0.78)', 260);
+        const budgetGrad = makeAquaGlassGradient(poolCtx, 'rgba(103, 232, 249, 0.82)', 'rgba(34, 211, 238, 0.56)', 'rgba(6, 182, 212, 0.30)', 260);
+        const spentGrad = makeAquaGlassGradient(poolCtx, 'rgba(253, 164, 175, 0.82)', 'rgba(244, 63, 94, 0.56)', 'rgba(225, 29, 72, 0.30)', 260);
 
         charts.poolBar = new Chart(poolCtx, {
           type: 'bar',
-          plugins: [telemetryChartEffectsPlugin],
+          plugins: [aquaGlassChartPlugin],
           data: {
             labels: poolList.map((p) => String(p.pool_name || '').replace(/\s*Pool$/i, '')),
             datasets: [
@@ -3383,8 +3581,9 @@ function setPeriodMode(mode) {
                 label: `Effective Budget (${cur})`,
                 data: poolList.map((p) => Number(p.available_budget || 0)),
                 backgroundColor: budgetGrad,
-                borderWidth: 0,
-                borderRadius: 999,
+                borderColor: 'rgba(103, 232, 249, 0.78)',
+                borderWidth: 1,
+                borderRadius: 10,
                 borderSkipped: false,
                 barPercentage: 0.56,
                 categoryPercentage: 0.74
@@ -3393,8 +3592,9 @@ function setPeriodMode(mode) {
                 label: `Spent (${cur})`,
                 data: poolList.map((p) => Number(p.spent_amount || 0)),
                 backgroundColor: spentGrad,
-                borderWidth: 0,
-                borderRadius: 999,
+                borderColor: 'rgba(253, 164, 175, 0.78)',
+                borderWidth: 1,
+                borderRadius: 10,
                 borderSkipped: false,
                 barPercentage: 0.56,
                 categoryPercentage: 0.74
@@ -3424,21 +3624,21 @@ function setPeriodMode(mode) {
         const activePools = (pools || []).filter((p) => Number(p.available_budget || 0) > 0);
         const bgFills = activePools.length
           ? activePools.map((p, idx) => {
-              if (p.color_tag) return makeVerticalGradient(poolMixCtx, hexToRgba(p.color_tag, 0.96), hexToRgba(p.color_tag, 0.68), 260);
-              const pal = richPalette[idx % richPalette.length];
-              return makeVerticalGradient(poolMixCtx, pal.top, pal.bot, 260);
+              if (p.color_tag) return makeAquaGlassGradient(poolMixCtx, hexToRgba(p.color_tag, 0.80), hexToRgba(p.color_tag, 0.55), hexToRgba(p.color_tag, 0.34), 260);
+              const pal = aquaGlassPalette[idx % aquaGlassPalette.length];
+              return makeAquaGlassGradient(poolMixCtx, pal.top, pal.mid, pal.bot, 260);
             })
-          : ['rgba(148,163,184,0.22)'];
+          : ['rgba(148,163,184,0.20)'];
 
         charts.poolMixDonut = new Chart(poolMixCtx, {
           type: 'doughnut',
-          plugins: [telemetryChartEffectsPlugin],
+          plugins: [aquaGlassChartPlugin],
           data: {
             labels: activePools.length ? activePools.map((p) => `${p.pool_name} (Bal: ${fmtNum(p.remaining_balance)})`) : ['No Pool Budget'],
             datasets: [{
               data: activePools.length ? activePools.map((p) => Number(p.available_budget || 0)) : [1],
               backgroundColor: bgFills,
-              borderColor: 'rgba(9, 17, 34, 0.72)',
+              borderColor: isLight ? 'rgba(255, 255, 255, 0.92)' : 'rgba(224, 242, 254, 0.35)',
               borderWidth: 2,
               hoverOffset: 8
             }]
@@ -3466,20 +3666,20 @@ function setPeriodMode(mode) {
 
         const catFills = expCats.length
           ? expCats.map((_, idx) => {
-              const pal = richPalette[idx % richPalette.length];
-              return makeVerticalGradient(donutCtx, pal.top, pal.bot, 260);
+              const pal = aquaGlassPalette[idx % aquaGlassPalette.length];
+              return makeAquaGlassGradient(donutCtx, pal.top, pal.mid, pal.bot, 260);
             })
-          : ['rgba(148,163,184,0.22)'];
+          : ['rgba(148,163,184,0.20)'];
 
         charts.categoryDonut = new Chart(donutCtx, {
           type: 'doughnut',
-          plugins: [telemetryChartEffectsPlugin],
+          plugins: [aquaGlassChartPlugin],
           data: {
             labels: expCats.length ? expCats.map((c) => c.category) : ['No Expense'],
             datasets: [{
               data: expCats.length ? expCats.map((c) => Number(c.total_mmk || 0)) : [1],
               backgroundColor: catFills,
-              borderColor: 'rgba(9, 17, 34, 0.72)',
+              borderColor: isLight ? 'rgba(255, 255, 255, 0.92)' : 'rgba(224, 242, 254, 0.35)',
               borderWidth: 2,
               hoverOffset: 8
             }]
@@ -3502,22 +3702,23 @@ function setPeriodMode(mode) {
       if (cfCtx) {
         const flowTypes = ['Income', 'Expense', 'Saving'];
         const cfGrads = [
-          makeVerticalGradient(cfCtx, 'rgba(52, 211, 153, 0.96)', 'rgba(16, 185, 129, 0.76)', 190),
-          makeVerticalGradient(cfCtx, 'rgba(251, 113, 133, 0.96)', 'rgba(190, 24, 93, 0.76)', 190),
-          makeVerticalGradient(cfCtx, 'rgba(192, 132, 252, 0.96)', 'rgba(109, 40, 217, 0.76)', 190)
+          makeAquaGlassGradient(cfCtx, 'rgba(110, 231, 183, 0.82)', 'rgba(16, 185, 129, 0.56)', 'rgba(5, 150, 105, 0.30)', 190),
+          makeAquaGlassGradient(cfCtx, 'rgba(253, 164, 175, 0.82)', 'rgba(244, 63, 94, 0.56)', 'rgba(225, 29, 72, 0.30)', 190),
+          makeAquaGlassGradient(cfCtx, 'rgba(216, 180, 254, 0.82)', 'rgba(168, 85, 247, 0.56)', 'rgba(126, 34, 206, 0.30)', 190)
         ];
 
         charts.cashflowBar = new Chart(cfCtx, {
           type: 'bar',
-          plugins: [telemetryChartEffectsPlugin],
+          plugins: [aquaGlassChartPlugin],
           data: {
             labels: flowTypes,
             datasets: [{
               label: `Amount (${cur})`,
               data: [Number(sum.total_income || 0), Number(sum.total_expense || 0), Number(sum.total_saving || 0)],
               backgroundColor: cfGrads,
-              borderWidth: 0,
-              borderRadius: 999,
+              borderColor: ['rgba(110, 231, 183, 0.78)', 'rgba(253, 164, 175, 0.78)', 'rgba(216, 180, 254, 0.78)'],
+              borderWidth: 1,
+              borderRadius: 10,
               borderSkipped: false,
               barPercentage: 0.45,
               categoryPercentage: 0.68
@@ -3572,17 +3773,19 @@ function setPeriodMode(mode) {
     function renderDashboard() {
       const cur = state.settings?.currency || 'MMK';
       const vm = buildActiveDashboardViewModel();
-      const { isYearly, periodLabel, totalIncome, totalAllocated, totalExpense, totalSaving, totalRemaining, unalloc, pools, cats, txList } = vm;
+      const { isYearly, periodMode, periodLabel, totalIncome, totalAllocated, totalExpense, totalSaving, totalRemaining, unalloc, pools, cats, txList } = vm;
 
-      if ($('dashReportHeading')) $('dashReportHeading').textContent = isYearly ? `Central KPI Grid · ${periodLabel}` : `Central KPI Grid · ${periodLabel}`;
-      if ($('kpiIncomeLabel')) $('kpiIncomeLabel').textContent = isYearly ? 'Total Income (Year)' : 'Total Income (Month)';
-      if ($('kpiPoolAllocLabel')) $('kpiPoolAllocLabel').textContent = isYearly ? 'Total Pool Budget (Year)' : 'Total Pool Budget';
-      if ($('kpiExpenseLabel')) $('kpiExpenseLabel').textContent = isYearly ? 'Total Expense (Year)' : 'Total Expense';
-      if ($('kpiPoolRemLabel')) $('kpiPoolRemLabel').textContent = isYearly ? 'Remaining Balance (Year)' : 'Remaining Balance';
+      const modeSuffix = periodMode === 'yearly' ? '(Year)' : periodMode === 'week' ? '(Week)' : periodMode === 'day' ? '(Day)' : '(Month)';
+
+      if ($('dashReportHeading')) $('dashReportHeading').textContent = `Central KPI Grid · ${periodLabel}`;
+      if ($('kpiIncomeLabel')) $('kpiIncomeLabel').textContent = `Total Income ${modeSuffix}`;
+      if ($('kpiPoolAllocLabel')) $('kpiPoolAllocLabel').textContent = `Total Pool Budget ${modeSuffix}`;
+      if ($('kpiExpenseLabel')) $('kpiExpenseLabel').textContent = `Total Expense ${modeSuffix}`;
+      if ($('kpiPoolRemLabel')) $('kpiPoolRemLabel').textContent = `Remaining Balance ${modeSuffix}`;
       if ($('cashflowPeriodTag')) $('cashflowPeriodTag').textContent = periodLabel;
       if ($('catSummaryTitle')) $('catSummaryTitle').textContent = `Category Breakdown (${periodLabel})`;
       if ($('memberReportTitle')) $('memberReportTitle').textContent = `Member Activity Report (${periodLabel})`;
-      if ($('printTitle')) $('printTitle').textContent = `${state.settings?.workspace_name || state.wsId} — ${isYearly ? 'Yearly' : 'Monthly'} Financial Report`;
+      if ($('printTitle')) $('printTitle').textContent = `${state.settings?.workspace_name || state.wsId} — Financial Report (${periodLabel})`;
       if ($('printSubtitle')) $('printSubtitle').textContent = `Period: ${periodLabel} · Currency: ${cur}`;
       if ($('printGeneratedAt')) $('printGeneratedAt').textContent = `Generated: ${new Date().toLocaleString()}`;
 
@@ -3602,7 +3805,7 @@ function setPeriodMode(mode) {
       }
 
       const netCashflowBalance = Number(totalIncome || 0) - Number(totalExpense || 0);
-      if ($('kpiNetBalanceLabel')) $('kpiNetBalanceLabel').textContent = isYearly ? 'Net Balance (Year)' : 'Net Balance';
+      if ($('kpiNetBalanceLabel')) $('kpiNetBalanceLabel').textContent = `Net Balance ${modeSuffix}`;
       if ($('kpiNetBalance')) {
         $('kpiNetBalance').textContent = `${fmtNum(netCashflowBalance)} ${cur}`;
         $('kpiNetBalance').className = `val ${netCashflowBalance < 0 ? 'exp' : netCashflowBalance === 0 ? 'warn' : 'inc'}`;
@@ -3648,20 +3851,24 @@ function setPeriodMode(mode) {
 
             return `
               <div class="pool-card" role="button" tabindex="0" data-pool-id="${escapeHtml(p.id)}" data-pool-name="${escapeHtml(p.pool_name)}" title="Click to inspect ${escapeHtml(p.pool_name)} transactions">
-                <div class="pool-header">
-                  <div class="pool-title">
-                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#22d3ee')};"></span>
-                    <span>${escapeHtml(p.pool_name)}</span>
+                <div>
+                  <div class="pool-header">
+                    <div class="pool-title">
+                      <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#22d3ee')};"></span>
+                      <span>${escapeHtml(p.pool_name)}</span>
+                    </div>
+                    <span class="muted">${p.utilization_pct}%</span>
                   </div>
-                  <span class="muted">${p.utilization_pct}%</span>
+                  <div class="pool-metrics">
+                    <div><span class="m-lbl">Remaining</span><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></div>
+                    <div><span class="m-lbl">Spent / Budget</span><strong>${fmtNum(p.spent_amount)} / ${fmtNum(p.available_budget)}</strong></div>
+                  </div>
                 </div>
-                <div class="pool-metrics">
-                  <div><span class="m-lbl">Remaining</span><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></div>
-                  <div><span class="m-lbl">Spent / Budget</span><strong>${fmtNum(p.spent_amount)} / ${fmtNum(p.available_budget)}</strong></div>
+                <div class="pool-footer-zone">
+                  <div class="bar-track"><div class="bar-fill ${barCls}" style="width:${pct}%"></div></div>
+                  <div><span class="pool-status-chip ${p.status}">${statusLabel}</span></div>
+                  ${badges.length ? `<div class="pool-badge-strip">${badges.join('')}</div>` : ''}
                 </div>
-                <div class="bar-track"><div class="bar-fill ${barCls}" style="width:${pct}%"></div></div>
-                <div><span class="pool-status-chip ${p.status}">${statusLabel}</span></div>
-                ${badges.length ? `<div class="pool-badge-strip">${badges.join('')}</div>` : ''}
               </div>
             `;
           }).join('')
@@ -3709,9 +3916,6 @@ function setPeriodMode(mode) {
         }
       }, 200);
     });
-
-    $('slicerMonthlyBtn')?.addEventListener('click', () => setPeriodMode('monthly'));
-    $('slicerYearlyBtn')?.addEventListener('click', () => setPeriodMode('yearly'));
 
     async function runCleanRefresh(showToast = true) {
       dirtyPoolIds.clear();
@@ -3927,7 +4131,7 @@ function setPeriodMode(mode) {
           }).join('')
         : '<tr><td colspan="11" class="muted">No transactions found for this filter.</td></tr>';
 
-     tbody.onclick = (e) => {
+      tbody.onclick = (e) => {
         const btn = e.target.closest('.view-receipt-btn[data-receipt-key]');
         if (!btn) return;
         openReceipt(btn.dataset.receiptKey);
@@ -4145,305 +4349,263 @@ function setPeriodMode(mode) {
     function renderAdminAccessTable() {
       const tbody = $('adminListBody');
       if (!tbody) return;
-      const list = [...(state.adminAdmins || [])];
-      if (!list.some((a) => normalizeEmail(a.email) === normalizeEmail(GLOBAL_ADMIN_EMAIL))) list.unshift({ email: GLOBAL_ADMIN_EMAIL, level: 'Global Admin', added_by: 'System' });
-      tbody.innerHTML = list.length
-        ? list.map((a) => {
-            const em = normalizeEmail(a.email);
-            const isGlobal = em === normalizeEmail(GLOBAL_ADMIN_EMAIL);
-            return `<tr><td><strong>${escapeHtml(a.email)}</strong></td><td><span class="pill ${isGlobal ? 'Income' : 'Saving'}">${escapeHtml(a.level || (isGlobal ? 'Global Admin' : 'Portal Admin'))}</span></td><td>${escapeHtml(a.added_by || '-')}</td><td>${(!isGlobal && isGlobalAdmin()) ? `<button type="button" class="small danger adm-rem-btn" data-email="${escapeHtml(a.email)}">Remove</button>` : '<span class="muted">Protected</span>'}</td></tr>`;
-          }).join('')
-        : '<tr><td colspan="4" class="muted">No admin records.</td></tr>';
-      tbody.querySelectorAll('.adm-rem-btn[data-email]').forEach((btn) => btn.addEventListener('click', () => removeExtraAdmin(btn.dataset.email)));
+      const rows = [{ email: GLOBAL_ADMIN_EMAIL, level: 'Global Admin (Master)', added_by: 'System Root', removable: false }];
+      (state.adminAdmins || []).forEach((a) => {
+        if (normalizeEmail(a.email) !== normalizeEmail(GLOBAL_ADMIN_EMAIL)) rows.push({ email: a.email, level: 'Portal Admin', added_by: a.added_by || GLOBAL_ADMIN_EMAIL, removable: isGlobalAdmin() });
+      });
+      tbody.innerHTML = rows.map((r) => `<tr><td><strong>${escapeHtml(r.email)}</strong></td><td><span class="pill ${r.removable ? 'Pool' : 'Income'}">${escapeHtml(r.level)}</span></td><td>${escapeHtml(r.added_by)}</td><td>${r.removable ? `<button type="button" class="small danger adm-access-rem-btn" data-email="${escapeHtml(r.email)}">Remove</button>` : '<span class="muted">Protected</span>'}</td></tr>`).join('');
+      tbody.querySelectorAll('.adm-access-rem-btn[data-email]').forEach((btn) => btn.addEventListener('click', () => removeExtraAdmin(btn.dataset.email)));
     }
 
     function renderAdminWorkspacesTable() {
       const tbody = $('adminWorkspaceTableBody');
       if (!tbody) return;
-      const rows = state.adminWorkspaces || [];
-      tbody.innerHTML = rows.length
-        ? rows.map((w) => {
-            const ownerText = w.owner_name || w.owner_email ? `${escapeHtml(w.owner_name || '')}${w.owner_email ? ` <span class="muted">(${escapeHtml(w.owner_email)})</span>` : ''}` : '<span class="muted">- (-)</span>';
-            return `<tr data-ws-id="${escapeHtml(w.workspace_id)}"><td><strong>${escapeHtml(w.workspace_name || w.workspace_id)}</strong></td><td><code>${escapeHtml(w.workspace_id)}</code></td><td>${ownerText}</td><td>${escapeHtml(w.member_count ?? 0)}</td><td>${escapeHtml(w.transaction_count ?? 0)}</td><td>${escapeHtml(w.currency || 'MMK')}</td><td><div class="row-actions"><button type="button" class="small adm-ws-view">View</button><button type="button" class="small primary adm-ws-pools">Pools & Settings</button></div></td></tr>`;
+      const list = state.adminWorkspaces || [];
+      tbody.innerHTML = list.length
+        ? list.map((w) => {
+            const ownerText = w.owner_email || w.owner_name || w.created_by || '-';
+            const memberCount = Array.isArray(w.members) ? w.members.length : (w.member_count ?? '-');
+            const txCount = w.tx_count ?? w.transaction_count ?? '-';
+            return `<tr><td><strong>${escapeHtml(w.workspace_name || '-')}</strong></td><td><code>${escapeHtml(w.workspace_id)}</code></td><td>${escapeHtml(ownerText)}</td><td>${escapeHtml(memberCount)}</td><td>${escapeHtml(txCount)}</td><td>${escapeHtml(w.currency || 'MMK')}</td><td><div class="row-actions"><button type="button" class="small adm-ws-open-btn" data-ws-id="${escapeHtml(w.workspace_id)}" data-target="dashboard">Dashboard</button><button type="button" class="small primary adm-ws-open-btn" data-ws-id="${escapeHtml(w.workspace_id)}" data-target="workspace">Pools</button></div></td></tr>`;
           }).join('')
         : '<tr><td colspan="7" class="muted">No workspaces found.</td></tr>';
-      tbody.querySelectorAll('tr[data-ws-id]').forEach((tr) => {
-        const wsId = tr.dataset.wsId;
-        tr.querySelector('.adm-ws-view')?.addEventListener('click', () => switchToWorkspaceFromAdmin(wsId, 'dashboard'));
-        tr.querySelector('.adm-ws-pools')?.addEventListener('click', () => switchToWorkspaceFromAdmin(wsId, 'workspace'));
-      });
+      tbody.querySelectorAll('.adm-ws-open-btn[data-ws-id]').forEach((btn) => btn.addEventListener('click', () => switchToWorkspaceFromAdmin(btn.dataset.wsId, btn.dataset.target || 'workspace')));
     }
-
-    const MERGED_POOL_DEFS = [
-      { key: 'food_dining', name: 'Food & Dining Pool', color: '#10b981' },
-      { key: 'home_bills', name: 'Home & Bills Pool', color: '#22d3ee' },
-      { key: 'transport', name: 'Transport Pool', color: '#f59e0b' },
-      { key: 'personal_family', name: 'Personal & Family Pool', color: '#a855f7' },
-      { key: 'lifestyle_debt', name: 'Lifestyle, Debt & Other Pool', color: '#f43f5e' }
-    ];
-
-    function normalizePoolKey(v) { return String(v || '').toLowerCase().replace(/^pool_/, '').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, ''); }
-
-    const SLUG_TO_MERGED_KEY = {
-      food_groceries: 'food_dining', dining_snacks: 'food_dining', food_and_groceries_pool: 'food_dining', dining_out_and_snacks_pool: 'food_dining', food_and_dining_pool: 'food_dining',
-      household_housing: 'home_bills', bills_utilities_tax: 'home_bills', household_and_housing_pool: 'home_bills', bills_utilities_and_tax_pool: 'home_bills', bills_and_utilities_pool: 'home_bills', home_and_bills_pool: 'home_bills',
-      transport_fuel: 'transport', transport_and_fuel_pool: 'transport', transport_pool: 'transport',
-      tps_personal: 'personal_family', family_support: 'personal_family', family_general: 'personal_family', kids_education: 'personal_family', health_medical: 'personal_family', family_and_personal_pool: 'personal_family', kids_and_education_pool: 'personal_family', health_and_medical_pool: 'personal_family', personal_and_family_pool: 'personal_family',
-      shopping_lifestyle: 'lifestyle_debt', gifts_social: 'lifestyle_debt', pet_care: 'lifestyle_debt', charity_donations: 'lifestyle_debt', debt_repayment: 'lifestyle_debt', shopping_and_lifestyle_pool: 'lifestyle_debt', gifts_and_social_pool: 'lifestyle_debt', pet_care_pool: 'lifestyle_debt', charity_and_donations_pool: 'lifestyle_debt', debt_and_credit_repayment_pool: 'lifestyle_debt', lifestyle_debt_and_other_pool: 'lifestyle_debt'
-    };
-
-    function resolveMergedPoolKey(entryType, poolColText, catText, poolIdText = '') {
-      if (entryType === 'Income') return null;
-      const pidSlug = normalizePoolKey(poolIdText);
-      const pName = normalizePoolKey(poolColText);
-      if (pidSlug && SLUG_TO_MERGED_KEY[pidSlug]) return SLUG_TO_MERGED_KEY[pidSlug];
-      if (pName && SLUG_TO_MERGED_KEY[pName]) return SLUG_TO_MERGED_KEY[pName];
-      const c = String(catText || '').toLowerCase();
-      if (c.includes('grocer') || c.includes('food') || c.includes('အစားအသောက်') || c.includes('entertainment') || c.includes('ဖျော်ဖြေရေး') || c.includes('မုန့်စား')) return 'food_dining';
-      if (c.includes('bill') || c.includes('internet') || c.includes('electric') || c.includes('tax') || c.includes('housing') || c.includes('အိမ်') || c.includes('household')) return 'home_bills';
-      if (c.includes('transport') || c.includes('သွားလာရေး')) return 'transport';
-      if (c.includes('debt') || c.includes('အကြွေး') || c.includes('shop') || c.includes('gift') || c.includes('pet') || c.includes('charity')) return 'lifestyle_debt';
-      return 'personal_family';
-    }
-
-    async function ensureMergedPoolsAndMap(targetWs, month, neededKeys, defaultAmount = 0) {
-      const encWs = encodeURIComponent(targetWs);
-      const encM = encodeURIComponent(month || state.month);
-      const res = await apiFetch(`/api/workspaces/${encWs}/pools?month=${encM}`);
-      let pools = res.data || [];
-      const findIdByKey = (mergedKey, list) => {
-        const def = MERGED_POOL_DEFS.find((d) => d.key === mergedKey);
-        if (!def) return null;
-        const targetNorm = normalizePoolKey(def.name);
-        const found = (list || []).find((p) => normalizePoolKey(p.pool_name) === targetNorm);
-        return found ? Number(found.id) : null;
-      };
-      let createdAny = false;
-      for (const key of neededKeys) {
-        if (!findIdByKey(key, pools)) {
-          const def = MERGED_POOL_DEFS.find((d) => d.key === key);
-          if (!def) continue;
-          await apiFetch(`/api/workspaces/${encWs}/pools`, { method: 'POST', body: JSON.stringify({ pool_name: def.name, default_amount: Number(defaultAmount) || 0, color_tag: def.color }) });
-          createdAny = true;
-        }
-      }
-      if (createdAny) {
-        const refreshed = await apiFetch(`/api/workspaces/${encWs}/pools?month=${encM}`);
-        pools = refreshed.data || [];
-      }
-      const keyToId = {};
-      for (const key of neededKeys) keyToId[key] = findIdByKey(key, pools);
-      return { pools, keyToId };
-    }
-
-    async function buildCsvPreview() {
-      const targetWs = $('adminImportWs')?.value;
-      const file = $('adminImportCsvFile')?.files?.[0];
-      const prevEl = $('adminImportPreview');
-      state.preparedCsvRows = [];
-      if (!file || !targetWs) { prevEl?.classList.add('hidden'); return; }
-      try {
-        const text = await file.text();
-        const rows = parseCsvText(text);
-        if (rows.length < 2) throw new Error('CSV file has no data rows');
-        const headers = (rows[0] || []).map((h) => String(h || '').trim().toLowerCase());
-        const findCol = (keywords, fallbackIdx) => { const idx = headers.findIndex((h) => keywords.some((k) => h.includes(k))); return idx >= 0 ? idx : fallbackIdx; };
-        const colDate = findCol(['date', 'နေ့စွဲ'], 0), colMember = findCol(['member', 'family', 'ထည့်သွင်းသူ'], 1), colType = findCol(['type', 'အမျိုးအစား |'], 2), colCategory = findCol(['category', 'အမျိုးအစားခွဲ'], 3), colAmount = findCol(['amount', 'ငွေပမာဏ'], 4), colPayment = findCol(['payment', 'ငွေပေးချေမှု'], 5), colNotes = findCol(['notes', 'မှတ်ချက်'], 6), colPoolName = findCol(['budget pool'], 8), colPoolId = findCol(['pool id'], 9);
-        const existingTxRes = await apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/transactions`);
-        const existingTx = existingTxRes.data || [];
-        const existingMap = new Map(), dateAmtMap = new Map();
-        existingTx.forEach((t) => {
-          const normD = normalizeIsoDate(t.tx_date) || t.tx_date;
-          existingMap.set(`${normD}|${Number(t.amount_mmk)}|${normalizeNoteKey(t.notes)}`, t);
-          const looseKey = `${normD}|${Number(t.amount_mmk)}`;
-          if (!dateAmtMap.has(looseKey)) dateAmtMap.set(looseKey, t);
-        });
-        let invalidCount = 0, newCount = 0, updateCount = 0, sumInc = 0, sumExp = 0;
-        const parsedItems = [], neededPoolKeys = new Set();
-        for (let i = 1; i < rows.length; i++) {
-          const r = rows[i];
-          if (!r || r.every((cell) => !cell)) continue;
-          const txDate = normalizeSheetDate(r[colDate]), memberName = String(r[colMember] || state.user?.display_name || 'Member').trim(), entryType = normalizeSheetType(r[colType]) || 'Expense', category = String(r[colCategory] || 'General').trim(), amountMmk = normalizeSheetAmount(r[colAmount]), paymentMethod = String(r[colPayment] || 'Cash').trim(), notes = String(r[colNotes] || '').trim(), csvPoolName = String(r[colPoolName] || '').trim(), csvPoolId = String(r[colPoolId] || '').trim();
-          if (!txDate || amountMmk <= 0) { invalidCount++; continue; }
-          const mergedKey = resolveMergedPoolKey(entryType, csvPoolName, category, csvPoolId);
-          if (mergedKey) neededPoolKeys.add(mergedKey);
-          const existingRow = existingMap.get(`${txDate}|${Number(amountMmk)}|${normalizeNoteKey(notes)}`) || dateAmtMap.get(`${txDate}|${Number(amountMmk)}`) || null;
-          if (entryType === 'Income') sumInc += amountMmk;
-          if (entryType === 'Expense') sumExp += amountMmk;
-          if (existingRow) updateCount++; else newCount++;
-          parsedItems.push({ existing_id: existingRow ? existingRow.id : null, tx_date: txDate, member_name: memberName, entry_type: entryType, category, amount_mmk: amountMmk, payment_method: paymentMethod, notes, merged_pool_key: mergedKey, csv_pool_name: csvPoolName });
-        }
-        const primaryMonth = parsedItems.length ? parsedItems[0].tx_date.slice(0, 7) : state.month;
-        const { keyToId } = await ensureMergedPoolsAndMap(targetWs, primaryMonth, neededPoolKeys, 0);
-        state.preparedCsvRows = parsedItems.map((item) => ({ ...item, pool_id: item.merged_pool_key ? (keyToId[item.merged_pool_key] ?? null) : null }));
-        if (prevEl) {
-          prevEl.classList.remove('hidden');
-          prevEl.innerHTML = `<div><strong>Smart Import Preview (${escapeHtml(targetWs)})</strong></div><div style="margin-top:4px;">New Rows: <strong style="color:var(--income);">${newCount}</strong> · Existing Rows to Update Pool: <strong style="color:var(--gold);">${updateCount}</strong> · Invalid Skipped: <strong>${invalidCount}</strong></div><div class="muted" style="margin-top:4px;">Preview Income (Unpooled): <strong>${fmtNum(sumInc)}</strong> · Preview Expense (5 Merged Pools): <strong>${fmtNum(sumExp)}</strong></div>`;
-        }
-      } catch (err) {
-        if (prevEl) { prevEl.classList.remove('hidden'); prevEl.innerHTML = `<span style="color:var(--expense);">${escapeHtml(err.message)}</span>`; }
-      }
-    }
-
-    $('adminImportCsvFile')?.addEventListener('change', buildCsvPreview);
-    $('adminImportWs')?.addEventListener('change', buildCsvPreview);
 
     $('adminCsvImportForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const targetWs = $('adminImportWs')?.value;
-      if (!targetWs) return;
-      if (!state.preparedCsvRows.length) await buildCsvPreview();
-      const readyList = state.preparedCsvRows || [];
-      if (!readyList.length) { toast('No valid rows found in CSV', 'error'); return; }
-      const btn = $('adminImportSubmitBtn');
-      btn.disabled = true; btn.textContent = 'Syncing CSV...';
-      setStatus('adminImportStatus', '');
+      const fileInput = $('adminImportCsvFile');
+      const file = fileInput?.files?.[0];
+      if (!targetWs) { setStatus('adminImportStatus', 'Target Workspace ရွေးပေးပါ။', 'err'); return; }
+      if (!file) { setStatus('adminImportStatus', 'CSV file ရွေးပေးပါ။', 'err'); return; }
+
+      const submitBtn = $('adminImportSubmitBtn');
+      const previewEl = $('adminImportPreview');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Parsing & Importing...'; }
+      setStatus('adminImportStatus', 'CSV ဖတ်ပြီး D1 ထဲသို့ စာရင်းသွင်းနေပါသည်...', '');
+
       try {
-        let insertedCount = 0, updatedCount = 0, failedCount = 0, lastErr = '';
-        const encWs = encodeURIComponent(targetWs);
-        for (const item of readyList) {
-          try {
-            if (item.existing_id) {
-              await apiFetch(`/api/workspaces/${encWs}/transactions/${item.existing_id}`, { method: 'PATCH', body: JSON.stringify({ tx_date: item.tx_date, member_name: item.member_name, entry_type: item.entry_type, category: item.category, amount_mmk: item.amount_mmk, payment_method: item.payment_method, notes: item.notes, pool_id: item.pool_id }) });
-              updatedCount++;
-            } else {
-              const fd = new FormData();
-              fd.append('tx_date', item.tx_date); fd.append('member_name', item.member_name); fd.append('entry_type', item.entry_type); fd.append('category', item.category); fd.append('amount_mmk', String(item.amount_mmk)); fd.append('payment_method', item.payment_method);
-              if (item.pool_id) fd.append('pool_id', String(item.pool_id));
-              if (item.notes) fd.append('notes', item.notes);
-              await apiFetch(`/api/workspaces/${encWs}/transactions`, { method: 'POST', body: fd });
-              insertedCount++;
-            }
-          } catch (rowErr) { failedCount++; lastErr = rowErr?.message || 'Row failed'; }
+        const text = await file.text();
+        const matrix = parseCsvText(text);
+        if (matrix.length < 2) throw new Error('CSV ဖိုင်ထဲတွင် အချက်အလက် မတွေ့ပါ။');
+
+        let headerIdx = 0;
+        for (let i = 0; i < Math.min(10, matrix.length); i++) {
+          const joined = matrix[i].join(' ').toLowerCase();
+          if (joined.includes('date') || joined.includes('ရက်စွဲ') || joined.includes('amount') || joined.includes('ပမာဏ')) {
+            headerIdx = i;
+            break;
+          }
         }
-        if (insertedCount > 0 || updatedCount > 0) { $('adminImportCsvFile').value = ''; state.preparedCsvRows = []; $('adminImportPreview')?.classList.add('hidden'); }
-        const msg = failedCount > 0 ? `Inserted ${insertedCount}, Updated ${updatedCount}, Failed ${failedCount} (${lastErr})` : `Done: ${insertedCount} new rows inserted, ${updatedCount} existing rows updated in ${targetWs}`;
-        setStatus('adminImportStatus', msg, failedCount > 0 ? 'err' : 'ok');
-        toast(msg, failedCount > 0 ? 'error' : 'success');
-        if (targetWs === state.wsId) await loadWorkspaceDetails();
+
+        const headers = matrix[headerIdx].map((h) => h.toLowerCase());
+        const findCol = (keys, fallbackIdx) => {
+          const found = headers.findIndex((h) => keys.some((k) => h.includes(k)));
+          return found >= 0 ? found : fallbackIdx;
+        };
+
+        const idxDate = findCol(['date', 'ရက်စွဲ'], 0);
+        const idxMember = findCol(['member', 'အမည်', 'သူ'], 1);
+        const idxType = findCol(['type', 'အမျိုးအစား'], 2);
+        const idxPool = findCol(['pool', 'ဘတ်ဂျက်'], -1);
+        const idxCat = findCol(['category', 'ကဏ္ဍ', 'ခေါင်းစဉ်'], 3);
+        const idxAmt = findCol(['amount', 'ပမာဏ', 'ငွေ'], 4);
+        const idxPay = findCol(['payment', 'ပေးချေမှု', 'method'], 5);
+        const idxNote = findCol(['note', 'မှတ်ချက်', 'remark'], 6);
+
+        const wsPoolsRes = await apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/pools?month=${encodeURIComponent(state.month)}`).catch(() => ({ data: [] }));
+        const poolMap = new Map((wsPoolsRes.data || []).map((p) => [String(p.pool_name || '').trim().toLowerCase(), Number(p.id)]));
+
+        const parsedRows = [];
+        let skipped = 0;
+        for (let r = headerIdx + 1; r < matrix.length; r++) {
+          const cols = matrix[r];
+          if (!cols || !cols.some((c) => c.trim())) continue;
+          const txDate = normalizeSheetDate(cols[idxDate]);
+          const entryType = normalizeSheetType(cols[idxType]) || 'Expense';
+          const amountMmk = normalizeSheetAmount(cols[idxAmt]);
+          if (!txDate || !(amountMmk > 0)) { skipped++; continue; }
+
+          const poolRaw = idxPool >= 0 ? (cols[idxPool] || '').trim() : '';
+          const matchedPoolId = poolRaw ? (poolMap.get(poolRaw.toLowerCase()) || null) : null;
+
+          parsedRows.push({
+            tx_date: txDate,
+            member_name: (cols[idxMember] || '').trim() || state.user?.display_name || 'Member',
+            entry_type: entryType,
+            pool_id: matchedPoolId,
+            category: (cols[idxCat] || '').trim() || 'General',
+            amount_mmk: amountMmk,
+            payment_method: (cols[idxPay] || '').trim() || 'Cash',
+            notes: (cols[idxNote] || '').trim()
+          });
+        }
+
+        if (!parsedRows.length) throw new Error('ထည့်သွင်းနိုင်သော စာရင်းတစ်ကြောင်းမျှ မတွေ့ပါ (Date/Amount format စစ်ဆေးပါ)။');
+
+        if (previewEl) {
+          previewEl.classList.remove('hidden');
+          previewEl.innerHTML = `<strong>CSV Summary:</strong> Valid rows: <strong>${parsedRows.length}</strong> · Skipped empty/invalid: ${skipped}`;
+        }
+
+        let imported = 0, failed = 0;
+        const encTarget = encodeURIComponent(targetWs);
+        for (const row of parsedRows) {
+          try {
+            await apiFetch(`/api/workspaces/${encTarget}/transactions`, {
+              method: 'POST',
+              body: JSON.stringify(row)
+            });
+            imported++;
+          } catch {
+            failed++;
+          }
+        }
+
+        setStatus('adminImportStatus', `Import ပြီးပါပြီ — ထည့်သွင်းပြီး: ${imported} ခု${failed ? `, မအောင်မြင်: ${failed} ခု` : ''}။`, failed ? 'err' : 'ok');
+        toast(`Imported ${imported} transaction(s)`, failed ? 'error' : 'success');
+        if (fileInput) fileInput.value = '';
         await loadFullAdminConsole();
-      } catch (err) { setStatus('adminImportStatus', err.message, 'err'); toast(err.message, 'error'); }
-      finally { btn.disabled = false; btn.textContent = 'Import CSV to D1'; }
+        if (String(targetWs) === String(state.wsId)) await loadWorkspaceDetails();
+      } catch (err) {
+        setStatus('adminImportStatus', err.message, 'err');
+        toast(err.message, 'error');
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Import CSV to D1'; }
+      }
     });
 
-    $('adminReloadBtn')?.addEventListener('click', async () => { await loadWorkspacesAndData(); await loadFullAdminConsole(); toast('Admin portal data refreshed', 'success'); });
+    $('adminReloadBtn')?.addEventListener('click', loadFullAdminConsole);
     $('adminJumpWorkspaceBtn')?.addEventListener('click', () => activateTab('workspace', true));
-    $('dashManagePoolsBtn')?.addEventListener('click', () => activateTab('workspace', true));
     $('adminUserSearch')?.addEventListener('input', renderAdminUsersTable);
     $('adminTxSearch')?.addEventListener('input', renderAdminInspectorTable);
     $('adminLoadTxBtn')?.addEventListener('click', loadAdminInspectorTransactions);
-
-    $('adminExportTxCsvBtn')?.addEventListener('click', () => {
-      const rows = state.adminTransactions || [];
-      const headers = ['Date', 'Workspace', 'Member', 'CreatorEmail', 'Type', 'Pool', 'Category', 'Amount', 'Payment', 'Notes'];
-      const lines = [headers.join(',')].concat(rows.map((r) => [r.tx_date, r.workspace_id, r.member_name, r.creator_email || '', r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')));
-      const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sayin-admin-transactions-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); URL.revokeObjectURL(a.href);
-    });
+    $('adminInspectorWs')?.addEventListener('change', loadAdminInspectorTransactions);
+    $('adminInspectorMonth')?.addEventListener('change', loadAdminInspectorTransactions);
 
     $('addAdminEmailForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!isGlobalAdmin()) { toast('Only Global Admin can add admins.', 'error'); return; }
-      const email = normalizeEmail($('newAdminEmail')?.value);
+      if (!isGlobalAdmin()) { toast('Only Global Admin can add portal admins.', 'error'); return; }
+      const email = normalizeEmail($('newAdminEmail').value);
       if (!email) return;
-      try { await apiFetch('/api/admin/users/admins', { method: 'POST', body: JSON.stringify({ email }) }); $('newAdminEmail').value = ''; toast('Admin added', 'success'); await loadFullAdminConsole(); } catch (err) { toast(err.message, 'error'); }
+      try {
+        await apiFetch('/api/admin/users/admins', { method: 'POST', body: JSON.stringify({ email }) });
+        $('newAdminEmail').value = '';
+        toast(`Added ${email} as Portal Admin`, 'success');
+        await loadFullAdminConsole();
+      } catch (err) { toast(err.message, 'error'); }
     });
 
-    $('themeToggleBtn').addEventListener('click', () => applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+    $('adminExportTxCsvBtn')?.addEventListener('click', () => {
+      const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
+      const rows = (state.adminTransactions || []).filter((r) => !q || `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q));
+      if (!rows.length) { toast('No rows to export', 'error'); return; }
+      const headers = ['ID', 'WorkspaceID', 'Date', 'Member', 'CreatorEmail', 'Type', 'BudgetPool', 'Category', 'Amount', 'PaymentMethod', 'Notes'];
+      const csv = [headers.join(','), ...rows.map((r) => [r.id, r.workspace_id, normalizeIsoDate(r.tx_date) || r.tx_date, r.member_name, r.creator_email || '', r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''].map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))].join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' }));
+      a.download = `sayin-admin-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+    });
 
-    function showAuthMode(mode) {
-      const isLogin = mode === 'login', isReg = mode === 'register', isForgot = mode === 'forgot';
-      $('tabLogin').classList.toggle('active', isLogin || isForgot); $('tabRegister').classList.toggle('active', isReg);
-      $('loginForm').classList.toggle('hidden', !isLogin); $('registerForm').classList.toggle('hidden', !isReg); $('forgotWrap').classList.toggle('hidden', !isForgot);
-      setStatus('loginStatus', ''); setStatus('regStatus', ''); setStatus('forgotStatus', '');
-    }
-
-    $('tabLogin').addEventListener('click', () => showAuthMode('login'));
-    $('tabRegister').addEventListener('click', () => showAuthMode('register'));
-    $('openForgotBtn').addEventListener('click', () => { $('forgotEmail').value = $('loginEmail').value.trim(); showAuthMode('forgot'); });
-    $('backToLoginBtn').addEventListener('click', () => showAuthMode('login'));
+    $('tabLogin').addEventListener('click', () => { $('tabLogin').classList.add('active'); $('tabRegister').classList.remove('active'); $('loginForm').classList.remove('hidden'); $('registerForm').classList.add('hidden'); $('forgotWrap').classList.add('hidden'); });
+    $('tabRegister').addEventListener('click', () => { $('tabRegister').classList.add('active'); $('tabLogin').classList.remove('active'); $('registerForm').classList.remove('hidden'); $('loginForm').classList.add('hidden'); $('forgotWrap').classList.add('hidden'); });
+    $('openForgotBtn').addEventListener('click', () => { $('loginForm').classList.add('hidden'); $('registerForm').classList.add('hidden'); $('forgotWrap').classList.remove('hidden'); $('forgotEmail').value = $('loginEmail').value; setStatus('forgotStatus', ''); });
+    $('backToLoginBtn').addEventListener('click', () => { $('forgotWrap').classList.add('hidden'); $('loginForm').classList.remove('hidden'); $('tabLogin').classList.add('active'); $('tabRegister').classList.remove('active'); });
 
     $('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = $('loginSubmitBtn'); btn.disabled = true; btn.textContent = 'Signing in...'; setStatus('loginStatus', '');
       try {
-        const data = await apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: $('loginEmail').value.trim(), password: $('loginPassword').value }) });
-        state.token = data.token; state.user = { ...data.user, default_workspace_id: data.default_workspace_id }; state.wsId = data.default_workspace_id || '';
-        localStorage.setItem(STORAGE_KEYS.token, state.token); setAuthUi(true); await activateTab('home', false); toast('Signed in successfully', 'success'); await loadWorkspacesAndData();
+        const res = await apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: $('loginEmail').value.trim(), password: $('loginPassword').value }) });
+        state.token = res.token; state.user = res.user;
+        localStorage.setItem(STORAGE_KEYS.token, state.token);
+        setAuthUi(true); await loadWorkspacesAndData(); await activateTab('home', false);
+        toast(`Welcome back, ${state.user.display_name}!`, 'success');
       } catch (err) { setStatus('loginStatus', err.message, 'err'); toast(err.message, 'error'); }
       finally { btn.disabled = false; btn.textContent = 'Sign In'; }
     });
 
     $('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const pw = $('regPassword').value, confirmPw = $('regConfirmPassword').value;
-      if (pw !== confirmPw) { const msg = 'Passwords do not match'; setStatus('regStatus', msg, 'err'); toast(msg, 'error'); return; }
-      const btn = $('regSubmitBtn'); btn.disabled = true; btn.textContent = 'Creating account...'; setStatus('regStatus', '');
+      const btn = $('regSubmitBtn'); const pass = $('regPassword').value; const confirmPass = $('regConfirmPassword').value;
+      if (pass !== confirmPass) { setStatus('regStatus', 'Passwords do not match.', 'err'); toast('Passwords do not match', 'error'); $('regConfirmPassword').focus(); return; }
+      btn.disabled = true; btn.textContent = 'Creating account...'; setStatus('regStatus', '');
       try {
-        const data = await apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify({ display_name: $('regName').value.trim(), email: $('regEmail').value.trim(), password: pw }) });
-        state.token = data.token; state.user = { ...data.user, default_workspace_id: data.default_workspace_id }; state.wsId = data.default_workspace_id || '';
-        localStorage.setItem(STORAGE_KEYS.token, state.token); setAuthUi(true); await activateTab('home', false); toast('Account created', 'success'); await loadWorkspacesAndData();
+        const res = await apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify({ display_name: $('regName').value.trim(), email: $('regEmail').value.trim(), password: pass }) });
+        state.token = res.token; state.user = res.user;
+        localStorage.setItem(STORAGE_KEYS.token, state.token);
+        setAuthUi(true); await loadWorkspacesAndData(); await activateTab('home', false);
+        toast('Account & default Budget Pools created!', 'success');
       } catch (err) { setStatus('regStatus', err.message, 'err'); toast(err.message, 'error'); }
       finally { btn.disabled = false; btn.textContent = 'Create Account'; }
     });
 
     $('forgotForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = $('sendCodeBtn'); btn.disabled = true; btn.textContent = 'Sending...'; setStatus('forgotStatus', '');
+      e.preventDefault(); const btn = $('sendCodeBtn'); btn.disabled = true;
       try {
         const res = await apiFetch('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email: $('forgotEmail').value.trim() }) });
-        if (res.reset_code) $('resetCode').value = res.reset_code;
-        setStatus('forgotStatus', res.message + (res.reset_code ? ` (Code: ${res.reset_code})` : ''), 'ok'); toast('Reset code sent', 'success');
+        setStatus('forgotStatus', res.dev_reset_code ? `${res.message} (Code: ${res.dev_reset_code})` : res.message, 'ok');
+        toast('Reset code generated', 'success');
       } catch (err) { setStatus('forgotStatus', err.message, 'err'); toast(err.message, 'error'); }
-      finally { btn.disabled = false; btn.textContent = 'Send Code'; }
+      finally { btn.disabled = false; }
     });
 
     $('resetForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const newPw = $('resetNewPassword').value, confirmPw = $('resetConfirmPassword').value;
-      if (newPw !== confirmPw) { const msg = 'New passwords do not match'; setStatus('forgotStatus', msg, 'err'); toast(msg, 'error'); return; }
-      const btn = $('resetSubmitBtn'); btn.disabled = true; btn.textContent = 'Updating...'; setStatus('forgotStatus', '');
+      e.preventDefault(); const btn = $('resetSubmitBtn'); const newPass = $('resetNewPassword').value; const confirmNewPass = $('resetConfirmPassword').value;
+      if (newPass !== confirmNewPass) { setStatus('forgotStatus', 'New passwords do not match.', 'err'); toast('New passwords do not match', 'error'); $('resetConfirmPassword').focus(); return; }
+      btn.disabled = true;
       try {
-        const res = await apiFetch('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ email: $('forgotEmail').value.trim(), reset_code: $('resetCode').value.trim(), new_password: newPw }) });
-        toast(res.message || 'Password updated', 'success'); $('loginEmail').value = $('forgotEmail').value.trim(); showAuthMode('login'); setStatus('loginStatus', 'Password updated. Please sign in.', 'ok');
+        await apiFetch('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ email: $('forgotEmail').value.trim(), code: $('resetCode').value.trim(), new_password: newPass }) });
+        toast('Password updated! Please sign in.', 'success'); $('backToLoginBtn').click();
       } catch (err) { setStatus('forgotStatus', err.message, 'err'); toast(err.message, 'error'); }
-      finally { btn.disabled = false; btn.textContent = 'Update Password'; }
+      finally { btn.disabled = false; }
     });
 
     $('logoutBtn').addEventListener('click', () => handleLogout(true));
-
-    $('workspaceSelect').addEventListener('change', async (e) => {
-      state.wsId = e.target.value; localStorage.setItem(STORAGE_KEYS.wsId, state.wsId); dirtyPoolIds.clear(); isPoolBulkEditMode = false; closeDashboardDrilldown(); await loadWorkspaceDetails();
-    });
-
-    $('monthFilter').addEventListener('change', async (e) => {
-      state.month = e.target.value; dirtyPoolIds.clear(); isPoolBulkEditMode = false; closeDashboardDrilldown(); await loadWorkspaceDetails();
-    });
-
     $('txType').addEventListener('change', updateCategoryDropdown);
     $('txPool')?.addEventListener('change', updatePoolBalanceHint);
+    $('dashManagePoolsBtn')?.addEventListener('click', () => activateTab('workspace', true));
+
+    $('createPoolForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools`, { method: 'POST', body: JSON.stringify({ pool_name: $('newPoolName').value.trim(), default_amount: Number($('newPoolDefaultAmt').value || 0), color_tag: $('newPoolColor').value }) });
+        $('newPoolName').value = ''; $('newPoolDefaultAmt').value = '';
+        toast('Budget pool saved', 'success'); await loadWorkspaceDetails();
+      } catch (err) { toast(err.message, 'error'); }
+    });
 
     $('txForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const editId = $('editingTxId').value;
-      const btn = $('txSubmitBtn'); btn.disabled = true; btn.textContent = 'Saving...';
-      const poolVal = $('txPool').value; const poolId = poolVal ? Number(poolVal) : null;
+      e.preventDefault(); const btn = $('txSubmitBtn'); btn.disabled = true;
       try {
+        const editId = $('editingTxId').value;
+        const poolVal = $('txPool').value;
+        const txDateVal = $('txDate').value;
+        const txMonth = getMonthFromDate(txDateVal);
+        const payload = { tx_date: txDateVal, member_name: $('txMember').value, entry_type: $('txType').value, category: $('txCategory').value, amount_mmk: Number($('txAmount').value), payment_method: $('txPayment').value, notes: $('txNotes').value.trim(), pool_id: poolVal ? Number(poolVal) : null };
+
         if (editId) {
-          await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${editId}`, { method: 'PATCH', body: JSON.stringify({ tx_date: $('txDate').value, member_name: $('txMember').value, entry_type: $('txType').value, category: $('txCategory').value, amount_mmk: Number($('txAmount').value), payment_method: $('txPayment').value, notes: $('txNotes').value.trim(), pool_id: poolId }) });
+          await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${editId}`, { method: 'PATCH', body: JSON.stringify(payload) });
           toast('Transaction updated', 'success');
         } else {
-          const fd = new FormData();
-          fd.append('tx_date', $('txDate').value); fd.append('member_name', $('txMember').value); fd.append('entry_type', $('txType').value); fd.append('category', $('txCategory').value); fd.append('amount_mmk', $('txAmount').value); fd.append('payment_method', $('txPayment').value);
-          if (poolId) fd.append('pool_id', String(poolId));
-          if ($('txNotes').value.trim()) fd.append('notes', $('txNotes').value.trim());
-          const file = $('txReceipt').files[0]; if (file) fd.append('receipt', file);
-          await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions`, { method: 'POST', body: fd });
-          toast('Transaction added', 'success');
+          const file = $('txReceipt').files[0];
+          if (file) {
+            const fd = new FormData();
+            Object.entries(payload).forEach(([k, v]) => { if (v !== null && v !== undefined) fd.append(k, String(v)); });
+            fd.append('receipt', file);
+            await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions`, { method: 'POST', body: fd });
+          } else {
+            await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions`, { method: 'POST', body: JSON.stringify(payload) });
+          }
+          toast('Transaction saved', 'success');
         }
+        if (txDateVal) state.anchorDate = txDateVal;
+        if (txMonth && txMonth !== state.month) { state.month = txMonth; if ($('monthFilter')) $('monthFilter').value = state.month; }
         closeTxModal(false); await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
-      finally { btn.disabled = false; btn.textContent = $('editingTxId').value ? 'Update Transaction' : 'Save Transaction'; }
+      finally { btn.disabled = false; }
     });
 
     $('txSearch').addEventListener('input', renderTransactions);
@@ -4451,42 +4613,37 @@ function setPeriodMode(mode) {
 
     $('exportCsvBtn').addEventListener('click', () => {
       const rows = getFilteredTransactions();
-      const headers = ['Date', 'Member', 'Type', 'Budget Pool', 'Category', 'Amount', 'Payment Method', 'Notes'];
-      const lines = [headers.join(',')].concat(rows.map((r) => [r.tx_date, r.member_name, r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')));
-      const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sayin-${state.wsId}-${state.month}.csv`; a.click(); URL.revokeObjectURL(a.href);
-    });
-
-    $('createPoolForm')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools`, { method: 'POST', body: JSON.stringify({ pool_name: $('newPoolName').value.trim(), default_amount: Number($('newPoolDefaultAmt').value || 0), color_tag: $('newPoolColor').value }) });
-        $('newPoolName').value = ''; $('newPoolDefaultAmt').value = ''; toast('Budget pool saved', 'success'); await loadWorkspaceDetails();
-      } catch (err) { toast(err.message, 'error'); }
+      if (!rows.length) { toast('No rows to export', 'error'); return; }
+      const headers = ['Date', 'Member', 'Type', 'BudgetPool', 'Category', 'Amount', 'PaymentMethod', 'Notes'];
+      const csv = [headers.join(','), ...rows.map((r) => [normalizeIsoDate(r.tx_date) || r.tx_date, r.member_name, r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''].map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))].join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' }));
+      a.download = `sayin-${state.wsId}-${state.month}.csv`;
+      a.click();
     });
 
     $('createWsForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
         const res = await apiFetch('/api/workspaces', { method: 'POST', body: JSON.stringify({ workspace_name: $('newWsName').value.trim(), workspace_id: $('newWsId').value.trim() || undefined }) });
-        $('newWsName').value = ''; $('newWsId').value = ''; state.wsId = res.data.workspace_id; localStorage.setItem(STORAGE_KEYS.wsId, state.wsId); toast('Workspace created', 'success'); await loadWorkspacesAndData();
+        $('newWsName').value = ''; $('newWsId').value = '';
+        state.wsId = res.data.workspace_id; localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
+        toast('Workspace & default Pools created', 'success'); await loadWorkspacesAndData();
       } catch (err) { toast(err.message, 'error'); }
     });
 
     $('inviteMemberForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/members/invite`, { method: 'POST', body: JSON.stringify({ email: $('inviteEmail').value.trim() }) });
-        $('inviteEmail').value = ''; toast(res.message || 'Member invited', 'success'); await loadWorkspaceDetails();
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/members`, { method: 'POST', body: JSON.stringify({ email: $('inviteEmail').value.trim() }) });
+        $('inviteEmail').value = ''; toast('Member invited to shared workspace', 'success'); await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
     });
 
     $('settingsForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const members = $('setMembers').value.split(',').map((s) => s.trim()).filter(Boolean);
-      const payment_methods = $('setPayments').value.split(',').map((s) => s.trim()).filter(Boolean);
       try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/settings`, { method: 'PATCH', body: JSON.stringify({ workspace_name: $('setWsName').value.trim(), currency: $('setCurrency').value.trim() || 'MMK', members, payment_methods }) });
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/settings`, { method: 'PATCH', body: JSON.stringify({ workspace_name: $('setWsName').value.trim(), currency: $('setCurrency').value.trim().toUpperCase(), members: $('setMembers').value.split(',').map((s) => s.trim()).filter(Boolean), payment_methods: $('setPayments').value.split(',').map((s) => s.trim()).filter(Boolean) }) });
         toast('Workspace settings saved', 'success'); await loadWorkspacesAndData();
       } catch (err) { toast(err.message, 'error'); }
     });
@@ -4499,20 +4656,43 @@ function setPeriodMode(mode) {
       } catch (err) { toast(err.message, 'error'); }
     });
 
-    (async function boot() {
+    $('workspaceSelect').addEventListener('change', async (e) => {
+      state.wsId = e.target.value; localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
+      selectedTxIds.clear(); dirtyPoolIds.clear(); isPoolBulkEditMode = false; closeDashboardDrilldown();
+      try { await loadWorkspaceDetails(); } catch (err) { toast(err.message, 'error'); }
+    });
+
+    $('monthFilter').addEventListener('change', async (e) => {
+      state.month = e.target.value || new Date().toISOString().slice(0, 7);
+      const todayIso = new Date().toISOString().slice(0, 10);
+      state.anchorDate = todayIso.startsWith(state.month) ? todayIso : `${state.month}-01`;
+      selectedTxIds.clear(); dirtyPoolIds.clear(); isPoolBulkEditMode = false; closeDashboardDrilldown();
+      try { await loadWorkspaceDetails(); } catch (err) { toast(err.message, 'error'); }
+    });
+
+    $('themeToggleBtn').addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
+    });
+
+    (async function init() {
       applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
       syncSoundButton();
-      syncSlicerButtons();
       $('monthFilter').value = state.month;
-      if ($('adminInspectorMonth')) $('adminInspectorMonth').value = state.month;
       $('txDate').value = new Date().toISOString().slice(0, 10);
-      if (!state.token) { setAuthUi(false); return; }
-      try {
-        const me = await apiFetch('/api/auth/me');
-        state.user = { ...me.user, default_workspace_id: me.default_workspace_id };
-        if (!state.wsId && me.default_workspace_id) state.wsId = me.default_workspace_id;
-        setAuthUi(true); await activateTab('home', false); await loadWorkspacesAndData();
-      } catch { handleLogout(false); }
+      syncSlicerButtons();
+
+      if (state.token) {
+        try {
+          const me = await apiFetch('/api/auth/me');
+          state.user = me.user;
+          setAuthUi(true);
+          await loadWorkspacesAndData();
+          await activateTab('home', false);
+          return;
+        } catch { handleLogout(false); }
+      }
+      setAuthUi(false);
     })();
   </script>
 </body>
