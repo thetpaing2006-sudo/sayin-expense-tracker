@@ -2083,10 +2083,12 @@ function getNeededMonthsForPeriod(mode, monthStr, dateStr) {
       }
     }
 
-    function syncSlicerButtons() {
-      const isYearly = state.periodMode === 'yearly';
-      $('slicerMonthlyBtn')?.classList.toggle('active', !isYearly);
-      $('slicerYearlyBtn')?.classList.toggle('active', isYearly);
+   function syncSlicerButtons() {
+      const mode = state.periodMode || 'monthly';
+      $('slicerDayBtn')?.classList.toggle('active', mode === 'day');
+      $('slicerWeekBtn')?.classList.toggle('active', mode === 'week');
+      $('slicerMonthlyBtn')?.classList.toggle('active', mode === 'monthly');
+      $('slicerYearlyBtn')?.classList.toggle('active', mode === 'yearly');
     }
 
 function setPeriodMode(mode) {
