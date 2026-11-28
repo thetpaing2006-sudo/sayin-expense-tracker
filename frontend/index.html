@@ -12,68 +12,65 @@
   <link id="appleTouchIconLink" rel="apple-touch-icon" sizes="180x180" href="./sayin-logo-cropped-transparent.png" />
   <title>Sayin — စာရင်း & Budget Pool Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #06080d;
-      --bg-glow-1: rgba(14, 165, 233, 0.16);
-      --bg-glow-2: rgba(139, 92, 246, 0.14);
-      --bg-glow-3: rgba(16, 185, 129, 0.09);
-      --bg-glow-4: rgba(56, 189, 248, 0.10);
-      --surface: rgba(15, 22, 38, 0.62);
-      --surface-solid: rgba(11, 15, 25, 0.96);
-      --surface-2: rgba(15, 23, 42, 0.56);
-      --border: rgba(255, 255, 255, 0.09);
-      --border-soft: rgba(255, 255, 255, 0.06);
-      --aqua-shine: rgba(255, 255, 255, 0.16);
+      --bg: #050b16;
+      --bg-glow-1: rgba(6, 182, 212, 0.24);
+      --bg-glow-2: rgba(16, 185, 129, 0.20);
+      --bg-glow-3: rgba(99, 102, 241, 0.16);
+      --bg-glow-4: rgba(244, 63, 94, 0.10);
+      --surface: rgba(11, 20, 38, 0.72);
+      --surface-solid: rgba(9, 17, 33, 0.96);
+      --surface-2: rgba(17, 30, 56, 0.68);
+      --border: rgba(56, 189, 248, 0.22);
+      --border-soft: rgba(148, 163, 184, 0.14);
+      --aqua-shine: rgba(255, 255, 255, 0.22);
       --text: #f8fafc;
       --muted: #94a3b8;
-      --primary: #38bdf8;
-      --aqua: #38bdf8;
-      --emerald: #34d399;
-      --gold: #fbbf24;
-      --navy: #0b0f19;
+      --primary: #06b6d4;
+      --aqua: #22d3ee;
+      --emerald: #10b981;
+      --gold: #eab308;
+      --navy: #0f3460;
       --primary-ink: #031521;
       --income: #34d399;
       --expense: #fb7185;
       --saving: #c084fc;
       --warn: #fbbf24;
-      --radius: 18px;
-      --sidebar-w: 248px;
+      --radius: 16px;
+      --sidebar-w: 244px;
       --shadow:
-        0 12px 36px -4px rgba(0, 0, 0, 0.65),
+        0 20px 44px rgba(2, 8, 20, 0.56),
         inset 0 1px 0 var(--aqua-shine),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+        inset 0 -1px 0 rgba(34, 211, 238, 0.12);
     }
 
     [data-theme="light"] {
-      --bg: #f1f5f9;
-      --bg-glow-1: rgba(56, 189, 248, 0.22);
-      --bg-glow-2: rgba(168, 85, 247, 0.16);
-      --bg-glow-3: rgba(16, 185, 129, 0.14);
-      --bg-glow-4: rgba(99, 102, 241, 0.12);
-      --surface: rgba(255, 255, 255, 0.72);
-      --surface-solid: rgba(255, 255, 255, 0.96);
-      --surface-2: rgba(248, 250, 252, 0.68);
-      --border: rgba(148, 163, 184, 0.28);
-      --border-soft: rgba(148, 163, 184, 0.18);
-      --aqua-shine: rgba(255, 255, 255, 0.95);
+      --bg: #e6f4fa;
+      --bg-glow-1: rgba(6, 182, 212, 0.34);
+      --bg-glow-2: rgba(16, 185, 129, 0.28);
+      --bg-glow-3: rgba(56, 189, 248, 0.24);
+      --bg-glow-4: rgba(129, 140, 248, 0.18);
+      --surface: rgba(255, 255, 255, 0.68);
+      --surface-solid: rgba(248, 252, 255, 0.96);
+      --surface-2: rgba(255, 255, 255, 0.56);
+      --border: rgba(14, 116, 144, 0.25);
+      --border-soft: rgba(8, 145, 178, 0.16);
+      --aqua-shine: rgba(255, 255, 255, 0.92);
       --text: #0f172a;
       --muted: #475569;
-      --primary: #0284c7;
-      --aqua: #0284c7;
+      --primary: #0891b2;
+      --aqua: #06b6d4;
       --emerald: #059669;
-      --gold: #d97706;
-      --navy: #0f172a;
+      --gold: #ca8a04;
+      --navy: #0f3460;
       --primary-ink: #ffffff;
       --income: #059669;
       --expense: #e11d48;
       --saving: #7e22ce;
-      --warn: #d97706;
+      --warn: #ca8a04;
       --shadow:
-        0 12px 32px -4px rgba(15, 23, 42, 0.08),
+        0 16px 36px rgba(8, 145, 178, 0.16),
         inset 0 1px 0 var(--aqua-shine);
     }
 
@@ -87,17 +84,16 @@
       padding-bottom: env(safe-area-inset-bottom, 0px);
       padding-left: env(safe-area-inset-left, 0px);
       padding-right: env(safe-area-inset-right, 0px);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Myanmar", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Myanmar", sans-serif;
       background-color: var(--bg);
       background-image:
-        radial-gradient(circle at 12% 18%, var(--bg-glow-1) 0%, transparent 45%),
-        radial-gradient(circle at 84% 22%, var(--bg-glow-2) 0%, transparent 48%),
-        radial-gradient(circle at 50% 88%, var(--bg-glow-3) 0%, transparent 52%);
+        radial-gradient(ellipse 65% 50% at 14% 18%, var(--bg-glow-1), transparent 65%),
+        radial-gradient(ellipse 60% 48% at 86% 20%, var(--bg-glow-2), transparent 65%),
+        radial-gradient(ellipse 70% 55% at 50% 82%, var(--bg-glow-3), transparent 68%);
       background-attachment: fixed;
       color: var(--text);
       line-height: 1.5;
       font-variant-numeric: tabular-nums;
-      -webkit-font-smoothing: antialiased;
       transition: background-color 0.25s ease, color 0.25s ease;
     }
     body::before {
@@ -107,56 +103,46 @@
       z-index: -2;
       pointer-events: none;
       background-image:
-        radial-gradient(circle at 28% 64%, rgba(16, 185, 129, 0.06), transparent 44%),
-        radial-gradient(circle at 76% 68%, rgba(56, 189, 248, 0.07), transparent 46%),
-        radial-gradient(circle at 56% 32%, var(--bg-glow-4), transparent 50%);
+        radial-gradient(circle at 26% 62%, rgba(16, 185, 129, 0.16), transparent 42%),
+        radial-gradient(circle at 76% 68%, rgba(34, 211, 238, 0.16), transparent 44%),
+        radial-gradient(circle at 56% 32%, var(--bg-glow-4), transparent 48%);
     }
 
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.22); border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.38); }
+    .container { max-width: 1380px; width: 100%; margin: 0 auto; padding: 18px 16px 56px; }
 
-    .container { max-width: 1460px; width: 100%; margin: 0 auto; padding: 18px 18px 56px; }
-
-    /* Desktop Left Frosted Glass Sidebar + Main Content */
     .app-shell {
       display: grid;
       grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
-      gap: 20px;
+      gap: 18px;
       align-items: start;
       width: 100%;
     }
     .sidebar {
       position: sticky;
-      top: 18px;
+      top: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      background: linear-gradient(160deg, rgba(20, 28, 46, 0.72) 0%, rgba(10, 14, 24, 0.84) 100%);
-      backdrop-filter: blur(24px) saturate(180%);
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
-      border: 1px solid var(--border);
-      border-top: 1px solid var(--aqua-shine);
-      border-radius: var(--radius);
-      padding: 16px;
+      background: linear-gradient(180deg, rgba(12, 22, 42, 0.82) 0%, rgba(8, 15, 29, 0.86) 100%);
+      backdrop-filter: blur(22px) saturate(165%);
+      -webkit-backdrop-filter: blur(22px) saturate(165%);
+      border: 1px solid rgba(56, 189, 248, 0.20);
+      border-radius: 16px;
+      padding: 14px;
       box-shadow: var(--shadow);
-    }
-    [data-theme="light"] .sidebar {
-      background: linear-gradient(160deg, rgba(255, 255, 255, 0.85) 0%, rgba(241, 245, 249, 0.9) 100%);
     }
     .sidebar-label {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--muted);
-      padding: 2px 8px;
+      padding: 2px 6px;
     }
     .sidebar-nav {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 7px;
     }
     .sidebar-nav button {
       width: 100%;
@@ -165,58 +151,49 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 11px 14px;
+      padding: 11px 13px;
       font-size: 13.5px;
-      font-weight: 500;
-      background: transparent;
-      border: 1px solid transparent;
-      box-shadow: none;
-      color: var(--muted);
-    }
-    .sidebar-nav button::before { display: none; }
-    .sidebar-nav button:hover:not(.active) {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
-      border-color: rgba(255, 255, 255, 0.08);
-      box-shadow: none;
     }
     .sidebar-nav button.active {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(139, 92, 246, 0.16) 100%);
-      color: var(--text);
-      font-weight: 600;
-      border-color: rgba(56, 189, 248, 0.36);
-      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      background: linear-gradient(90deg, rgba(6, 182, 212, 0.26) 0%, rgba(16, 185, 129, 0.22) 100%);
+      color: #e0f2fe;
+      border-color: rgba(34, 211, 238, 0.58);
+      text-shadow: none;
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.24);
     }
     .sidebar-footer {
       border-top: 1px solid var(--border-soft);
-      padding-top: 12px;
+      padding-top: 10px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
     .main-content { min-width: 0; width: 100%; }
 
-    /* Frosted Glass Topbar */
     .topbar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      background: linear-gradient(145deg, rgba(20, 28, 46, 0.65) 0%, rgba(11, 15, 25, 0.78) 100%);
-      backdrop-filter: blur(22px) saturate(180%);
-      -webkit-backdrop-filter: blur(22px) saturate(180%);
-      border: 1px solid var(--border);
-      border-top: 1px solid var(--aqua-shine);
-      border-radius: var(--radius);
-      padding: 13px 18px;
+      background: linear-gradient(180deg, rgba(13, 24, 46, 0.86) 0%, rgba(8, 16, 32, 0.82) 100%);
+      backdrop-filter: blur(22px) saturate(165%);
+      -webkit-backdrop-filter: blur(22px) saturate(165%);
+      border: 1px solid rgba(56, 189, 248, 0.24);
+      border-radius: 16px;
+      padding: 12px 18px;
       box-shadow: var(--shadow);
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       position: relative;
       overflow: hidden;
     }
-    [data-theme="light"] .topbar {
-      background: rgba(255, 255, 255, 0.78);
+    .topbar::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.65), rgba(52, 211, 153, 0.55), transparent);
+      pointer-events: none;
     }
     .brand { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 240px; }
     .brand-logo-box {
@@ -225,15 +202,15 @@
       justify-content: center;
       padding: 6px 12px;
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(139, 92, 246, 0.22));
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      box-shadow: 0 6px 18px rgba(14, 165, 233, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      background: linear-gradient(145deg, rgba(34, 211, 238, 0.22), rgba(16, 185, 129, 0.18));
+      border: 1px solid rgba(34, 211, 238, 0.42);
+      box-shadow: 0 6px 18px rgba(6, 182, 212, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.35);
       flex-shrink: 0;
     }
     .brand-logo-box img {
-      height: 28px;
+      height: 30px;
       width: auto;
-      max-width: 124px;
+      max-width: 128px;
       object-fit: contain;
       display: block;
     }
@@ -242,9 +219,9 @@
       font-weight: 800;
       font-size: 16px;
       letter-spacing: 0.4px;
-      color: var(--text);
+      color: #e0f2fe;
     }
-    .brand h1 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+    .brand h1 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: 0.2px; }
     .brand p { margin: 0; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
     .topbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
     .topbar-btn-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -253,14 +230,14 @@
       width: 100%;
       max-width: 100%;
       min-width: 0;
-      padding: 9px 12px;
+      padding: 10px 12px;
       border-radius: 11px;
       border: 1px solid var(--border);
       background: var(--surface-2);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       color: var(--text);
-      font-size: 13.5px;
+      font-size: 14px;
       outline: none;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
@@ -269,120 +246,96 @@
       width: 100%;
       max-width: 100%;
       min-width: 0;
-      inline-size: 100%;
-      max-inline-size: 100%;
-      min-inline-size: 0;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .grid-4 > div, .grid-2 > div, .pool-grid > div {
-      min-width: 0;
-      max-width: 100%;
-    }
+    .grid-4 > div, .grid-2 > div, .pool-grid > div { min-width: 0; max-width: 100%; }
     input:focus, select:focus {
-      border-color: rgba(56, 189, 248, 0.55);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16);
+      border-color: var(--aqua);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.22);
     }
-    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
 
-    /* Sleek Glass Buttons */
     button {
       position: relative;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.11);
-      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(125, 211, 252, 0.34);
+      background: linear-gradient(180deg, rgba(30, 48, 82, 0.72) 0%, rgba(16, 28, 52, 0.82) 100%);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       color: var(--text);
-      padding: 8px 14px;
+      padding: 9px 14px;
       border-radius: 11px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 650;
       cursor: pointer;
       white-space: nowrap;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: transform 0.13s ease, opacity 0.15s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 18px rgba(2, 8, 20, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+      transition: transform 0.13s ease, border-color 0.2s ease, box-shadow 0.2s ease, filter 0.15s ease;
     }
     button:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.09);
-      border-color: rgba(56, 189, 248, 0.42);
-      box-shadow: 0 6px 18px rgba(14, 165, 233, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      border-color: rgba(34, 211, 238, 0.72);
+      box-shadow: 0 10px 24px rgba(34, 211, 238, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+      filter: brightness(1.06);
     }
-    button:active:not(:disabled) {
-      transform: scale(0.97);
-    }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button:active:not(:disabled) { transform: scale(0.97); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
     button.primary {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.24) 0%, rgba(99, 102, 241, 0.24) 100%);
-      color: #f8fafc;
-      border-color: rgba(56, 189, 248, 0.48);
-      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.26);
-    }
-    button.primary:hover:not(:disabled) {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.34) 0%, rgba(99, 102, 241, 0.34) 100%);
-      border-color: rgba(125, 211, 252, 0.72);
-    }
-    [data-theme="light"] button.primary {
-      background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+      background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
       color: #ffffff;
+      border-color: rgba(165, 243, 252, 0.65);
+      text-shadow: 0 1px 2px rgba(2, 12, 24, 0.45);
+      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.48);
     }
     button.danger {
-      background: rgba(244, 63, 94, 0.14);
-      color: var(--expense);
-      border-color: rgba(244, 63, 94, 0.35);
-    }
-    button.danger:hover:not(:disabled) {
-      background: rgba(244, 63, 94, 0.22);
-      border-color: rgba(251, 113, 133, 0.55);
+      background: linear-gradient(180deg, rgba(159, 18, 57, 0.35), rgba(136, 19, 55, 0.45));
+      color: #fda4af;
+      border-color: rgba(251, 113, 133, 0.45);
     }
     button.warn-btn {
-      background: rgba(245, 158, 11, 0.14);
-      color: var(--warn);
-      border-color: rgba(245, 158, 11, 0.36);
+      background: linear-gradient(180deg, rgba(180, 83, 9, 0.34), rgba(146, 64, 14, 0.44));
+      color: #fde68a;
+      border-color: rgba(251, 191, 36, 0.45);
     }
     button.small { padding: 6px 10px; font-size: 12px; border-radius: 9px; }
     button.link-btn {
       background: none; border: none; padding: 0; color: var(--aqua);
       font-size: 12px; font-weight: 600; text-decoration: underline; box-shadow: none;
-      backdrop-filter: none; -webkit-backdrop-filter: none;
     }
 
     .slicer-group {
       display: inline-flex;
       padding: 3px;
       border-radius: 11px;
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.24);
       gap: 3px;
     }
-    [data-theme="light"] .slicer-group { background: rgba(226, 232, 240, 0.75); }
     .slicer-btn {
       border: 1px solid transparent;
       background: transparent;
-      padding: 5px 12px;
+      padding: 5px 11px;
       border-radius: 8px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--muted);
       box-shadow: none;
     }
     .slicer-btn.active {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.26), rgba(139, 92, 246, 0.24));
-      color: var(--text);
-      border-color: rgba(56, 189, 248, 0.45);
-      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.2);
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.32), rgba(16, 185, 129, 0.28));
+      color: #e0f2fe;
+      border-color: rgba(34, 211, 238, 0.55);
     }
 
     .auth-wrap { max-width: 440px; margin: 36px auto; }
     .auth-logo-header { display: flex; justify-content: center; margin-bottom: 14px; }
     .auth-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
     .auth-tabs button.active {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.28), rgba(139, 92, 246, 0.26));
-      color: var(--text);
-      border-color: rgba(56, 189, 248, 0.5);
+      background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+      color: #ffffff;
+      border-color: rgba(165, 243, 252, 0.65);
     }
 
-    /* Homepage Launcher Grid */
     .home-hero {
       display: flex;
       flex-wrap: wrap;
@@ -391,11 +344,11 @@
       gap: 14px;
       padding: 20px 22px;
     }
-    .home-hero h2 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
+    .home-hero h2 { margin: 0 0 4px; font-size: 20px; }
     .home-hero p { margin: 0; font-size: 13px; color: var(--muted); }
     .home-launcher-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 14px;
       margin-bottom: 18px;
     }
@@ -406,22 +359,17 @@
       justify-content: space-between;
       gap: 12px;
       padding: 18px;
-      border-radius: var(--radius);
-      background: linear-gradient(145deg, rgba(20, 28, 46, 0.65) 0%, rgba(11, 15, 25, 0.78) 100%);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid var(--border);
-      border-top: 1px solid var(--aqua-shine);
+      border-radius: 16px;
+      background: linear-gradient(165deg, rgba(16, 29, 54, 0.78) 0%, rgba(9, 17, 34, 0.84) 100%);
+      border: 1px solid rgba(100, 116, 139, 0.26);
       box-shadow: var(--shadow);
       cursor: pointer;
       white-space: normal;
-      transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.16s ease, border-color 0.2s ease;
     }
-    [data-theme="light"] .launcher-card { background: rgba(255, 255, 255, 0.78); }
     .launcher-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(56, 189, 248, 0.42);
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7), 0 0 24px rgba(56, 189, 248, 0.12);
+      transform: translateY(-3px);
+      border-color: rgba(34, 211, 238, 0.65);
     }
     .launcher-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .launcher-icon {
@@ -432,37 +380,31 @@
       align-items: center;
       justify-content: center;
       font-size: 18px;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(139, 92, 246, 0.2));
-      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(34, 211, 238, 0.14);
+      border: 1px solid rgba(34, 211, 238, 0.36);
     }
-    .launcher-title { font-size: 15.5px; font-weight: 700; margin: 0 0 4px; }
+    .launcher-title { font-size: 16px; font-weight: 800; margin: 0 0 4px; }
     .launcher-desc { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.45; }
-    .launcher-meta { font-size: 12px; font-weight: 600; color: var(--aqua); }
+    .launcher-meta { font-size: 12px; font-weight: 700; color: var(--aqua); }
 
-    /* Premium Frosted Glassmorphism Cards */
     .card {
-      background: linear-gradient(145deg, rgba(20, 28, 46, 0.62) 0%, rgba(11, 15, 25, 0.75) 100%);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid var(--border);
-      border-top: 1px solid var(--aqua-shine);
-      border-radius: var(--radius);
-      padding: 20px;
+      background: linear-gradient(165deg, rgba(16, 29, 54, 0.78) 0%, rgba(9, 17, 34, 0.84) 100%);
+      backdrop-filter: blur(20px) saturate(165%);
+      -webkit-backdrop-filter: blur(20px) saturate(165%);
+      border: 1px solid rgba(100, 116, 139, 0.26);
+      border-radius: 16px;
+      padding: 18px 20px;
       box-shadow: var(--shadow);
       margin-bottom: 16px;
       min-width: 0;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
-    [data-theme="light"] .card { background: rgba(255, 255, 255, 0.76); }
-    .card:hover { border-color: rgba(255, 255, 255, 0.14); }
-    .card h2, .card h3 { margin: 0 0 10px; font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; }
+    .card h2, .card h3 { margin: 0 0 10px; font-size: 16px; font-weight: 750; }
 
-    /* Modal Dialog */
     .modal-backdrop {
       position: fixed;
       inset: 0;
       z-index: 9000;
-      background: rgba(3, 6, 12, 0.72);
+      background: rgba(2, 8, 20, 0.65);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       display: flex;
@@ -476,19 +418,11 @@
       max-width: 820px;
       max-height: calc(100vh - 32px);
       overflow-y: auto;
-      background: linear-gradient(145deg, rgba(20, 28, 46, 0.88) 0%, var(--surface-solid) 100%);
-      backdrop-filter: blur(24px) saturate(180%);
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-top: 1px solid rgba(255, 255, 255, 0.25);
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
       border-radius: 20px;
       padding: 22px;
-      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.75);
-      animation: modalPopIn 0.18s ease-out;
-    }
-    @keyframes modalPopIn {
-      from { opacity: 0; transform: translateY(10px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      box-shadow: 0 28px 64px rgba(2, 8, 20, 0.65);
     }
     .modal-header {
       display: flex;
@@ -500,38 +434,62 @@
       border-bottom: 1px solid var(--border-soft);
     }
 
-    /* Central KPI Grid with Glowing Full-Perimeter Borders */
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 13px; margin-bottom: 16px; }
     .kpi {
-      background: linear-gradient(145deg, rgba(20, 28, 46, 0.65) 0%, rgba(11, 15, 25, 0.78) 100%);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(56, 189, 248, 0.30);
-      border-top: 1px solid rgba(125, 211, 252, 0.50);
-      border-radius: var(--radius);
-      padding: 16px 18px;
-      box-shadow: 0 8px 28px rgba(56, 189, 248, 0.08), inset 0 0 22px rgba(56, 189, 248, 0.04);
+      position: relative;
+      background: linear-gradient(160deg, rgba(17, 32, 60, 0.84) 0%, rgba(9, 17, 34, 0.88) 100%);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(100, 116, 139, 0.28);
+      border-top: 2px solid var(--aqua);
+      border-radius: 14px;
+      padding: 15px 16px;
+      box-shadow: 0 12px 28px rgba(2, 8, 20, 0.42);
       min-width: 0;
     }
     .kpi.inc-border {
-      border: 1px solid rgba(16, 185, 129, 0.32);
-      border-top: 1px solid rgba(52, 211, 153, 0.52);
-      box-shadow: 0 8px 28px rgba(16, 185, 129, 0.09), inset 0 0 22px rgba(16, 185, 129, 0.04);
+      border-color: rgba(16, 185, 129, 0.34);
+      border-top-color: #10b981;
+      box-shadow: 0 12px 28px rgba(2, 8, 20, 0.45), inset 0 1px 0 rgba(110, 231, 183, 0.16);
     }
     .kpi.exp-border {
-      border: 1px solid rgba(244, 63, 94, 0.34);
-      border-top: 1px solid rgba(251, 113, 133, 0.54);
-      box-shadow: 0 8px 28px rgba(244, 63, 94, 0.09), inset 0 0 22px rgba(244, 63, 94, 0.04);
+      border-color: rgba(244, 63, 94, 0.34);
+      border-top-color: #f43f5e;
+      box-shadow: 0 12px 28px rgba(2, 8, 20, 0.45), inset 0 1px 0 rgba(253, 164, 175, 0.14);
     }
     .kpi.sav-border {
-      border: 1px solid rgba(168, 85, 247, 0.35);
-      border-top: 1px solid rgba(192, 132, 252, 0.55);
-      box-shadow: 0 8px 28px rgba(168, 85, 247, 0.09), inset 0 0 22px rgba(168, 85, 247, 0.05);
+      border-color: rgba(168, 85, 247, 0.34);
+      border-top-color: #a855f7;
     }
-    [data-theme="light"] .kpi { background: rgba(255, 255, 255, 0.82); }
-    .kpi .label { font-size: 12px; color: var(--muted); font-weight: 500; }
-    .kpi .val { font-size: 21px; font-weight: 700; margin-top: 6px; overflow-wrap: anywhere; letter-spacing: -0.02em; color: var(--text); }
-    .kpi .sub { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+    .kpi .kpi-head-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .kpi .label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .kpi .kpi-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(30, 41, 59, 0.85);
+      color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+    }
+    .kpi .kpi-tag.over {
+      background: rgba(159, 18, 57, 0.35);
+      color: #fda4af;
+      border-color: rgba(251, 113, 133, 0.42);
+    }
+    .kpi .kpi-tag.safe {
+      background: rgba(6, 95, 70, 0.35);
+      color: #6ee7b7;
+      border-color: rgba(52, 211, 153, 0.38);
+    }
+    .kpi .val { font-size: 21px; font-weight: 800; margin-top: 2px; overflow-wrap: anywhere; letter-spacing: -0.01em; }
+    .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
     .val.inc { color: var(--income); }
     .val.exp { color: var(--expense); }
     .val.sav { color: var(--saving); }
@@ -539,116 +497,129 @@
 
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-    .pool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 14px; }
+    .pool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 13px; }
 
-    /* Inner Glass Pool Sub-Cards */
     .pool-card {
-      background: rgba(15, 23, 42, 0.54);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-top: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 15px;
-      padding: 15px;
+      background: linear-gradient(165deg, rgba(16, 30, 56, 0.78) 0%, rgba(10, 19, 36, 0.86) 100%);
+      border: 1px solid rgba(100, 116, 139, 0.25);
+      border-radius: 14px;
+      padding: 14px;
       cursor: pointer;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-      transition: transform 0.16s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 20px rgba(2, 8, 20, 0.35);
+      transition: transform 0.14s ease, border-color 0.2s ease;
     }
-    [data-theme="light"] .pool-card { background: rgba(248, 250, 252, 0.85); }
     .pool-card:hover {
       transform: translateY(-2px);
-      border-color: rgba(56, 189, 248, 0.38);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), 0 0 18px rgba(56, 189, 248, 0.1);
+      border-color: rgba(34, 211, 238, 0.62);
     }
-    .pool-card:active { transform: translateY(0); }
     .pool-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .pool-title { font-weight: 600; font-size: 13.5px; display: flex; align-items: center; gap: 8px; }
-    .pool-dot { width: 9px; height: 9px; border-radius: 999px; display: inline-block; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
+    .pool-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .pool-dot { width: 9px; height: 9px; border-radius: 999px; display: inline-block; flex-shrink: 0; }
     .pool-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; margin-bottom: 10px; }
     .pool-metrics span.m-lbl { color: var(--muted); display: block; font-size: 11px; }
-    .pool-metrics strong.rem-ok { color: var(--income); font-size: 14px; font-weight: 700; }
-    .pool-metrics strong.rem-warn { color: var(--warn); font-size: 14px; font-weight: 700; }
-    .pool-metrics strong.rem-over { color: var(--expense); font-size: 14px; font-weight: 700; }
-    .pool-badge-strip { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .pool-metrics strong.rem-ok { color: var(--income); font-size: 13.5px; }
+    .pool-metrics strong.rem-warn { color: var(--warn); font-size: 13.5px; }
+    .pool-metrics strong.rem-over { color: var(--expense); font-size: 13.5px; }
+    .pool-status-chip {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .pool-status-chip.healthy {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.30);
+    }
+    .pool-status-chip.warning {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.32);
+    }
+    .pool-status-chip.over_budget {
+      background: rgba(244, 63, 94, 0.16);
+      color: #fb7185;
+      border: 1px solid rgba(251, 113, 133, 0.34);
+    }
+    .pool-badge-strip { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
     .mini-badge {
       font-size: 10px;
-      padding: 2px 7px;
+      padding: 1px 6px;
       border-radius: 6px;
-      font-weight: 600;
-      background: rgba(56, 189, 248, 0.14);
+      font-weight: 700;
+      background: rgba(34, 211, 238, 0.16);
       color: var(--aqua);
-      border: 1px solid rgba(56, 189, 248, 0.28);
+      border: 1px solid rgba(34, 211, 238, 0.34);
     }
     .mini-badge.borrow {
-      background: rgba(251, 191, 36, 0.14);
+      background: rgba(250, 204, 21, 0.16);
       color: var(--warn);
-      border-color: rgba(251, 191, 36, 0.3);
+      border-color: rgba(250, 204, 21, 0.36);
     }
     .mini-badge.rollover {
-      background: rgba(52, 211, 153, 0.14);
+      background: rgba(16, 185, 129, 0.16);
       color: var(--income);
-      border-color: rgba(52, 211, 153, 0.3);
+      border-color: rgba(16, 185, 129, 0.36);
     }
 
-    /* Glowing Progress Bars */
-    .bar-row { margin-bottom: 13px; }
-    .bar-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; margin-bottom: 6px; }
+    /* Pill / Capsule Bar Chart & Recessed Doughnut Styling */
+    .bar-row { margin-bottom: 12px; }
+    .bar-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; margin-bottom: 5px; }
     .bar-track {
-      height: 7px;
+      height: 10px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow: inset 0 2px 4px rgba(2, 6, 16, 0.75);
       overflow: hidden;
+      padding: 0;
     }
-    [data-theme="light"] .bar-track { background: rgba(15, 23, 42, 0.09); }
     .bar-fill {
+      position: relative;
       height: 100%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #0284c7, #38bdf8);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
-      transition: width 0.35s ease;
+      background: linear-gradient(90deg, #0891b2 0%, #22d3ee 60%, #67e8f9 100%);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.45);
+      transition: width 0.3s ease;
     }
     .bar-fill.inc {
-      background: linear-gradient(90deg, #059669, #34d399);
-      box-shadow: 0 0 12px rgba(52, 211, 153, 0.45);
+      background: linear-gradient(90deg, #059669 0%, #10b981 55%, #6ee7b7 100%);
     }
     .bar-fill.exp {
-      background: linear-gradient(90deg, #e11d48, #fb7185);
-      box-shadow: 0 0 12px rgba(251, 113, 133, 0.45);
+      background: linear-gradient(90deg, #be123c 0%, #f43f5e 55%, #fda4af 100%);
     }
     .bar-fill.sav {
-      background: linear-gradient(90deg, #7c3aed, #c084fc);
-      box-shadow: 0 0 12px rgba(192, 132, 252, 0.45);
+      background: linear-gradient(90deg, #6b21a8 0%, #a855f7 55%, #d8b4fe 100%);
     }
     .bar-fill.warn {
-      background: linear-gradient(90deg, #d97706, #fbbf24);
-      box-shadow: 0 0 12px rgba(251, 191, 36, 0.45);
+      background: linear-gradient(90deg, #b45309 0%, #f59e0b 55%, #fde047 100%);
     }
 
     .chart-canvas-wrap {
       position: relative;
       height: 260px;
       width: 100%;
+      padding: 6px 6px 2px;
+      border-radius: 12px;
+      background: rgba(6, 14, 28, 0.36);
+      border: 1px solid rgba(148, 163, 184, 0.10);
     }
     .chart-canvas-wrap canvas { cursor: pointer; }
+
     .drilldown-card {
-      border: 1px solid rgba(56, 189, 248, 0.45);
-      background: linear-gradient(145deg, rgba(20, 28, 46, 0.78), rgba(11, 15, 25, 0.88));
-      animation: drillSlideIn 0.2s ease-out;
-    }
-    @keyframes drillSlideIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to { opacity: 1; transform: translateY(0); }
+      border: 1px solid rgba(34, 211, 238, 0.55);
+      background: linear-gradient(155deg, rgba(16, 29, 54, 0.88), rgba(9, 17, 34, 0.92));
     }
 
     .preview-box {
       margin-top: 12px;
-      padding: 14px 16px;
+      padding: 12px 14px;
       border-radius: 13px;
-      background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: var(--surface-2);
       border: 1px solid var(--border);
-      font-size: 12.5px;
+      font-size: 12px;
     }
 
     .inline-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; min-width: 0; }
@@ -665,12 +636,12 @@
     .pool-amt-input { width: 112px; min-width: 84px; padding: 5px 8px; height: 32px; font-size: 13px; }
     .pool-mgr-table { table-layout: fixed; width: 100%; min-width: 960px; }
     .pool-mgr-table tr { height: 56px; }
-    .pool-mgr-table tr.is-dirty-pool { background: rgba(56, 189, 248, 0.10); }
+    .pool-mgr-table tr.is-dirty-pool { background: rgba(34, 211, 238, 0.12); }
     .tx-table { table-layout: fixed; width: 100%; min-width: 1040px; }
     .tx-table th, .tx-table td { overflow: hidden; text-overflow: ellipsis; }
     .tx-table td.tx-edit-cell { padding: 4px 5px; overflow: visible; }
-    .tx-table tr { height: 52px; transition: background-color 0.16s ease; }
-    .tx-table tr.is-editing-row { background: rgba(56, 189, 248, 0.10); }
+    .tx-table tr { height: 52px; }
+    .tx-table tr.is-editing-row { background: rgba(34, 211, 238, 0.12); }
     .inline-tx-input {
       display: block;
       width: 100%;
@@ -687,15 +658,14 @@
 
     .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 11px 10px; border-bottom: 1px solid var(--border-soft); text-align: left; vertical-align: middle; }
-    th { color: var(--muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
-    tbody tr:hover { background: rgba(255, 255, 255, 0.025); }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border-soft); text-align: left; vertical-align: middle; }
+    th { color: var(--muted); font-weight: 700; font-size: 12px; white-space: nowrap; }
     td input[type="checkbox"], th input[type="checkbox"] { width: auto; padding: 0; cursor: pointer; }
-    .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-    .pill.Income { background: rgba(52, 211, 153, 0.15); color: var(--income); border: 1px solid rgba(52, 211, 153, 0.32); }
-    .pill.Expense { background: rgba(251, 113, 133, 0.15); color: var(--expense); border: 1px solid rgba(251, 113, 133, 0.32); }
-    .pill.Saving { background: rgba(192, 132, 252, 0.15); color: var(--saving); border: 1px solid rgba(192, 132, 252, 0.32); }
-    .pill.Pool { background: rgba(56, 189, 248, 0.15); color: var(--aqua); border: 1px solid rgba(56, 189, 248, 0.34); }
+    .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .pill.Income { background: rgba(16, 185, 129, 0.18); color: var(--income); border: 1px solid rgba(16, 185, 129, 0.34); }
+    .pill.Expense { background: rgba(244, 63, 94, 0.18); color: var(--expense); border: 1px solid rgba(244, 63, 94, 0.34); }
+    .pill.Saving { background: rgba(168, 85, 247, 0.18); color: var(--saving); border: 1px solid rgba(168, 85, 247, 0.34); }
+    .pill.Pool { background: rgba(34, 211, 238, 0.18); color: var(--aqua); border: 1px solid rgba(34, 211, 238, 0.38); }
 
     .row-actions { display: flex; gap: 6px; flex-wrap: nowrap; }
     .muted { color: var(--muted); font-size: 12px; }
@@ -710,10 +680,10 @@
       bottom: calc(18px + env(safe-area-inset-bottom, 0px));
       z-index: 9999;
       max-width: 360px; padding: 12px 16px; border-radius: 14px;
-      background: var(--surface-solid); border: 1px solid rgba(255, 255, 255, 0.15);
+      background: var(--surface-solid); border: 1px solid var(--border);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65); font-size: 13px; font-weight: 600;
+      box-shadow: var(--shadow); font-size: 13px; font-weight: 600;
       opacity: 0; transform: translateY(10px); pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
@@ -737,39 +707,26 @@
       .container { padding: 10px 8px 44px; width: 100%; max-width: 100vw; overflow-x: clip; }
       .topbar { padding: 10px 12px; gap: 8px; overflow: hidden; }
       .brand { flex: 1 1 100%; }
-      .brand-logo-box img { height: 24px; max-width: 96px; }
+      .brand-logo-box img { height: 26px; max-width: 96px; }
       .brand h1 { font-size: 15px; }
       .topbar-actions { width: 100%; max-width: 100%; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
       #wsSelectorWrap, #monthWrap { width: 100%; max-width: 100%; min-width: 0 !important; overflow: hidden; }
       #wsSelectorWrap select, #monthWrap input[type="month"] { width: 100%; max-width: 100%; min-width: 0; font-size: 13px; padding: 8px 10px; }
       .topbar-btn-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px; width: 100%; }
       .topbar-btn-row > button { width: 100%; padding: 8px 7px; font-size: 11px; text-align: center; }
-
       .slicer-group { width: 100%; }
       .slicer-btn { flex: 1 1 50%; padding: 6px 8px; font-size: 11px; text-align: center; }
-
       .sidebar-nav button { flex: 1 1 calc(33.3% - 6px); min-width: 0; padding: 8px 6px; font-size: 11px; }
-
       .home-launcher-grid { grid-template-columns: 1fr; gap: 10px; }
-      .card { padding: 14px; border-radius: 15px; max-width: 100%; }
-      .modal-dialog { padding: 16px; border-radius: 16px; }
+      .card { padding: 12px; border-radius: 14px; max-width: 100%; }
+      .modal-dialog { padding: 14px; border-radius: 16px; }
       .kpi-grid { grid-template-columns: 1fr; gap: 10px; }
-      .kpi { padding: 14px; }
-      .kpi .val { font-size: 19px; }
-
+      .kpi { padding: 12px; }
+      .kpi .val { font-size: 18px; }
       .grid-2, .grid-4, .pool-grid { grid-template-columns: minmax(0, 1fr); width: 100%; max-width: 100%; }
-      .grid-4 > div input[type="date"],
-      .grid-4 > div input[type="number"],
-      .grid-4 > div input[type="text"],
-      .grid-4 > div select,
-      .grid-4 > div input[type="file"] {
-        width: 100%; max-width: 100%; min-width: 0; font-size: 13px;
-      }
       .chart-canvas-wrap { height: 210px; max-width: 100%; }
-
       .inline-form button[type="submit"] { width: 100%; }
       .pool-amt-input { width: 100px; min-width: 76px; }
-
       .table-wrap { max-width: 100%; }
       th, td { padding: 7px 6px; font-size: 11px; }
       #toast { left: 10px; right: 10px; bottom: 10px; max-width: none; }
@@ -777,7 +734,7 @@
 
     @media print {
       body { background: #ffffff !important; color: #0f172a !important; }
-      body::before, body::after { display: none !important; }
+      body::before { display: none !important; }
       .app-shell { display: block !important; }
       .sidebar { display: none !important; }
       .container { max-width: 100% !important; padding: 0 !important; }
@@ -802,7 +759,6 @@
       .chart-canvas-wrap { height: 220px !important; }
     }
   </style>
-
 </head>
 <body>
   <div class="container">
@@ -815,7 +771,7 @@
         </div>
         <div>
           <h1>Sayin စာရင်း</h1>
-          <p id="userSubtitle">Personal & Shared Ledger · Expense & Pool Analytics</p>
+          <p id="userSubtitle">Budget Pool & Expense Telemetry Portal</p>
         </div>
       </div>
 
@@ -1008,19 +964,31 @@
 
             <div class="kpi-grid">
               <div class="kpi inc-border">
-                <div class="label" id="homeKpiIncomeLbl">Income (Month)</div>
+                <div class="kpi-head-row">
+                  <div class="label" id="homeKpiIncomeLbl">Income (Month)</div>
+                  <span class="kpi-tag safe">+ Inflow</span>
+                </div>
                 <div class="val inc" id="homeKpiIncome">0</div>
               </div>
               <div class="kpi exp-border">
-                <div class="label" id="homeKpiExpenseLbl">Expense (Month)</div>
+                <div class="kpi-head-row">
+                  <div class="label" id="homeKpiExpenseLbl">Expense (Month)</div>
+                  <span class="kpi-tag">Outflow</span>
+                </div>
                 <div class="val exp" id="homeKpiExpense">0</div>
               </div>
               <div class="kpi inc-border">
-                <div class="label" id="homeKpiPoolRemLbl">Pool Remaining</div>
+                <div class="kpi-head-row">
+                  <div class="label" id="homeKpiPoolRemLbl">Pool Remaining</div>
+                  <span class="kpi-tag safe">Pools</span>
+                </div>
                 <div class="val inc" id="homeKpiPoolRem">0</div>
               </div>
               <div class="kpi">
-                <div class="label" id="homeKpiNetLbl">Net Balance</div>
+                <div class="kpi-head-row">
+                  <div class="label" id="homeKpiNetLbl">Net Balance</div>
+                  <span class="kpi-tag">Net</span>
+                </div>
                 <div class="val" id="homeKpiNet">0</div>
               </div>
             </div>
@@ -1040,7 +1008,7 @@
               <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                 <div>
                   <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                    <h2 style="margin: 0;" id="dashReportHeading">Monthly Budget Health Report</h2>
+                    <h2 style="margin: 0;" id="dashReportHeading">Central KPI Grid</h2>
                     <div class="slicer-group" role="group" aria-label="Period Slicer">
                       <button type="button" class="slicer-btn active" id="slicerMonthlyBtn" data-period="monthly">လချုပ် (Monthly)</button>
                       <button type="button" class="slicer-btn" id="slicerYearlyBtn" data-period="yearly">နှစ်ချုပ် (Yearly)</button>
@@ -1061,27 +1029,42 @@
 
             <div class="kpi-grid">
               <div class="kpi inc-border">
-                <div class="label" id="kpiIncomeLabel">Total Income (Month)</div>
+                <div class="kpi-head-row">
+                  <div class="label" id="kpiIncomeLabel">Total Income (Month)</div>
+                  <span class="kpi-tag safe" id="kpiIncomeTag">+ Inflow</span>
+                </div>
                 <div class="val inc" id="kpiIncome">0</div>
                 <div class="sub" id="kpiIncomeSub">Period inflow</div>
               </div>
               <div class="kpi">
-                <div class="label" id="kpiPoolAllocLabel">Total Pool Budget</div>
+                <div class="kpi-head-row">
+                  <div class="label" id="kpiPoolAllocLabel">Total Pool Budget</div>
+                  <span class="kpi-tag" id="kpiPoolAllocTag">Envelopes</span>
+                </div>
                 <div class="val" id="kpiPoolAllocated">0</div>
                 <div class="sub" id="kpiPoolAllocSub">Allocated envelopes</div>
               </div>
               <div class="kpi exp-border">
-                <div class="label" id="kpiExpenseLabel">Total Expense</div>
+                <div class="kpi-head-row">
+                  <div class="label" id="kpiExpenseLabel">Total Expense</div>
+                  <span class="kpi-tag" id="kpiExpenseTag">Outflow</span>
+                </div>
                 <div class="val exp" id="kpiExpense">0</div>
                 <div class="sub" id="kpiExpenseSub">Period outflow</div>
               </div>
-              <div class="kpi inc-border">
-                <div class="label" id="kpiPoolRemLabel">Remaining Pool Balance</div>
+              <div class="kpi inc-border" id="kpiPoolRemCard">
+                <div class="kpi-head-row">
+                  <div class="label" id="kpiPoolRemLabel">Remaining Pool Balance</div>
+                  <span class="kpi-tag safe" id="kpiPoolRemTag">Balance</span>
+                </div>
                 <div class="val inc" id="kpiPoolRemaining">0</div>
                 <div class="sub" id="kpiPoolRemSub">Available in pools</div>
               </div>
-              <div class="kpi inc-border">
-                <div class="label" id="kpiNetBalanceLabel">Net Balance (Income - Expense)</div>
+              <div class="kpi inc-border" id="kpiNetBalanceCard">
+                <div class="kpi-head-row">
+                  <div class="label" id="kpiNetBalanceLabel">Net Balance (Income - Expense)</div>
+                  <span class="kpi-tag safe" id="kpiNetBalanceTag">Net</span>
+                </div>
                 <div class="val inc" id="kpiNetBalance">0</div>
                 <div class="sub" id="kpiNetBalanceSub">Total Income − Total Expense</div>
               </div>
@@ -1090,7 +1073,7 @@
             <div class="card">
               <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                 <div>
-                  <h3 style="margin: 0;">6-Month Income, Expense & Saving Trend</h3>
+                  <h3 style="margin: 0;">6-Month Trend</h3>
                   <span class="muted" id="sixMonthRangeLabel">Last 6 Months Comparison</span>
                 </div>
                 <span class="muted">Income · Expense · Saving</span>
@@ -1113,7 +1096,7 @@
 
               <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
-                  <h3 style="margin: 0;">Budget Pool Allocation Mix (Doughnut)</h3>
+                  <h3 style="margin: 0;">Budget Pool Allocation Mix</h3>
                   <span class="muted">Pool Share %</span>
                 </div>
                 <div class="chart-canvas-wrap">
@@ -1125,7 +1108,7 @@
             <div class="grid-2">
               <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
-                  <h3 style="margin: 0;" id="catDonutTitle">Expense Mix by Category (Doughnut)</h3>
+                  <h3 style="margin: 0;" id="catDonutTitle">Expense Mix by Category</h3>
                   <span class="muted">Category Share %</span>
                 </div>
                 <div class="chart-canvas-wrap">
@@ -1138,7 +1121,7 @@
                   <h3 style="margin: 0;" id="cashflowTitle">Cashflow & Saving Overview</h3>
                   <span class="muted" id="cashflowPeriodTag">Selected Period</span>
                 </div>
-                <div class="chart-canvas-wrap" style="height: 195px;">
+                <div class="chart-canvas-wrap" style="height: 190px;">
                   <canvas id="cashflowBarCanvas"></canvas>
                 </div>
                 <div id="cashflowBars" style="margin-top: 10px;"></div>
@@ -1282,14 +1265,14 @@
                   </p>
                 </div>
                 <div class="inline-form">
-                  <button type="button" class="small warn-btn" id="autoBalanceDeficitsBtn" title="လိုငွေပြနေသော Pool များကို ပိုနေသော Pool များမှ အလိုအလျောက် Borrow ညှိပေးရန်">⚡ Auto-Cover Over Budget</button>
-                  <button type="button" class="small" id="rolloverSurplusBtn" title="ယခုလ ပိုထွက်လာသော လက်ကျန်ငွေများကို နောက်လ Budget ထဲသို့ ပေါင်းထည့်ရန်">↪ Rollover Surplus to Next Month</button>
+                  <button type="button" class="small warn-btn" id="autoBalanceDeficitsBtn">⚡ Auto-Cover Over Budget</button>
+                  <button type="button" class="small" id="rolloverSurplusBtn">↪ Rollover Surplus to Next Month</button>
                   <button type="button" class="primary" id="toggleEditAllPoolsBtn" onclick="togglePoolBulkEditMode()">Edit All Pools</button>
                   <button type="button" class="hidden" id="cancelEditAllPoolsBtn" onclick="cancelPoolBulkEditMode()">Cancel</button>
                 </div>
               </div>
 
-              <div class="kpi-grid" id="poolManageSummaryGrid" style="margin-bottom: 16px;">
+              <div class="kpi-grid" style="margin-bottom: 16px;">
                 <div class="kpi">
                   <div class="label">Effective Pool Budget</div>
                   <div class="val" id="poolMgrTotalBudget">0</div>
@@ -1735,12 +1718,6 @@
 
     const $ = (id) => document.getElementById(id);
 
-    /* ============================================================================
-     * Pool Ledger Store (Rollover Surplus + Internal Borrow / Transfer Tracking)
-     * Formula:
-     *   Effective Budget = Base Monthly Budget + Topup + RolloverIn + BorrowedIn - LentOut
-     *   Remaining Balance = Effective Budget - Actual Spent
-     * ========================================================================== */
     function readFullLedger() {
       try {
         const raw = localStorage.getItem(STORAGE_KEYS.poolLedger);
@@ -1783,13 +1760,6 @@
       return new Date(Date.UTC(y, m + 1, 1)).toISOString().slice(0, 7);
     }
 
-    function getPrevMonthStr(ym) {
-      const parts = String(ym || new Date().toISOString().slice(0, 7)).split('-');
-      const y = Number(parts[0]) || new Date().getFullYear();
-      const m = (Number(parts[1]) || 1) - 1;
-      return new Date(Date.UTC(y, m - 1, 1)).toISOString().slice(0, 7);
-    }
-
     function computePoolLedgerEffects(wsId, month) {
       const ledger = getMonthLedger(wsId, month);
       const effectsByPool = new Map();
@@ -1818,11 +1788,9 @@
         const mode = adj.mode || 'borrow';
 
         if (mode === 'repay') {
-          // Repaying a previous borrow: borrower (fromId) gives back to lender (toId)
           const borrower = ensure(fromId);
           borrower.borrowedIn -= amt;
           borrower.netDelta -= amt;
-
           const lender = ensure(toId);
           lender.lentOut -= amt;
           lender.netDelta += amt;
@@ -1830,16 +1798,13 @@
           const src = ensure(fromId);
           src.transferOut += amt;
           src.netDelta -= amt;
-
           const dst = ensure(toId);
           dst.transferIn += amt;
           dst.netDelta += amt;
         } else {
-          // 'borrow'
           const lender = ensure(fromId);
           lender.lentOut += amt;
           lender.netDelta -= amt;
-
           const borrower = ensure(toId);
           borrower.borrowedIn += amt;
           borrower.netDelta += amt;
@@ -1849,7 +1814,6 @@
       return { effectsByPool, adjustments: ledger.adjustments || [], rollovers: ledger.rollovers || {} };
     }
 
-    /* Subtle Aqua / Glass Sound Effects (Web Audio API) */
     const SoundFX = (() => {
       let ctx = null;
       function getCtx() {
@@ -1857,12 +1821,9 @@
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return null;
         if (!ctx) ctx = new AudioCtx();
-        if (ctx.state === 'suspended') {
-          ctx.resume().catch(() => {});
-        }
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
         return ctx;
       }
-
       function playTone(freqStart, freqEnd, duration = 0.09, type = 'sine', gainPeak = 0.055, delay = 0) {
         const ac = getCtx();
         if (!ac) return;
@@ -1871,9 +1832,7 @@
         const gain = ac.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freqStart, now);
-        if (freqEnd && freqEnd !== freqStart) {
-          osc.frequency.exponentialRampToValueAtTime(Math.max(40, freqEnd), now + duration);
-        }
+        if (freqEnd && freqEnd !== freqStart) osc.frequency.exponentialRampToValueAtTime(Math.max(40, freqEnd), now + duration);
         gain.gain.setValueAtTime(0.0001, now);
         gain.gain.linearRampToValueAtTime(gainPeak, now + 0.012);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
@@ -1882,27 +1841,19 @@
         osc.start(now);
         osc.stop(now + duration + 0.02);
       }
-
       return {
         tap() { playTone(680, 960, 0.065, 'sine', 0.045); },
         nav() { playTone(520, 780, 0.085, 'triangle', 0.04); },
-        modalOpen() {
-          playTone(480, 720, 0.08, 'sine', 0.045, 0);
-          playTone(720, 960, 0.09, 'sine', 0.04, 0.045);
-        },
+        modalOpen() { playTone(480, 720, 0.08, 'sine', 0.045, 0); playTone(720, 960, 0.09, 'sine', 0.04, 0.045); },
         modalClose() { playTone(640, 400, 0.08, 'sine', 0.04); },
-        success() {
-          playTone(587.33, 587.33, 0.09, 'sine', 0.05, 0);
-          playTone(880, 880, 0.14, 'sine', 0.05, 0.075);
-        },
+        success() { playTone(587.33, 587.33, 0.09, 'sine', 0.05, 0); playTone(880, 880, 0.14, 'sine', 0.05, 0.075); },
         error() { playTone(260, 185, 0.14, 'triangle', 0.05); }
       };
     })();
 
     function syncSoundButton() {
       const btn = $('soundToggleBtn');
-      if (!btn) return;
-      btn.textContent = state.soundEnabled ? '🔊 Sound: On' : '🔇 Sound: Off';
+      if (btn) btn.textContent = state.soundEnabled ? '🔊 Sound: On' : '🔇 Sound: Off';
     }
 
     $('soundToggleBtn')?.addEventListener('click', () => {
@@ -1950,10 +1901,7 @@
       const allowed = isAnyAdmin();
       if (adminBtn) adminBtn.classList.toggle('hidden', !allowed);
       if (homeAdminCard) homeAdminCard.classList.toggle('hidden', !allowed);
-
-      if (!allowed && !$('tab-admin')?.classList.contains('hidden')) {
-        activateTab('home', false);
-      }
+      if (!allowed && !$('tab-admin')?.classList.contains('hidden')) activateTab('home', false);
     }
 
     function toast(msg, tone = 'info') {
@@ -2006,19 +1954,13 @@
       if (!(options.body instanceof FormData) && !headers.has('Content-Type') && options.method && options.method !== 'GET') {
         headers.set('Content-Type', 'application/json');
       }
-
       const method = (options.method || 'GET').toUpperCase();
       let res;
       try {
-        res = await fetch(getApiUrl(path), {
-          ...options,
-          headers,
-          cache: method === 'GET' ? 'no-store' : options.cache
-        });
+        res = await fetch(getApiUrl(path), { ...options, headers, cache: method === 'GET' ? 'no-store' : options.cache });
       } catch {
         throw new Error('Cannot reach API server. Check Worker URL / network.');
       }
-
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         if (res.status === 401) handleLogout(false);
@@ -2046,9 +1988,7 @@
     function getYearMonths(anchorMonth) {
       const yr = String(anchorMonth || new Date().toISOString().slice(0, 7)).slice(0, 4);
       const months = [];
-      for (let m = 1; m <= 12; m++) {
-        months.push(`${yr}-${String(m).padStart(2, '0')}`);
-      }
+      for (let m = 1; m <= 12; m++) months.push(`${yr}-${String(m).padStart(2, '0')}`);
       return { year: yr, months };
     }
 
@@ -2058,7 +1998,6 @@
       let row = [];
       let field = '';
       let inQuotes = false;
-
       for (let i = 0; i < clean.length; i++) {
         const ch = clean[i];
         const next = clean[i + 1];
@@ -2066,23 +2005,13 @@
           if (ch === '"' && next === '"') { field += '"'; i++; }
           else if (ch === '"') { inQuotes = false; }
           else { field += ch; }
-        } else if (ch === '"') {
-          inQuotes = true;
-        } else if (ch === ',') {
-          row.push(field.trim());
-          field = '';
-        } else if (ch === '\r' && next === '\n') {
-          row.push(field.trim()); rows.push(row); row = []; field = ''; i++;
-        } else if (ch === '\n' || ch === '\r') {
-          row.push(field.trim()); rows.push(row); row = []; field = '';
-        } else {
-          field += ch;
-        }
+        } else if (ch === '"') { inQuotes = true; }
+        else if (ch === ',') { row.push(field.trim()); field = ''; }
+        else if (ch === '\r' && next === '\n') { row.push(field.trim()); rows.push(row); row = []; field = ''; i++; }
+        else if (ch === '\n' || ch === '\r') { row.push(field.trim()); rows.push(row); row = []; field = ''; }
+        else { field += ch; }
       }
-      if (field.length > 0 || row.length > 0) {
-        row.push(field.trim());
-        rows.push(row);
-      }
+      if (field.length > 0 || row.length > 0) { row.push(field.trim()); rows.push(row); }
       return rows;
     }
 
@@ -2091,9 +2020,7 @@
       if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
       const m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
       if (m) {
-        const p1 = Number(m[1]);
-        const p2 = Number(m[2]);
-        const yr = m[3];
+        const p1 = Number(m[1]), p2 = Number(m[2]), yr = m[3];
         if (p2 >= 1 && p2 <= 12 && p1 >= 1 && p1 <= 31) return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
         if (p1 > 12 && p2 <= 12) return `${yr}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
         return `${yr}-${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}`;
@@ -2120,9 +2047,7 @@
         const vp = document.querySelector('meta[name="viewport"]');
         if (vp) {
           vp.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover');
-          setTimeout(() => {
-            vp.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
-          }, 250);
+          setTimeout(() => vp.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover'), 250);
         }
       }
     }
@@ -2140,14 +2065,12 @@
       $('logoutBtn').classList.toggle('hidden', !loggedIn);
       $('userSubtitle').textContent = loggedIn && state.user
         ? `${state.user.display_name} (${state.user.email})`
-        : 'Aqua Glass Budget Pool & Expense Portal';
+        : 'Budget Pool & Expense Telemetry Portal';
       updateAdminTabVisibility();
     }
 
     function handleLogout(callApi = true) {
-      if (callApi && state.token) {
-        apiFetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
-      }
+      if (callApi && state.token) apiFetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
       state.token = '';
       state.user = null;
       state.isAdmin = false;
@@ -2156,47 +2079,27 @@
       setAuthUi(false);
     }
 
-    /* Tab Navigation Controller */
     async function activateTab(target, playSound = true) {
-      if (target === 'admin' && !isAnyAdmin()) {
-        toast('Admin access required', 'error');
-        return;
-      }
+      if (target === 'admin' && !isAnyAdmin()) { toast('Admin access required', 'error'); return; }
       if (playSound) SoundFX.nav();
       document.querySelectorAll('.nav-tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === target));
-      ['home', 'dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => {
-        $('tab-' + t)?.classList.toggle('hidden', t !== target);
-      });
+      ['home', 'dashboard', 'transactions', 'workspace', 'admin'].forEach((t) => $('tab-' + t)?.classList.toggle('hidden', t !== target));
 
-      if (target === 'home') {
-        renderHomeSummary();
-      } else if (target === 'dashboard') {
+      if (target === 'home') renderHomeSummary();
+      else if (target === 'dashboard') {
         syncSlicerButtons();
         renderDashboard();
-        if (state.wsId) {
-          try { await loadWorkspaceDetails(); } catch (err) { toast(err.message, 'error'); }
-        }
+        if (state.wsId) { try { await loadWorkspaceDetails(); } catch (err) { toast(err.message, 'error'); } }
       } else if (target === 'transactions') {
         renderTransactions();
-        if (state.wsId) {
-          try { await loadWorkspaceDetails(); } catch (err) { toast(err.message, 'error'); }
-        }
-      } else if (target === 'workspace') {
-        renderPoolManager();
-      } else if (target === 'admin') {
-        await loadFullAdminConsole();
-      }
+        if (state.wsId) { try { await loadWorkspaceDetails(); } catch (err) { toast(err.message, 'error'); } }
+      } else if (target === 'workspace') renderPoolManager();
+      else if (target === 'admin') await loadFullAdminConsole();
     }
 
-    document.querySelectorAll('.nav-tabs button').forEach((btn) => {
-      btn.addEventListener('click', () => activateTab(btn.dataset.tab, true));
-    });
+    document.querySelectorAll('.nav-tabs button').forEach((btn) => btn.addEventListener('click', () => activateTab(btn.dataset.tab, true)));
+    document.querySelectorAll('.launcher-card[data-jump-tab]').forEach((card) => card.addEventListener('click', () => activateTab(card.dataset.jumpTab, true)));
 
-    document.querySelectorAll('.launcher-card[data-jump-tab]').forEach((card) => {
-      card.addEventListener('click', () => activateTab(card.dataset.jumpTab, true));
-    });
-
-    /* Modal Userform Open / Close */
     function openTxModal(editRow = null) {
       const backdrop = $('txModalBackdrop');
       if (!backdrop) return;
@@ -2238,10 +2141,7 @@
       const backdrop = $('txModalBackdrop');
       if (!backdrop || backdrop.classList.contains('hidden')) return;
       backdrop.classList.add('hidden');
-      if (inlineEditingTxId !== null) {
-        inlineEditingTxId = null;
-        rerenderTxPreservingScroll();
-      }
+      if (inlineEditingTxId !== null) { inlineEditingTxId = null; rerenderTxPreservingScroll(); }
       if (playSound) SoundFX.modalClose();
     }
 
@@ -2250,24 +2150,15 @@
     $('topbarQuickAddTxBtn')?.addEventListener('click', () => openTxModal(null));
     $('closeTxModalBtn')?.addEventListener('click', () => closeTxModal(true));
     $('txCancelEditBtn')?.addEventListener('click', () => closeTxModal(true));
-    $('txModalBackdrop')?.addEventListener('click', (e) => {
-      if (e.target === $('txModalBackdrop')) closeTxModal(true);
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeTxModal(true);
-    });
+    $('txModalBackdrop')?.addEventListener('click', (e) => { if (e.target === $('txModalBackdrop')) closeTxModal(true); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTxModal(true); });
 
     function renderHomeSummary() {
       const cur = state.settings?.currency || 'MMK';
       const vm = buildMonthlyViewModel();
       const net = Number(vm.totalIncome || 0) - Number(vm.totalExpense || 0);
-
-      if ($('homeWelcomeHeading')) {
-        $('homeWelcomeHeading').textContent = `Welcome, ${state.user?.display_name || 'Member'}`;
-      }
-      if ($('homeContextSub')) {
-        $('homeContextSub').textContent = `${state.settings?.workspace_name || state.wsId || 'Workspace'} · Period: ${state.month} · ${cur}`;
-      }
+      if ($('homeWelcomeHeading')) $('homeWelcomeHeading').textContent = `Welcome, ${state.user?.display_name || 'Member'}`;
+      if ($('homeContextSub')) $('homeContextSub').textContent = `${state.settings?.workspace_name || state.wsId || 'Workspace'} · Period: ${state.month} · ${cur}`;
       if ($('homeKpiIncomeLbl')) $('homeKpiIncomeLbl').textContent = `Income (${state.month})`;
       if ($('homeKpiExpenseLbl')) $('homeKpiExpenseLbl').textContent = `Expense (${state.month})`;
       if ($('homeKpiIncome')) $('homeKpiIncome').textContent = `${fmtNum(vm.totalIncome)} ${cur}`;
@@ -2280,23 +2171,14 @@
         $('homeKpiNet').textContent = `${fmtNum(net)} ${cur}`;
         $('homeKpiNet').className = `val ${net < 0 ? 'exp' : 'inc'}`;
       }
-      if ($('homeMetaTx')) {
-        $('homeMetaTx').textContent = `${(state.transactions || []).length} records this month →`;
-      }
-      if ($('homeMetaPools')) {
-        $('homeMetaPools').textContent = `${(state.pools || []).length} active pools →`;
-      }
+      if ($('homeMetaTx')) $('homeMetaTx').textContent = `${(state.transactions || []).length} records this month →`;
+      if ($('homeMetaPools')) $('homeMetaPools').textContent = `${(state.pools || []).length} active pools →`;
     }
 
     async function checkAdminPrivilege() {
       if (!state.user) { state.isAdmin = false; updateAdminTabVisibility(); return; }
       if (isGlobalAdmin()) { state.isAdmin = true; updateAdminTabVisibility(); return; }
-      try {
-        await apiFetch('/api/admin/overview');
-        state.isAdmin = true;
-      } catch {
-        state.isAdmin = false;
-      }
+      try { await apiFetch('/api/admin/overview'); state.isAdmin = true; } catch { state.isAdmin = false; }
       updateAdminTabVisibility();
     }
 
@@ -2305,16 +2187,13 @@
       const wsRes = await apiFetch('/api/workspaces');
       state.workspaces = wsRes.data || [];
       if (!state.workspaces.length) return;
-
       if (!state.wsId || !state.workspaces.some((w) => w.workspace_id === state.wsId)) {
         state.wsId = state.user?.default_workspace_id || state.workspaces[0].workspace_id;
       }
       localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
-
       $('workspaceSelect').innerHTML = state.workspaces
         .map((w) => `<option value="${escapeHtml(w.workspace_id)}" ${w.workspace_id === state.wsId ? 'selected' : ''}>${escapeHtml(w.workspace_name)} (${escapeHtml(w.currency)})</option>`)
         .join('');
-
       await loadWorkspaceDetails();
     }
 
@@ -2349,12 +2228,8 @@
               month: pm, summary: { total_income: 0, total_expense: 0, total_saving: 0 }
             }))
           ),
-          ...otherYearMonths.map((ym) =>
-            apiFetch(`/api/workspaces/${ws}/transactions?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] }))
-          ),
-          ...otherYearMonths.map((ym) =>
-            apiFetch(`/api/workspaces/${ws}/pools?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] }))
-          )
+          ...otherYearMonths.map((ym) => apiFetch(`/api/workspaces/${ws}/transactions?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] }))),
+          ...otherYearMonths.map((ym) => apiFetch(`/api/workspaces/${ws}/pools?month=${encodeURIComponent(ym)}${bust}`).catch(() => ({ data: [] })))
         ]);
 
         if (reqId !== wsLoadSeq) return;
@@ -2365,41 +2240,28 @@
 
         state.settings = setRes.data;
         state.categories = catRes.data || [];
-        state.transactions = (txRes.data || []).filter((t) => {
-          const tm = getMonthFromDate(t.tx_date);
-          return !tm || tm === state.month;
-        });
-        state.summary = sumRes.summary || {
-          total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0,
-          total_pool_allocated: 0, total_pool_remaining: 0, unallocated_income: 0
-        };
+        state.transactions = (txRes.data || []).filter((t) => { const tm = getMonthFromDate(t.tx_date); return !tm || tm === state.month; });
+        state.summary = sumRes.summary || { total_income: 0, total_expense: 0, total_saving: 0, net_balance: 0, total_pool_allocated: 0, total_pool_remaining: 0, unallocated_income: 0 };
         state.categorySummary = sumRes.categories || [];
         state.pools = poolRes.data || sumRes.pools || [];
 
         const poolsByMonthMap = {};
         yearMonths.forEach((ym) => {
-          if (ym === state.month) {
-            poolsByMonthMap[ym] = state.pools;
-          } else {
+          if (ym === state.month) poolsByMonthMap[ym] = state.pools;
+          else {
             const idx = otherYearMonths.indexOf(ym);
-            poolsByMonthMap[ym] = idx >= 0 && Array.isArray(otherYearPoolResults[idx]?.data)
-              ? otherYearPoolResults[idx].data
-              : state.pools;
+            poolsByMonthMap[ym] = idx >= 0 && Array.isArray(otherYearPoolResults[idx]?.data) ? otherYearPoolResults[idx].data : state.pools;
           }
         });
         state.yearlyPoolsByMonth = poolsByMonthMap;
 
         const yearTxMap = new Map();
         yearMonths.forEach((ym) => {
-          if (ym === state.month) {
-            yearTxMap.set(ym, state.transactions);
-          } else {
+          if (ym === state.month) yearTxMap.set(ym, state.transactions);
+          else {
             const idx = otherYearMonths.indexOf(ym);
             const rawList = idx >= 0 ? (otherYearTxResults[idx]?.data || []) : [];
-            yearTxMap.set(ym, rawList.filter((t) => {
-              const tm = getMonthFromDate(t.tx_date);
-              return !tm || tm === ym;
-            }));
+            yearTxMap.set(ym, rawList.filter((t) => { const tm = getMonthFromDate(t.tx_date); return !tm || tm === ym; }));
           }
         });
         state.yearlyTransactions = yearMonths.flatMap((ym) => yearTxMap.get(ym) || []);
@@ -2407,12 +2269,7 @@
         const trendMap = new Map();
         prevFiveMonths.forEach((pm, idx) => {
           const s = prevSumResults[idx]?.summary || {};
-          trendMap.set(pm, {
-            month: pm,
-            income: Number(s.total_income || 0),
-            expense: Number(s.total_expense || 0),
-            saving: Number(s.total_saving || 0)
-          });
+          trendMap.set(pm, { month: pm, income: Number(s.total_income || 0), expense: Number(s.total_expense || 0), saving: Number(s.total_saving || 0) });
         });
         const activeMonthAgg = aggregateMonthlyTransactions(state.transactions || [], state.pools || [], state.month);
         const hasActiveTx = (state.transactions || []).length > 0;
@@ -2440,35 +2297,20 @@
       }
     }
 
-    function getNormalizedPoolsForMonth() {
-      const vm = buildMonthlyViewModel();
-      return vm.pools || [];
-    }
+    function getNormalizedPoolsForMonth() { return buildMonthlyViewModel().pools || []; }
 
     function renderFormOptions() {
       const s = state.settings || {};
       $('currencyLabel').textContent = s.currency || 'MMK';
-
       const members = Array.isArray(s.members) && s.members.length ? s.members : [state.user?.display_name || 'Member'];
       $('txMember').innerHTML = members.map((m) => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
-
       const payments = Array.isArray(s.payment_methods) && s.payment_methods.length ? s.payment_methods : ['Cash'];
       $('txPayment').innerHTML = payments.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
-
       const pools = getNormalizedPoolsForMonth();
-      $('txPool').innerHTML = '<option value="">No Specific Pool (General)</option>' + pools
-        .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.pool_name)} (Bal: ${fmtNum(p.remaining_balance)})</option>`)
-        .join('');
-
-      const poolOpts = pools
-        .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.pool_name)} (Rem: ${fmtNum(p.remaining_balance)})</option>`)
-        .join('');
+      $('txPool').innerHTML = '<option value="">No Specific Pool (General)</option>' + pools.map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.pool_name)} (Bal: ${fmtNum(p.remaining_balance)})</option>`).join('');
+      const poolOpts = pools.map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.pool_name)} (Rem: ${fmtNum(p.remaining_balance)})</option>`).join('');
       if ($('transferFromPool')) $('transferFromPool').innerHTML = poolOpts;
-      if ($('transferToPool')) {
-        $('transferToPool').innerHTML = poolOpts;
-        if (pools.length > 1) $('transferToPool').selectedIndex = 1;
-      }
-
+      if ($('transferToPool')) { $('transferToPool').innerHTML = poolOpts; if (pools.length > 1) $('transferToPool').selectedIndex = 1; }
       updatePoolBalanceHint();
       updateCategoryDropdown();
     }
@@ -2478,14 +2320,9 @@
       const cur = state.settings?.currency || 'MMK';
       const hintEl = $('txPoolBalanceHint');
       if (!hintEl) return;
-
-      if (!poolId) {
-        hintEl.textContent = 'Select a pool to check remaining balance before spending.';
-        return;
-      }
+      if (!poolId) { hintEl.textContent = 'Select a pool to check remaining balance before spending.'; return; }
       const pool = getNormalizedPoolsForMonth().find((p) => Number(p.id) === poolId);
       if (!pool) { hintEl.textContent = 'Pool Balance: -'; return; }
-
       hintEl.innerHTML = `Available: <strong>${fmtNum(pool.remaining_balance)} ${escapeHtml(cur)}</strong> <span class="muted">(${fmtNum(pool.spent_amount)} / ${fmtNum(pool.available_budget)} ${escapeHtml(cur)})</span>`;
     }
 
@@ -2502,12 +2339,9 @@
       $('setCurrency').value = s.currency || 'MMK';
       $('setMembers').value = (s.members || []).join(', ');
       $('setPayments').value = (s.payment_methods || []).join(', ');
-
       const listEl = $('memberList');
       if (!membersList || !membersList.length) { listEl.textContent = 'Members: -'; return; }
-      listEl.innerHTML = '<strong>Active Group Members:</strong> ' + membersList
-        .map((m) => `${escapeHtml(m.display_name)} (${escapeHtml(m.email)}) · <em>${escapeHtml(m.role)}</em>`)
-        .join(', ');
+      listEl.innerHTML = '<strong>Active Group Members:</strong> ' + membersList.map((m) => `${escapeHtml(m.display_name)} (${escapeHtml(m.email)}) · <em>${escapeHtml(m.role)}</em>`).join(', ');
     }
 
     function renderCategories() {
@@ -2532,55 +2366,38 @@
           }).join('')
         : '<span class="muted">No categories</span>';
     }
+
     window.editCategory = async function(id, encodedName, encodedType) {
       const currentName = decodeURIComponent(encodedName);
       const currentType = decodeURIComponent(encodedType);
-
       const newName = prompt('Edit category name:', currentName);
       if (newName === null) return;
       const trimmedName = newName.trim();
-      if (!trimmedName) {
-        toast('Category name cannot be empty', 'error');
-        return;
-      }
-
+      if (!trimmedName) { toast('Category name cannot be empty', 'error'); return; }
       const typeInput = prompt('Entry type (Expense, Income, Saving):', currentType);
       if (typeInput === null) return;
       const trimmedType = typeInput.trim();
-      if (!['Expense', 'Income', 'Saving'].includes(trimmedType)) {
-        toast('Invalid entry type. Use Expense, Income, or Saving.', 'error');
-        return;
-      }
-
+      if (!['Expense', 'Income', 'Saving'].includes(trimmedType)) { toast('Invalid entry type. Use Expense, Income, or Saving.', 'error'); return; }
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories/${id}`, {
           method: 'PATCH',
-          body: JSON.stringify({
-            name: trimmedName,
-            entry_type: trimmedType
-          })
+          body: JSON.stringify({ name: trimmedName, entry_type: trimmedType })
         });
         toast('Category updated', 'success');
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     };
 
     window.deleteCategory = async function(id, encodedName) {
       const catName = decodeURIComponent(encodedName);
       if (!confirm(`Delete category "${catName}"?`)) return;
-
       try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories/${id}`, {
-          method: 'DELETE'
-        });
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories/${id}`, { method: 'DELETE' });
         toast('Category deleted', 'success');
         await loadWorkspaceDetails();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
+      } catch (err) { toast(err.message, 'error'); }
     };
+
     let isPoolBulkEditMode = false;
     const dirtyPoolIds = new Set();
 
@@ -2588,11 +2405,9 @@
       const toggleBtn = $('toggleEditAllPoolsBtn');
       const cancelBtn = $('cancelEditAllPoolsBtn');
       if (!toggleBtn) return;
-
       const hasPending = isPoolBulkEditMode || dirtyPoolIds.size > 0;
       if (hasPending) {
-        const countTag = dirtyPoolIds.size > 0 ? ` (${dirtyPoolIds.size})` : '';
-        toggleBtn.textContent = `Save All Changes${countTag}`;
+        toggleBtn.textContent = `Save All Changes${dirtyPoolIds.size > 0 ? ` (${dirtyPoolIds.size})` : ''}`;
         cancelBtn?.classList.remove('hidden');
       } else {
         toggleBtn.textContent = 'Edit All Pools';
@@ -2601,11 +2416,7 @@
     }
 
     window.togglePoolBulkEditMode = async function() {
-      if (!isPoolBulkEditMode && dirtyPoolIds.size === 0) {
-        isPoolBulkEditMode = true;
-        renderPoolManager();
-        return;
-      }
+      if (!isPoolBulkEditMode && dirtyPoolIds.size === 0) { isPoolBulkEditMode = true; renderPoolManager(); return; }
       await saveAllPools();
     };
 
@@ -2621,37 +2432,22 @@
       const ledger = getMonthLedger(state.wsId, state.month);
       const adjs = ledger.adjustments || [];
       const rollEntries = Object.entries(ledger.rollovers || {}).filter(([, v]) => Number(v || 0) !== 0);
-
       if (!adjs.length && !rollEntries.length) {
         wrap.innerHTML = '<span class="muted">ယခုလအတွက် Borrow / Transfer / Rollover မှတ်တမ်း မရှိသေးပါ။</span>';
         return;
       }
-
       const poolNameById = new Map((state.pools || []).map((p) => [Number(p.id), p.pool_name]));
       const itemsHtml = [];
-
       rollEntries.forEach(([pidStr, amt]) => {
         const pName = poolNameById.get(Number(pidStr)) || `Pool #${pidStr}`;
-        itemsHtml.push(`
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 0; border-bottom:1px dashed var(--border-soft);">
-            <span>↪ <strong>Rollover Surplus:</strong> ${escapeHtml(pName)} <span style="color:var(--income);">+${fmtNum(amt)} ${escapeHtml(cur)}</span></span>
-            <button type="button" class="small danger" onclick="clearPoolRollover(${Number(pidStr)})">Undo</button>
-          </div>
-        `);
+        itemsHtml.push(`<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 0; border-bottom:1px dashed var(--border-soft);"><span>↪ <strong>Rollover Surplus:</strong> ${escapeHtml(pName)} <span style="color:var(--income);">+${fmtNum(amt)} ${escapeHtml(cur)}</span></span><button type="button" class="small danger" onclick="clearPoolRollover(${Number(pidStr)})">Undo</button></div>`);
       });
-
       adjs.forEach((a, idx) => {
         const fromName = poolNameById.get(Number(a.fromPoolId)) || `Pool #${a.fromPoolId}`;
         const toName = poolNameById.get(Number(a.toPoolId)) || `Pool #${a.toPoolId}`;
         const tag = a.mode === 'transfer' ? 'Transfer' : a.mode === 'repay' ? 'Repay Borrow' : 'Borrow';
-        itemsHtml.push(`
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 0; border-bottom:1px dashed var(--border-soft);">
-            <span>⇄ <strong>${escapeHtml(tag)}:</strong> ${escapeHtml(fromName)} → ${escapeHtml(toName)} (<strong>${fmtNum(a.amount)} ${escapeHtml(cur)}</strong>)</span>
-            <button type="button" class="small danger" onclick="removePoolAdjustment(${idx})">Undo</button>
-          </div>
-        `);
+        itemsHtml.push(`<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 0; border-bottom:1px dashed var(--border-soft);"><span>⇄ <strong>${escapeHtml(tag)}:</strong> ${escapeHtml(fromName)} → ${escapeHtml(toName)} (<strong>${fmtNum(a.amount)} ${escapeHtml(cur)}</strong>)</span><button type="button" class="small danger" onclick="removePoolAdjustment(${idx})">Undo</button></div>`);
       });
-
       wrap.innerHTML = itemsHtml.join('');
     }
 
@@ -2661,10 +2457,7 @@
         ledger.adjustments.splice(idx, 1);
         saveMonthLedger(state.wsId, state.month, ledger);
         toast('Adjustment removed', 'success');
-        renderFormOptions();
-        renderPoolManager();
-        renderDashboard();
-        renderHomeSummary();
+        renderFormOptions(); renderPoolManager(); renderDashboard(); renderHomeSummary();
       }
     };
 
@@ -2673,16 +2466,12 @@
       delete ledger.rollovers[String(poolId)];
       saveMonthLedger(state.wsId, state.month, ledger);
       toast('Rollover entry removed', 'success');
-      renderFormOptions();
-      renderPoolManager();
-      renderDashboard();
-      renderHomeSummary();
+      renderFormOptions(); renderPoolManager(); renderDashboard(); renderHomeSummary();
     };
 
     function renderPoolManager() {
       const cur = state.settings?.currency || 'MMK';
       if ($('poolManageMonthLabel')) $('poolManageMonthLabel').textContent = state.month;
-
       const pools = getNormalizedPoolsForMonth();
       const totalBudget = pools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
       const totalSpent = pools.reduce((acc, p) => acc + Number(p.spent_amount || 0), 0);
@@ -2701,7 +2490,6 @@
 
       const tbody = $('poolManageTableBody');
       if (!tbody) return;
-
       tbody.innerHTML = pools.length
         ? pools.map((p) => {
             const pid = Number(p.id);
@@ -2721,20 +2509,13 @@
                 ? `<span style="color:var(--warn); font-weight:700;">${fmtNum(delta)}</span>`
                 : '<span class="muted">0</span>';
 
-            const subNotes = [];
-            if (Number(p.rollover_in || 0) !== 0) subNotes.push(`Rollover: ${p.rollover_in > 0 ? '+' : ''}${fmtNum(p.rollover_in)}`);
-            if (Number(p.borrowed_in || 0) !== 0) subNotes.push(`Borrowed: ${p.borrowed_in > 0 ? '+' : ''}${fmtNum(p.borrowed_in)}`);
-            if (Number(p.lent_out || 0) > 0) subNotes.push(`Lent: -${fmtNum(p.lent_out)}`);
-            if (Number(p.transfer_in || 0) > 0) subNotes.push(`In: +${fmtNum(p.transfer_in)}`);
-            if (Number(p.transfer_out || 0) > 0) subNotes.push(`Out: -${fmtNum(p.transfer_out)}`);
-
             return `
               <tr data-pool-id="${pid}" data-is-custom="${isCustom ? '1' : '0'}" class="${isDirty ? 'is-dirty-pool' : ''}">
                 <td>
                   <div class="row-actions" style="align-items:center;">
-                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#22d3ee')}; color:${escapeHtml(p.color_tag || '#22d3ee')};"></span>
+                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#22d3ee')};"></span>
                     ${isPoolBulkEditMode
-                      ? `<input type="text" id="poolNameInput_${pid}" value="${escapeHtml(p.pool_name)}" style="min-width:110px; height:32px; padding:4px 7px; font-size:12px;" oninput="markPoolDirty(${pid})" placeholder="Pool Name" />
+                      ? `<input type="text" id="poolNameInput_${pid}" value="${escapeHtml(p.pool_name)}" style="min-width:110px; height:32px; padding:4px 7px; font-size:12px;" oninput="markPoolDirty(${pid})" />
                          <select id="poolColorInput_${pid}" style="max-width:86px; height:32px; padding:4px 5px; font-size:12px;" onchange="markPoolDirty(${pid})">
                            <option value="#22d3ee" ${(p.color_tag || '#22d3ee') === '#22d3ee' ? 'selected' : ''}>Aqua</option>
                            <option value="#10b981" ${p.color_tag === '#10b981' ? 'selected' : ''}>Emerald</option>
@@ -2742,38 +2523,22 @@
                            <option value="#a855f7" ${p.color_tag === '#a855f7' ? 'selected' : ''}>Purple</option>
                            <option value="#f43f5e" ${p.color_tag === '#f43f5e' ? 'selected' : ''}>Rose</option>
                          </select>`
-                      : `<div>
-                           <strong>${escapeHtml(p.pool_name)}</strong>
-                           <div class="muted">${isCustom ? `Custom for ${escapeHtml(state.month)}` : 'Using Monthly Default'}</div>
-                         </div>`
+                      : `<div><strong>${escapeHtml(p.pool_name)}</strong><div class="muted">${isCustom ? `Custom for ${escapeHtml(state.month)}` : 'Using Monthly Default'}</div></div>`
                     }
                   </div>
                 </td>
-                <td>
-                  <input type="number" step="any" min="0" id="poolDefInput_${pid}"
-                         class="pool-amt-input"
-                         value="${escapeHtml(p.default_amount)}"
-                         oninput="syncPoolDefaultInput(${pid}); markPoolDirty(${pid})" />
-                </td>
+                <td><input type="number" step="any" min="0" id="poolDefInput_${pid}" class="pool-amt-input" value="${escapeHtml(p.default_amount)}" oninput="syncPoolDefaultInput(${pid}); markPoolDirty(${pid})" /></td>
                 <td>
                   <div class="row-actions">
-                    <input type="number" step="any" min="0" id="poolMonthInput_${pid}"
-                           class="pool-amt-input"
-                           value="${escapeHtml(p.base_allocated_amount)}"
-                           oninput="markPoolDirty(${pid})" />
+                    <input type="number" step="any" min="0" id="poolMonthInput_${pid}" class="pool-amt-input" value="${escapeHtml(p.base_allocated_amount)}" oninput="markPoolDirty(${pid})" />
                     ${isCustom ? `<button type="button" class="small" onclick="resetPoolMonthBudget(${pid})">Reset</button>` : ''}
                   </div>
                 </td>
-                <td>
-                  <div>${deltaText}</div>
-                  ${subNotes.length ? `<div class="muted" style="font-size:10px;">${escapeHtml(subNotes.join(' · '))}</div>` : ''}
-                </td>
+                <td>${deltaText}</td>
                 <td>${fmtNum(p.spent_amount)} ${escapeHtml(cur)}</td>
                 <td><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></td>
                 <td>${statusPill}</td>
-                <td>
-                  <button type="button" class="small danger" onclick="disablePoolRow(${pid})">Hide</button>
-                </td>
+                <td><button type="button" class="small danger" onclick="disablePoolRow(${pid})">Hide</button></td>
               </tr>
             `;
           }).join('')
@@ -2789,91 +2554,48 @@
     };
 
     window.markPoolDirty = function(poolId) {
-      const pid = Number(poolId);
-      dirtyPoolIds.add(pid);
-      const row = document.querySelector(`tr[data-pool-id="${pid}"]`);
-      if (row) row.classList.add('is-dirty-pool');
+      dirtyPoolIds.add(Number(poolId));
+      document.querySelector(`tr[data-pool-id="${poolId}"]`)?.classList.add('is-dirty-pool');
       syncPoolBulkButtons();
     };
 
     function buildPoolPatchPayload(poolId) {
       const pool = (state.pools || []).find((p) => Number(p.id) === Number(poolId));
-      const defEl = $(`poolDefInput_${poolId}`);
-      const monthEl = $(`poolMonthInput_${poolId}`);
-      const nameEl = $(`poolNameInput_${poolId}`);
-      const colorEl = $(`poolColorInput_${poolId}`);
-
-      const defVal = Number(defEl?.value);
-      const monthVal = Number(monthEl?.value);
-      if (!(defVal >= 0) || !(monthVal >= 0)) {
-        return { error: 'Budget amounts must be 0 or greater' };
-      }
-
-      const poolName = nameEl ? nameEl.value.trim() : String(pool?.pool_name || '').trim();
-      if (!poolName) {
-        return { error: 'Pool name cannot be empty' };
-      }
-
-      const colorTag = colorEl ? colorEl.value : (pool?.color_tag || '#22d3ee');
-
-      return {
-        payload: {
-          pool_name: poolName,
-          color_tag: colorTag,
-          default_amount: defVal,
-          month: state.month,
-          month_allocated_amount: monthVal
-        }
-      };
+      const defVal = Number($(`poolDefInput_${poolId}`)?.value);
+      const monthVal = Number($(`poolMonthInput_${poolId}`)?.value);
+      if (!(defVal >= 0) || !(monthVal >= 0)) return { error: 'Budget amounts must be 0 or greater' };
+      const poolName = $(`poolNameInput_${poolId}`) ? $(`poolNameInput_${poolId}`).value.trim() : String(pool?.pool_name || '').trim();
+      if (!poolName) return { error: 'Pool name cannot be empty' };
+      const colorTag = $(`poolColorInput_${poolId}`) ? $(`poolColorInput_${poolId}`).value : (pool?.color_tag || '#22d3ee');
+      return { payload: { pool_name: poolName, color_tag: colorTag, default_amount: defVal, month: state.month, month_allocated_amount: monthVal } };
     }
 
     window.saveAllPools = async function() {
       const pools = state.pools || [];
       if (!pools.length) return;
-
-      const targetPools = dirtyPoolIds.size > 0
-        ? pools.filter((p) => dirtyPoolIds.has(Number(p.id)))
-        : pools;
-
+      const targetPools = dirtyPoolIds.size > 0 ? pools.filter((p) => dirtyPoolIds.has(Number(p.id))) : pools;
       const btn = $('toggleEditAllPoolsBtn');
       const cancelBtn = $('cancelEditAllPoolsBtn');
       if (btn) { btn.disabled = true; btn.textContent = 'Saving All...'; }
       if (cancelBtn) cancelBtn.disabled = true;
-
-      let savedCount = 0;
-      let errCount = 0;
+      let savedCount = 0, errCount = 0;
       const encWs = encodeURIComponent(state.wsId);
-
       for (const p of targetPools) {
         const pid = Number(p.id);
         const { payload, error } = buildPoolPatchPayload(pid);
         if (error) { errCount++; continue; }
-        try {
-          await apiFetch(`/api/workspaces/${encWs}/pools/${pid}`, {
-            method: 'PATCH',
-            body: JSON.stringify(payload)
-          });
-          dirtyPoolIds.delete(pid);
-          savedCount++;
-        } catch {
-          errCount++;
-        }
+        try { await apiFetch(`/api/workspaces/${encWs}/pools/${pid}`, { method: 'PATCH', body: JSON.stringify(payload) }); dirtyPoolIds.delete(pid); savedCount++; } catch { errCount++; }
       }
-
       if (btn) btn.disabled = false;
       if (cancelBtn) cancelBtn.disabled = false;
       isPoolBulkEditMode = false;
-
-      if (errCount > 0) toast(`Saved ${savedCount} pool(s), ${errCount} failed`, 'error');
-      else toast(`Saved ${savedCount} budget pool(s)`, 'success');
+      toast(errCount > 0 ? `Saved ${savedCount} pool(s), ${errCount} failed` : `Saved ${savedCount} budget pool(s)`, errCount > 0 ? 'error' : 'success');
       await loadWorkspaceDetails();
     };
 
     window.resetPoolMonthBudget = async function(poolId) {
       try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools/${poolId}/month-budget?month=${encodeURIComponent(state.month)}`, {
-          method: 'DELETE'
-        });
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools/${poolId}/month-budget?month=${encodeURIComponent(state.month)}`, { method: 'DELETE' });
         toast('Reset to monthly default', 'success');
         await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
@@ -2888,201 +2610,106 @@
       } catch (err) { toast(err.message, 'error'); }
     };
 
-    /* Pool-to-Pool Borrow / Transfer / Repay Handler */
     $('poolTransferForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
       const mode = $('transferMode')?.value || 'borrow';
       const fromId = Number($('transferFromPool')?.value || 0);
       const toId = Number($('transferToPool')?.value || 0);
       const amt = Number($('transferAmount')?.value || 0);
-
-      if (!fromId || !toId || fromId === toId) {
-        toast('Select two different pools to adjust', 'error');
-        return;
-      }
-      if (!(amt > 0)) {
-        toast('Amount must be greater than 0', 'error');
-        return;
-      }
-
+      if (!fromId || !toId || fromId === toId) { toast('Select two different pools to adjust', 'error'); return; }
+      if (!(amt > 0)) { toast('Amount must be greater than 0', 'error'); return; }
       const normalizedPools = getNormalizedPoolsForMonth();
       const fromPool = normalizedPools.find((p) => Number(p.id) === fromId);
       const toPool = normalizedPools.find((p) => Number(p.id) === toId);
       if (!fromPool || !toPool) return;
-
       const availableRem = Number(fromPool.remaining_balance || 0);
-      if (amt > availableRem) {
-        toast(`${fromPool.pool_name} တွင် လက်ကျန် (${fmtNum(availableRem)}) သာ ရှိပါသည်`, 'error');
-        return;
-      }
-
+      if (amt > availableRem) { toast(`${fromPool.pool_name} တွင် လက်ကျန် (${fmtNum(availableRem)}) သာ ရှိပါသည်`, 'error'); return; }
       const ledger = getMonthLedger(state.wsId, state.month);
-      ledger.adjustments.push({
-        mode,
-        fromPoolId: fromId,
-        toPoolId: toId,
-        amount: amt,
-        createdAt: new Date().toISOString()
-      });
+      ledger.adjustments.push({ mode, fromPoolId: fromId, toPoolId: toId, amount: amt, createdAt: new Date().toISOString() });
       saveMonthLedger(state.wsId, state.month, ledger);
-
       $('transferAmount').value = '';
-      const labelMap = { borrow: 'Borrowed', transfer: 'Transferred', repay: 'Repaid' };
-      toast(`${labelMap[mode] || 'Adjusted'} ${fmtNum(amt)} from ${fromPool.pool_name} to ${toPool.pool_name}`, 'success');
-
-      renderFormOptions();
-      renderPoolManager();
-      renderDashboard();
-      renderHomeSummary();
+      toast(`Adjusted ${fmtNum(amt)} from ${fromPool.pool_name} to ${toPool.pool_name}`, 'success');
+      renderFormOptions(); renderPoolManager(); renderDashboard(); renderHomeSummary();
     });
 
-    /* Auto-Cover Over Budget Pools using Surplus Pools via Borrow */
     $('autoBalanceDeficitsBtn')?.addEventListener('click', () => {
       const pools = getNormalizedPoolsForMonth();
-      const deficits = pools.filter((p) => Number(p.remaining_balance || 0) < 0)
-        .map((p) => ({ id: Number(p.id), name: p.pool_name, need: Math.abs(Number(p.remaining_balance || 0)) }));
-      const surpluses = pools.filter((p) => Number(p.remaining_balance || 0) > 0)
-        .map((p) => ({ id: Number(p.id), name: p.pool_name, avail: Number(p.remaining_balance || 0) }))
-        .sort((a, b) => b.avail - a.avail);
-
-      if (!deficits.length) {
-        toast('Over Budget ဖြစ်နေသော Pool မရှိပါ', 'info');
-        return;
-      }
-      if (!surpluses.length) {
-        toast('ချေးယူနိုင်မည့် လက်ကျန်ပို Pool မရှိပါ', 'error');
-        return;
-      }
-
+      const deficits = pools.filter((p) => Number(p.remaining_balance || 0) < 0).map((p) => ({ id: Number(p.id), need: Math.abs(Number(p.remaining_balance || 0)) }));
+      const surpluses = pools.filter((p) => Number(p.remaining_balance || 0) > 0).map((p) => ({ id: Number(p.id), avail: Number(p.remaining_balance || 0) })).sort((a, b) => b.avail - a.avail);
+      if (!deficits.length) { toast('Over Budget ဖြစ်နေသော Pool မရှိပါ', 'info'); return; }
+      if (!surpluses.length) { toast('ချေးယူနိုင်မည့် လက်ကျန်ပို Pool မရှိပါ', 'error'); return; }
       const ledger = getMonthLedger(state.wsId, state.month);
       let coveredTotal = 0;
-
       for (const def of deficits) {
         let remainingNeed = def.need;
         for (const sur of surpluses) {
           if (remainingNeed <= 0) break;
           if (sur.avail <= 0) continue;
           const take = Math.min(remainingNeed, sur.avail);
-          ledger.adjustments.push({
-            mode: 'borrow',
-            fromPoolId: sur.id,
-            toPoolId: def.id,
-            amount: take,
-            createdAt: new Date().toISOString()
-          });
-          sur.avail -= take;
-          remainingNeed -= take;
-          coveredTotal += take;
+          ledger.adjustments.push({ mode: 'borrow', fromPoolId: sur.id, toPoolId: def.id, amount: take, createdAt: new Date().toISOString() });
+          sur.avail -= take; remainingNeed -= take; coveredTotal += take;
         }
       }
-
-      if (coveredTotal <= 0) {
-        toast('လိုငွေညှိရန် လုံလောက်သော လက်ကျန်မရှိပါ', 'error');
-        return;
-      }
-
+      if (coveredTotal <= 0) { toast('လိုငွေညှိရန် လုံလောက်သော လက်ကျန်မရှိပါ', 'error'); return; }
       saveMonthLedger(state.wsId, state.month, ledger);
       toast(`Auto-covered ${fmtNum(coveredTotal)} across over-budget pool(s)`, 'success');
-      renderFormOptions();
-      renderPoolManager();
-      renderDashboard();
-      renderHomeSummary();
+      renderFormOptions(); renderPoolManager(); renderDashboard(); renderHomeSummary();
     });
 
-    /* Rollover Current Month Surplus to Next Month */
     $('rolloverSurplusBtn')?.addEventListener('click', () => {
       const pools = getNormalizedPoolsForMonth();
       const surplusPools = pools.filter((p) => Number(p.remaining_balance || 0) > 0);
-      if (!surplusPools.length) {
-        toast('နောက်လသို့ ပေါင်းထည့်ရန် လက်ကျန်ပိုငွေ မရှိပါ', 'info');
-        return;
-      }
-
+      if (!surplusPools.length) { toast('နောက်လသို့ ပေါင်းထည့်ရန် လက်ကျန်ပိုငွေ မရှိပါ', 'info'); return; }
       const nextMonth = getNextMonthStr(state.month);
       const totalSurplus = surplusPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
-      if (!confirm(`${state.month} မှ ပိုထွက်ငွေ စုစုပေါင်း ${fmtNum(totalSurplus)} ကို ${nextMonth} ၏ Pool Budget များထဲသို့ Rollover ပေါင်းထည့်မလား?`)) {
-        return;
-      }
-
+      if (!confirm(`${state.month} မှ ပိုထွက်ငွေ စုစုပေါင်း ${fmtNum(totalSurplus)} ကို ${nextMonth} ၏ Pool Budget များထဲသို့ Rollover ပေါင်းထည့်မလား?`)) return;
       const nextLedger = getMonthLedger(state.wsId, nextMonth);
-      surplusPools.forEach((p) => {
-        nextLedger.rollovers[String(p.id)] = Number(p.remaining_balance || 0);
-      });
+      surplusPools.forEach((p) => { nextLedger.rollovers[String(p.id)] = Number(p.remaining_balance || 0); });
       saveMonthLedger(state.wsId, nextMonth, nextLedger);
       toast(`Rolled over ${fmtNum(totalSurplus)} to ${nextMonth}`, 'success');
     });
 
-    /* ============================================================================
-     * Unified Single-Source-of-Truth Aggregation (Monthly & Yearly)
-     * ========================================================================== */
     function aggregateMonthlyTransactions(txList, basePools, targetMonth) {
       let totalIncome = 0, totalExpense = 0, totalSaving = 0;
       const spentByPoolId = new Map(), spentByPoolName = new Map(), topupByPoolId = new Map(), catMap = new Map();
-
       for (const tx of (txList || [])) {
         const amt = Number(tx.amount_mmk || 0);
         const type = tx.entry_type;
         if (type === 'Income') totalIncome += amt;
         else if (type === 'Saving') totalSaving += amt;
         else totalExpense += amt;
-
         const pid = (tx.pool_id !== null && tx.pool_id !== undefined && tx.pool_id !== '') ? Number(tx.pool_id) : null;
         const pName = String(tx.pool_name || '').trim().toLowerCase();
-
         if (type === 'Expense') {
           if (pid !== null) spentByPoolId.set(pid, (spentByPoolId.get(pid) || 0) + amt);
           if (pName) spentByPoolName.set(pName, (spentByPoolName.get(pName) || 0) + amt);
         } else if (type === 'Income') {
           if (pid !== null) topupByPoolId.set(pid, (topupByPoolId.get(pid) || 0) + amt);
         }
-
         const catKey = `${tx.category || 'Uncategorized'}||${type}`;
         if (!catMap.has(catKey)) catMap.set(catKey, { category: tx.category || 'Uncategorized', entry_type: type, total_mmk: 0 });
         catMap.get(catKey).total_mmk += amt;
       }
 
       const { effectsByPool } = computePoolLedgerEffects(state.wsId, targetMonth);
-
       const computedPools = (basePools || []).map((p) => {
         const pid = Number(p.id);
         const pName = String(p.pool_name || '').trim().toLowerCase();
-        const baseAlloc = (p.override_amount !== null && p.override_amount !== undefined)
-          ? Number(p.override_amount)
-          : Number(p.allocated_amount ?? p.default_amount ?? 0);
-
+        const baseAlloc = (p.override_amount !== null && p.override_amount !== undefined) ? Number(p.override_amount) : Number(p.allocated_amount ?? p.default_amount ?? 0);
         const txSpent = spentByPoolId.has(pid) ? spentByPoolId.get(pid) : (spentByPoolName.get(pName) || 0);
         const spent = (txList && txList.length > 0) ? txSpent : Number(p.spent_amount || 0);
         const topup = (txList && txList.length > 0) ? Number(topupByPoolId.get(pid) || 0) : Number(p.topup_amount || 0);
-
         const fx = effectsByPool.get(pid) || { rolloverIn: 0, borrowedIn: 0, lentOut: 0, transferIn: 0, transferOut: 0, netDelta: 0 };
         const available = Math.max(0, baseAlloc + topup + fx.netDelta);
         const remaining = available - spent;
         const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : (spent > 0 ? 100 : 0);
         const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
-
-        return {
-          ...p,
-          base_allocated_amount: baseAlloc,
-          allocated_amount: available,
-          spent_amount: spent,
-          topup_amount: topup,
-          rollover_in: fx.rolloverIn,
-          borrowed_in: fx.borrowedIn,
-          lent_out: fx.lentOut,
-          transfer_in: fx.transferIn,
-          transfer_out: fx.transferOut,
-          ledger_delta: fx.netDelta,
-          available_budget: available,
-          remaining_balance: remaining,
-          utilization_pct: util,
-          status
-        };
+        return { ...p, base_allocated_amount: baseAlloc, allocated_amount: available, spent_amount: spent, topup_amount: topup, rollover_in: fx.rolloverIn, borrowed_in: fx.borrowedIn, lent_out: fx.lentOut, transfer_in: fx.transferIn, transfer_out: fx.transferOut, ledger_delta: fx.netDelta, available_budget: available, remaining_balance: remaining, utilization_pct: util, status };
       });
 
       const totalAllocated = computedPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
       const totalRemaining = computedPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
       const cats = [...catMap.values()].sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
-
       return { totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining, unalloc: totalIncome - totalAllocated, pools: computedPools, cats };
     }
 
@@ -3090,18 +2717,12 @@
       const basePools = state.pools || [];
       const txList = state.transactions || [];
       const sum = state.summary || {};
-
-      if (txList.length > 0) {
-        const agg = aggregateMonthlyTransactions(txList, basePools, state.month);
-        return { isYearly: false, periodLabel: state.month, ...agg, txList };
-      }
+      if (txList.length > 0) return { isYearly: false, periodLabel: state.month, ...aggregateMonthlyTransactions(txList, basePools, state.month), txList };
 
       const { effectsByPool } = computePoolLedgerEffects(state.wsId, state.month);
       const fallbackPools = basePools.map((p) => {
         const pid = Number(p.id);
-        const baseAlloc = (p.override_amount !== null && p.override_amount !== undefined)
-          ? Number(p.override_amount)
-          : Number(p.allocated_amount ?? p.default_amount ?? 0);
+        const baseAlloc = (p.override_amount !== null && p.override_amount !== undefined) ? Number(p.override_amount) : Number(p.allocated_amount ?? p.default_amount ?? 0);
         const topup = Number(p.topup_amount || 0);
         const fx = effectsByPool.get(pid) || { rolloverIn: 0, borrowedIn: 0, lentOut: 0, transferIn: 0, transferOut: 0, netDelta: 0 };
         const available = Math.max(0, baseAlloc + topup + fx.netDelta);
@@ -3109,22 +2730,7 @@
         const remaining = available - spent;
         const util = available > 0 ? Math.round((spent / available) * 1000) / 10 : (spent > 0 ? 100 : 0);
         const status = remaining < 0 ? 'over_budget' : util >= 80 ? 'warning' : 'healthy';
-        return {
-          ...p,
-          base_allocated_amount: baseAlloc,
-          allocated_amount: available,
-          available_budget: available,
-          rollover_in: fx.rolloverIn,
-          borrowed_in: fx.borrowedIn,
-          lent_out: fx.lentOut,
-          transfer_in: fx.transferIn,
-          transfer_out: fx.transferOut,
-          ledger_delta: fx.netDelta,
-          spent_amount: spent,
-          remaining_balance: remaining,
-          utilization_pct: util,
-          status
-        };
+        return { ...p, base_allocated_amount: baseAlloc, allocated_amount: available, available_budget: available, rollover_in: fx.rolloverIn, borrowed_in: fx.borrowedIn, lent_out: fx.lentOut, transfer_in: fx.transferIn, transfer_out: fx.transferOut, ledger_delta: fx.netDelta, spent_amount: spent, remaining_balance: remaining, utilization_pct: util, status };
       });
 
       const totalIncome = Number(sum.total_income || 0);
@@ -3132,59 +2738,38 @@
       const totalSaving = Number(sum.total_saving || 0);
       const totalAllocated = fallbackPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
       const totalRemaining = fallbackPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
-
       return { isYearly: false, periodLabel: state.month, totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining, unalloc: totalIncome - totalAllocated, pools: fallbackPools, cats: state.categorySummary || [], txList };
     }
 
     function buildActiveDashboardViewModel() {
       if (state.periodMode !== 'yearly') return buildMonthlyViewModel();
-
       const { year, months } = getYearMonths(state.month);
       const yTx = state.yearlyTransactions || [];
       let totalIncome = 0, totalExpense = 0, totalSaving = 0;
       const catMap = new Map();
-
       for (const tx of yTx) {
         const amt = Number(tx.amount_mmk || 0);
         const type = tx.entry_type;
         if (type === 'Income') totalIncome += amt;
         else if (type === 'Saving') totalSaving += amt;
         else totalExpense += amt;
-
         const catKey = `${tx.category || 'Uncategorized'}||${type}`;
         if (!catMap.has(catKey)) catMap.set(catKey, { category: tx.category || 'Uncategorized', entry_type: type, total_mmk: 0 });
         catMap.get(catKey).total_mmk += amt;
       }
 
-      // Sum exact monthly allocations + ledger adjustments across all 12 months of the year
       const poolAccMap = new Map();
       (state.pools || []).forEach((p) => {
-        poolAccMap.set(Number(p.id), {
-          ...p,
-          base_allocated_amount: 0,
-          allocated_amount: 0,
-          available_budget: 0,
-          spent_amount: 0,
-          topup_amount: 0,
-          rollover_in: 0,
-          borrowed_in: 0,
-          lent_out: 0,
-          transfer_in: 0,
-          transfer_out: 0,
-          ledger_delta: 0
-        });
+        poolAccMap.set(Number(p.id), { ...p, base_allocated_amount: 0, allocated_amount: 0, available_budget: 0, spent_amount: 0, topup_amount: 0, rollover_in: 0, borrowed_in: 0, lent_out: 0, transfer_in: 0, transfer_out: 0, ledger_delta: 0 });
       });
 
       months.forEach((ym) => {
         const mPools = state.yearlyPoolsByMonth[ym] || state.pools || [];
         const mTx = yTx.filter((t) => getMonthFromDate(t.tx_date) === ym);
         const mAgg = aggregateMonthlyTransactions(mTx, mPools, ym);
-
         mAgg.pools.forEach((mp) => {
           const pid = Number(mp.id);
-          if (!poolAccMap.has(pid)) {
-            poolAccMap.set(pid, { ...mp, base_allocated_amount: 0, allocated_amount: 0, available_budget: 0, spent_amount: 0, topup_amount: 0, rollover_in: 0, borrowed_in: 0, lent_out: 0, transfer_in: 0, transfer_out: 0, ledger_delta: 0 });
-          }
+          if (!poolAccMap.has(pid)) poolAccMap.set(pid, { ...mp, base_allocated_amount: 0, allocated_amount: 0, available_budget: 0, spent_amount: 0, topup_amount: 0, rollover_in: 0, borrowed_in: 0, lent_out: 0, transfer_in: 0, transfer_out: 0, ledger_delta: 0 });
           const acc = poolAccMap.get(pid);
           acc.base_allocated_amount += Number(mp.base_allocated_amount || 0);
           acc.allocated_amount += Number(mp.available_budget || 0);
@@ -3210,20 +2795,7 @@
       const totalAllocated = yearlyPools.reduce((acc, p) => acc + Number(p.available_budget || 0), 0);
       const totalRemaining = yearlyPools.reduce((acc, p) => acc + Number(p.remaining_balance || 0), 0);
       const cats = [...catMap.values()].sort((a, b) => Number(b.total_mmk || 0) - Number(a.total_mmk || 0));
-
-      return {
-        isYearly: true,
-        periodLabel: `${year} (Yearly)`,
-        totalIncome,
-        totalExpense,
-        totalSaving,
-        totalAllocated,
-        totalRemaining,
-        unalloc: totalIncome - totalAllocated,
-        pools: yearlyPools,
-        cats,
-        txList: yTx
-      };
+      return { isYearly: true, periodLabel: `${year} (Yearly)`, totalIncome, totalExpense, totalSaving, totalAllocated, totalRemaining, unalloc: totalIncome - totalAllocated, pools: yearlyPools, cats, txList: yTx };
     }
 
     function getChartTextColor() { return document.documentElement.getAttribute('data-theme') === 'light' ? '#334155' : '#cbd5e1'; }
@@ -3254,19 +2826,16 @@
       const card = $('dashDrilldownCard');
       const tbody = $('drilldownTableBody');
       if (!card || !tbody) return;
-
       lastDrilldownFilter = filter;
       const cur = state.settings?.currency || 'MMK';
       const vm = buildActiveDashboardViewModel();
       let baseList = vm.txList || [];
-
       if (filter.month && filter.month !== state.month) {
         try {
           const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions?month=${encodeURIComponent(filter.month)}`);
           baseList = res.data || [];
         } catch { baseList = []; }
       }
-
       const matched = baseList.filter((tx) => {
         if (filter.entryType && tx.entry_type !== filter.entryType) return false;
         if (filter.poolId !== undefined && filter.poolId !== null) {
@@ -3278,12 +2847,10 @@
         if (filter.category && String(tx.category || '').trim().toLowerCase() !== String(filter.category).trim().toLowerCase()) return false;
         return true;
       });
-
       const totalAmt = matched.reduce((acc, r) => acc + Number(r.amount_mmk || 0), 0);
       $('drilldownTitle').textContent = filter.title || 'Filtered Transactions';
       $('drilldownSubtitle').textContent = `${matched.length} record(s) · Period: ${filter.month || vm.periodLabel}`;
       $('drilldownTotalBadge').textContent = `Total: ${fmtNum(totalAmt)} ${cur}`;
-
       tbody.innerHTML = matched.length
         ? matched.map((r) => `
           <tr>
@@ -3298,7 +2865,6 @@
           </tr>
         `).join('')
         : '<tr><td colspan="8" class="muted">No matching transactions found for this selection.</td></tr>';
-
       card.classList.remove('hidden');
       card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -3317,6 +2883,64 @@
       renderTransactions();
     });
 
+    const telemetryChartEffectsPlugin = {
+      id: 'telemetryChartEffectsPlugin',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        if (chart.config.type === 'doughnut') {
+          const meta = chart.getDatasetMeta(0);
+          const firstArc = meta?.data?.[0];
+          if (firstArc && firstArc.outerRadius > 0) {
+            const { x, y, innerRadius, outerRadius } = firstArc;
+            ctx.save();
+            const innerRing = ctx.createRadialGradient(x, y, Math.max(0, innerRadius - 3), x, y, innerRadius + 9);
+            innerRing.addColorStop(0, 'rgba(2, 6, 16, 0.75)');
+            innerRing.addColorStop(0.55, 'rgba(2, 6, 16, 0.28)');
+            innerRing.addColorStop(1, 'rgba(2, 6, 16, 0)');
+            ctx.fillStyle = innerRing;
+            ctx.beginPath();
+            ctx.arc(x, y, innerRadius + 9, 0, Math.PI * 2);
+            ctx.arc(x, y, Math.max(0, innerRadius - 2), 0, Math.PI * 2, true);
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(x, y, outerRadius - 1, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+          }
+          return;
+        }
+
+        chart.data.datasets.forEach((ds, idx) => {
+          if (ds.type === 'line') return;
+          const meta = chart.getDatasetMeta(idx);
+          if (!meta || meta.hidden) return;
+          meta.data.forEach((el) => {
+            if (!el || typeof el.getProps !== 'function') return;
+            const { x, y, base, width } = el.getProps(['x', 'y', 'base', 'width'], true);
+            const h = Math.abs(base - y);
+            if (h < 3 || width < 4) return;
+            const topY = Math.min(y, base);
+            const left = x - width / 2;
+
+            ctx.save();
+            const sheen = ctx.createLinearGradient(left, 0, left + width, 0);
+            sheen.addColorStop(0, 'rgba(255, 255, 255, 0.26)');
+            sheen.addColorStop(0.3, 'rgba(255, 255, 255, 0.05)');
+            sheen.addColorStop(0.8, 'rgba(2, 6, 16, 0.05)');
+            sheen.addColorStop(1, 'rgba(2, 6, 16, 0.28)');
+            ctx.fillStyle = sheen;
+            ctx.beginPath();
+            ctx.roundRect(left, topY, width, h, Math.min(999, width / 2));
+            ctx.fill();
+            ctx.restore();
+          });
+        });
+      }
+    };
+
     function renderPowerBiCharts(pools, cats, sum, cur) {
       if (typeof Chart === 'undefined') return;
       const textCol = getChartTextColor();
@@ -3327,13 +2951,13 @@
       };
 
       const richPalette = [
-        { top: 'rgba(34, 211, 238, 0.96)', bot: 'rgba(8, 145, 178, 0.42)', border: '#67e8f9' },
-        { top: 'rgba(52, 211, 153, 0.96)', bot: 'rgba(5, 150, 105, 0.42)', border: '#6ee7b7' },
-        { top: 'rgba(251, 113, 133, 0.96)', bot: 'rgba(225, 29, 72, 0.42)', border: '#fda4af' },
-        { top: 'rgba(192, 132, 252, 0.96)', bot: 'rgba(126, 34, 206, 0.42)', border: '#e9d5ff' },
-        { top: 'rgba(250, 204, 21, 0.96)', bot: 'rgba(202, 138, 4, 0.42)', border: '#fef08a' },
-        { top: 'rgba(56, 189, 248, 0.96)', bot: 'rgba(2, 132, 199, 0.42)', border: '#bae6fd' },
-        { top: 'rgba(251, 146, 60, 0.96)', bot: 'rgba(234, 88, 12, 0.42)', border: '#fed7aa' }
+        { top: 'rgba(34, 211, 238, 0.96)', bot: 'rgba(16, 185, 129, 0.85)', border: 'rgba(165, 243, 252, 0.5)' },
+        { top: 'rgba(52, 211, 153, 0.96)', bot: 'rgba(5, 150, 105, 0.85)', border: 'rgba(167, 243, 208, 0.5)' },
+        { top: 'rgba(251, 113, 133, 0.96)', bot: 'rgba(190, 24, 93, 0.85)', border: 'rgba(253, 164, 175, 0.5)' },
+        { top: 'rgba(192, 132, 252, 0.96)', bot: 'rgba(109, 40, 217, 0.85)', border: 'rgba(233, 213, 255, 0.5)' },
+        { top: 'rgba(251, 191, 36, 0.96)', bot: 'rgba(180, 83, 9, 0.85)', border: 'rgba(253, 230, 138, 0.5)' },
+        { top: 'rgba(56, 189, 248, 0.96)', bot: 'rgba(3, 105, 161, 0.85)', border: 'rgba(186, 230, 253, 0.5)' },
+        { top: 'rgba(251, 146, 60, 0.96)', bot: 'rgba(154, 52, 18, 0.85)', border: 'rgba(254, 215, 170, 0.5)' }
       ];
 
       destroyChart('sixMonthTrend');
@@ -3343,12 +2967,13 @@
         if ($('sixMonthRangeLabel') && trendData.length) {
           $('sixMonthRangeLabel').textContent = `${trendData[0].month} to ${trendData[trendData.length - 1].month} (${cur})`;
         }
-        const incFill = makeVerticalGradient(trendCtx, 'rgba(56, 189, 248, 0.36)', 'rgba(139, 92, 246, 0.04)', 270);
-        const expGrad = makeVerticalGradient(trendCtx, 'rgba(251, 113, 133, 0.95)', 'rgba(225, 29, 72, 0.38)', 270);
-        const savGrad = makeVerticalGradient(trendCtx, 'rgba(168, 85, 247, 0.85)', 'rgba(126, 34, 206, 0.22)', 270);
+        const incFill = makeVerticalGradient(trendCtx, 'rgba(34, 211, 238, 0.42)', 'rgba(16, 185, 129, 0.03)', 270);
+        const expGrad = makeVerticalGradient(trendCtx, 'rgba(251, 113, 133, 0.96)', 'rgba(190, 24, 93, 0.78)', 270);
+        const savGrad = makeVerticalGradient(trendCtx, 'rgba(52, 211, 153, 0.96)', 'rgba(6, 182, 212, 0.78)', 270);
 
         charts.sixMonthTrend = new Chart(trendCtx, {
           type: 'bar',
+          plugins: [telemetryChartEffectsPlugin],
           data: {
             labels: trendData.map((d) => d.month),
             datasets: [
@@ -3356,34 +2981,38 @@
                 type: 'line',
                 label: `Income (${cur})`,
                 data: trendData.map((d) => d.income),
-                borderColor: '#38bdf8',
+                borderColor: '#22d3ee',
                 backgroundColor: incFill,
-                borderWidth: 3,
-                tension: 0.35,
+                borderWidth: 2.5,
+                tension: 0.38,
                 fill: true,
-                pointBackgroundColor: '#38bdf8',
-                pointBorderColor: '#ecfdf5',
+                pointBackgroundColor: '#34d399',
+                pointBorderColor: '#04111f',
                 pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7
+                pointRadius: 4,
+                pointHoverRadius: 6
               },
               {
                 type: 'bar',
                 label: `Expense (${cur})`,
                 data: trendData.map((d) => d.expense),
                 backgroundColor: expGrad,
-                borderColor: 'rgba(253, 164, 175, 0.65)',
-                borderWidth: 1,
-                borderRadius: { topLeft: 8, topRight: 8 }
+                borderWidth: 0,
+                borderRadius: 999,
+                borderSkipped: false,
+                barPercentage: 0.52,
+                categoryPercentage: 0.72
               },
               {
                 type: 'bar',
                 label: `Saving (${cur})`,
                 data: trendData.map((d) => d.saving),
                 backgroundColor: savGrad,
-                borderColor: 'rgba(165, 243, 252, 0.65)',
-                borderWidth: 1,
-                borderRadius: { topLeft: 8, topRight: 8 }
+                borderWidth: 0,
+                borderRadius: 999,
+                borderSkipped: false,
+                barPercentage: 0.52,
+                categoryPercentage: 0.72
               }
             ]
           },
@@ -3397,8 +3026,11 @@
               const typeMap = ['Income', 'Expense', 'Saving'];
               showDashboardDrilldown({ title: `${mItem.month} · ${typeMap[datasetIndex] || ''} Transactions`, month: mItem.month, entryType: typeMap[datasetIndex] || '' });
             },
-            plugins: { legend: { labels: { color: textCol, boxWidth: 12 } } },
-            scales: { x: { ticks: { color: textCol }, grid: { display: false } }, y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true } }
+            plugins: { legend: { labels: { color: textCol, boxWidth: 10, usePointStyle: true, pointStyle: 'rectRounded' } } },
+            scales: {
+              x: { ticks: { color: textCol, font: { size: 11 } }, grid: { display: false } },
+              y: { ticks: { color: textCol, font: { size: 11 } }, grid: { color: gridCol }, beginAtZero: true }
+            }
           }
         });
       }
@@ -3407,11 +3039,12 @@
       const poolCtx = $('poolBarCanvas')?.getContext('2d');
       if (poolCtx) {
         const poolList = pools || [];
-        const budgetGrad = makeVerticalGradient(poolCtx, 'rgba(34, 211, 238, 0.94)', 'rgba(8, 145, 178, 0.34)', 260);
-        const spentGrad = makeVerticalGradient(poolCtx, 'rgba(251, 113, 133, 0.95)', 'rgba(225, 29, 72, 0.38)', 260);
+        const budgetGrad = makeVerticalGradient(poolCtx, 'rgba(34, 211, 238, 0.96)', 'rgba(16, 185, 129, 0.80)', 260);
+        const spentGrad = makeVerticalGradient(poolCtx, 'rgba(251, 113, 133, 0.96)', 'rgba(190, 24, 93, 0.78)', 260);
 
         charts.poolBar = new Chart(poolCtx, {
           type: 'bar',
+          plugins: [telemetryChartEffectsPlugin],
           data: {
             labels: poolList.map((p) => String(p.pool_name || '').replace(/\s*Pool$/i, '')),
             datasets: [
@@ -3419,17 +3052,21 @@
                 label: `Effective Budget (${cur})`,
                 data: poolList.map((p) => Number(p.available_budget || 0)),
                 backgroundColor: budgetGrad,
-                borderColor: 'rgba(165, 243, 252, 0.65)',
-                borderWidth: 1,
-                borderRadius: { topLeft: 8, topRight: 8 }
+                borderWidth: 0,
+                borderRadius: 999,
+                borderSkipped: false,
+                barPercentage: 0.56,
+                categoryPercentage: 0.74
               },
               {
                 label: `Spent (${cur})`,
                 data: poolList.map((p) => Number(p.spent_amount || 0)),
                 backgroundColor: spentGrad,
-                borderColor: 'rgba(253, 164, 175, 0.65)',
-                borderWidth: 1,
-                borderRadius: { topLeft: 8, topRight: 8 }
+                borderWidth: 0,
+                borderRadius: 999,
+                borderSkipped: false,
+                barPercentage: 0.56,
+                categoryPercentage: 0.74
               }
             ]
           },
@@ -3441,8 +3078,11 @@
               if (!p) return;
               showDashboardDrilldown({ title: `${p.pool_name} · Expense Transactions`, entryType: 'Expense', poolId: p.id, poolName: p.pool_name });
             },
-            plugins: { legend: { labels: { color: textCol, boxWidth: 12 } } },
-            scales: { x: { ticks: { color: textCol }, grid: { display: false } }, y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true } }
+            plugins: { legend: { labels: { color: textCol, boxWidth: 10, usePointStyle: true, pointStyle: 'rectRounded' } } },
+            scales: {
+              x: { ticks: { color: textCol, font: { size: 11 } }, grid: { display: false } },
+              y: { ticks: { color: textCol, font: { size: 11 } }, grid: { color: gridCol }, beginAtZero: true }
+            }
           }
         });
       }
@@ -3453,35 +3093,34 @@
         const activePools = (pools || []).filter((p) => Number(p.available_budget || 0) > 0);
         const bgFills = activePools.length
           ? activePools.map((p, idx) => {
-              if (p.color_tag) {
-                return makeVerticalGradient(poolMixCtx, hexToRgba(p.color_tag, 0.96), hexToRgba(p.color_tag, 0.48), 260);
-              }
+              if (p.color_tag) return makeVerticalGradient(poolMixCtx, hexToRgba(p.color_tag, 0.96), hexToRgba(p.color_tag, 0.68), 260);
               const pal = richPalette[idx % richPalette.length];
               return makeVerticalGradient(poolMixCtx, pal.top, pal.bot, 260);
             })
-          : ['rgba(148,163,184,0.25)'];
+          : ['rgba(148,163,184,0.22)'];
 
         charts.poolMixDonut = new Chart(poolMixCtx, {
           type: 'doughnut',
+          plugins: [telemetryChartEffectsPlugin],
           data: {
             labels: activePools.length ? activePools.map((p) => `${p.pool_name} (Bal: ${fmtNum(p.remaining_balance)})`) : ['No Pool Budget'],
             datasets: [{
               data: activePools.length ? activePools.map((p) => Number(p.available_budget || 0)) : [1],
               backgroundColor: bgFills,
-              borderColor: '#0b0f19',
-              borderWidth: 2.5,
+              borderColor: 'rgba(9, 17, 34, 0.72)',
+              borderWidth: 2,
               hoverOffset: 8
             }]
           },
           options: {
-            responsive: true, maintainAspectRatio: false, cutout: '70%', onHover: commonHover,
+            responsive: true, maintainAspectRatio: false, cutout: '66%', onHover: commonHover,
             onClick: (_evt, elements) => {
               if (!elements || !elements.length || !activePools.length) return;
               const p = activePools[elements[0].index];
               if (!p) return;
               showDashboardDrilldown({ title: `${p.pool_name} · Expense Transactions`, entryType: 'Expense', poolId: p.id, poolName: p.pool_name });
             },
-            plugins: { legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } } }
+            plugins: { legend: { position: legendPos, labels: { color: textCol, boxWidth: 10, usePointStyle: true, pointStyle: 'rectRounded', font: { size: 11 } } } }
           }
         });
       }
@@ -3499,29 +3138,30 @@
               const pal = richPalette[idx % richPalette.length];
               return makeVerticalGradient(donutCtx, pal.top, pal.bot, 260);
             })
-          : ['rgba(148,163,184,0.25)'];
+          : ['rgba(148,163,184,0.22)'];
 
         charts.categoryDonut = new Chart(donutCtx, {
           type: 'doughnut',
+          plugins: [telemetryChartEffectsPlugin],
           data: {
             labels: expCats.length ? expCats.map((c) => c.category) : ['No Expense'],
             datasets: [{
               data: expCats.length ? expCats.map((c) => Number(c.total_mmk || 0)) : [1],
               backgroundColor: catFills,
-              borderColor: '#0b0f19',
-              borderWidth: 2.5,
+              borderColor: 'rgba(9, 17, 34, 0.72)',
+              borderWidth: 2,
               hoverOffset: 8
             }]
           },
           options: {
-            responsive: true, maintainAspectRatio: false, cutout: '70%', onHover: commonHover,
+            responsive: true, maintainAspectRatio: false, cutout: '66%', onHover: commonHover,
             onClick: (_evt, elements) => {
               if (!elements || !elements.length || !expCats.length) return;
               const cat = expCats[elements[0].index];
               if (!cat) return;
               showDashboardDrilldown({ title: `Category: ${cat.category} · Expense Transactions`, entryType: 'Expense', category: cat.category });
             },
-            plugins: { legend: { position: legendPos, labels: { color: textCol, boxWidth: 12 } } }
+            plugins: { legend: { position: legendPos, labels: { color: textCol, boxWidth: 10, usePointStyle: true, pointStyle: 'rectRounded', font: { size: 11 } } } }
           }
         });
       }
@@ -3531,22 +3171,25 @@
       if (cfCtx) {
         const flowTypes = ['Income', 'Expense', 'Saving'];
         const cfGrads = [
-          makeVerticalGradient(cfCtx, 'rgba(52, 211, 153, 0.96)', 'rgba(5, 150, 105, 0.38)', 195),
-          makeVerticalGradient(cfCtx, 'rgba(251, 113, 133, 0.96)', 'rgba(225, 29, 72, 0.38)', 195),
-          makeVerticalGradient(cfCtx, 'rgba(192, 132, 252, 0.96)', 'rgba(126, 34, 206, 0.38)', 195)
+          makeVerticalGradient(cfCtx, 'rgba(52, 211, 153, 0.96)', 'rgba(16, 185, 129, 0.76)', 190),
+          makeVerticalGradient(cfCtx, 'rgba(251, 113, 133, 0.96)', 'rgba(190, 24, 93, 0.76)', 190),
+          makeVerticalGradient(cfCtx, 'rgba(192, 132, 252, 0.96)', 'rgba(109, 40, 217, 0.76)', 190)
         ];
 
         charts.cashflowBar = new Chart(cfCtx, {
           type: 'bar',
+          plugins: [telemetryChartEffectsPlugin],
           data: {
             labels: flowTypes,
             datasets: [{
               label: `Amount (${cur})`,
               data: [Number(sum.total_income || 0), Number(sum.total_expense || 0), Number(sum.total_saving || 0)],
               backgroundColor: cfGrads,
-              borderColor: ['rgba(110, 231, 183, 0.75)', 'rgba(253, 164, 175, 0.75)', 'rgba(233, 213, 255, 0.75)'],
-              borderWidth: 1,
-              borderRadius: { topLeft: 8, topRight: 8 }
+              borderWidth: 0,
+              borderRadius: 999,
+              borderSkipped: false,
+              barPercentage: 0.45,
+              categoryPercentage: 0.68
             }]
           },
           options: {
@@ -3558,7 +3201,10 @@
               showDashboardDrilldown({ title: `${entryType} Transactions`, entryType });
             },
             plugins: { legend: { display: false } },
-            scales: { x: { ticks: { color: textCol }, grid: { display: false } }, y: { ticks: { color: textCol }, grid: { color: gridCol }, beginAtZero: true } }
+            scales: {
+              x: { ticks: { color: textCol, font: { size: 11 } }, grid: { display: false } },
+              y: { ticks: { color: textCol, font: { size: 11 } }, grid: { color: gridCol }, beginAtZero: true }
+            }
           }
         });
       }
@@ -3597,11 +3243,11 @@
       const vm = buildActiveDashboardViewModel();
       const { isYearly, periodLabel, totalIncome, totalAllocated, totalExpense, totalSaving, totalRemaining, unalloc, pools, cats, txList } = vm;
 
-      if ($('dashReportHeading')) $('dashReportHeading').textContent = isYearly ? `Yearly Budget Health Report (${periodLabel})` : `Monthly Budget Health Report (${periodLabel})`;
+      if ($('dashReportHeading')) $('dashReportHeading').textContent = isYearly ? `Central KPI Grid · ${periodLabel}` : `Central KPI Grid · ${periodLabel}`;
       if ($('kpiIncomeLabel')) $('kpiIncomeLabel').textContent = isYearly ? 'Total Income (Year)' : 'Total Income (Month)';
       if ($('kpiPoolAllocLabel')) $('kpiPoolAllocLabel').textContent = isYearly ? 'Total Pool Budget (Year)' : 'Total Pool Budget';
       if ($('kpiExpenseLabel')) $('kpiExpenseLabel').textContent = isYearly ? 'Total Expense (Year)' : 'Total Expense';
-      if ($('kpiPoolRemLabel')) $('kpiPoolRemLabel').textContent = isYearly ? 'Remaining Pool Balance (Year)' : 'Remaining Pool Balance';
+      if ($('kpiPoolRemLabel')) $('kpiPoolRemLabel').textContent = isYearly ? 'Remaining Balance (Year)' : 'Remaining Balance';
       if ($('cashflowPeriodTag')) $('cashflowPeriodTag').textContent = periodLabel;
       if ($('catSummaryTitle')) $('catSummaryTitle').textContent = `Category Breakdown (${periodLabel})`;
       if ($('memberReportTitle')) $('memberReportTitle').textContent = `Member Activity Report (${periodLabel})`;
@@ -3614,9 +3260,18 @@
       $('kpiExpense').textContent = `${fmtNum(totalExpense)} ${cur}`;
       $('kpiPoolRemaining').textContent = `${fmtNum(totalRemaining)} ${cur}`;
       $('kpiPoolRemaining').className = `val ${totalRemaining < 0 ? 'exp' : totalRemaining === 0 ? 'warn' : 'inc'}`;
+      if ($('kpiPoolRemTag')) {
+        if (totalRemaining < 0) {
+          $('kpiPoolRemTag').textContent = 'Over Budget';
+          $('kpiPoolRemTag').className = 'kpi-tag over';
+        } else {
+          $('kpiPoolRemTag').textContent = 'Safe';
+          $('kpiPoolRemTag').className = 'kpi-tag safe';
+        }
+      }
 
       const netCashflowBalance = Number(totalIncome || 0) - Number(totalExpense || 0);
-      if ($('kpiNetBalanceLabel')) $('kpiNetBalanceLabel').textContent = isYearly ? 'Net Balance (Income − Expense · Year)' : 'Net Balance (Income − Expense)';
+      if ($('kpiNetBalanceLabel')) $('kpiNetBalanceLabel').textContent = isYearly ? 'Net Balance (Year)' : 'Net Balance';
       if ($('kpiNetBalance')) {
         $('kpiNetBalance').textContent = `${fmtNum(netCashflowBalance)} ${cur}`;
         $('kpiNetBalance').className = `val ${netCashflowBalance < 0 ? 'exp' : netCashflowBalance === 0 ? 'warn' : 'inc'}`;
@@ -3625,7 +3280,6 @@
         const afterSaving = netCashflowBalance - Number(totalSaving || 0);
         $('kpiNetBalanceSub').textContent = Number(totalSaving || 0) > 0 ? `After Saving (${fmtNum(totalSaving)}): ${fmtNum(afterSaving)} ${cur}` : 'Total Income − Total Expense';
       }
-
       if ($('kpiPoolAllocSub')) {
         $('kpiPoolAllocSub').textContent = unalloc >= 0 ? `Unallocated: ${fmtNum(unalloc)} ${cur}` : `Over income by ${fmtNum(Math.abs(unalloc))} ${cur}`;
       }
@@ -3655,7 +3309,7 @@
             const pct = Math.min(100, Number(p.utilization_pct || 0));
             const barCls = p.status === 'over_budget' ? 'exp' : p.status === 'warning' ? 'warn' : 'inc';
             const remCls = p.status === 'over_budget' ? 'rem-over' : p.status === 'warning' ? 'rem-warn' : 'rem-ok';
-
+            const statusLabel = p.status === 'over_budget' ? 'Over Budget' : p.status === 'warning' ? 'Warning progress' : 'Safe in progress';
             const badges = [];
             if (Number(p.rollover_in || 0) > 0) badges.push(`<span class="mini-badge rollover">+${fmtNum(p.rollover_in)} Rollover</span>`);
             if (Number(p.borrowed_in || 0) > 0) badges.push(`<span class="mini-badge borrow">+${fmtNum(p.borrowed_in)} Borrowed</span>`);
@@ -3665,16 +3319,17 @@
               <div class="pool-card" role="button" tabindex="0" data-pool-id="${escapeHtml(p.id)}" data-pool-name="${escapeHtml(p.pool_name)}" title="Click to inspect ${escapeHtml(p.pool_name)} transactions">
                 <div class="pool-header">
                   <div class="pool-title">
-                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#22d3ee')}; color:${escapeHtml(p.color_tag || '#22d3ee')};"></span>
+                    <span class="pool-dot" style="background:${escapeHtml(p.color_tag || '#22d3ee')};"></span>
                     <span>${escapeHtml(p.pool_name)}</span>
                   </div>
                   <span class="muted">${p.utilization_pct}%</span>
                 </div>
                 <div class="pool-metrics">
                   <div><span class="m-lbl">Remaining</span><strong class="${remCls}">${fmtNum(p.remaining_balance)} ${escapeHtml(cur)}</strong></div>
-                  <div><span class="m-lbl">Spent / Effective Budget</span><strong>${fmtNum(p.spent_amount)} / ${fmtNum(p.available_budget)}</strong></div>
+                  <div><span class="m-lbl">Spent / Budget</span><strong>${fmtNum(p.spent_amount)} / ${fmtNum(p.available_budget)}</strong></div>
                 </div>
                 <div class="bar-track"><div class="bar-fill ${barCls}" style="width:${pct}%"></div></div>
+                <div><span class="pool-status-chip ${p.status}">${statusLabel}</span></div>
                 ${badges.length ? `<div class="pool-badge-strip">${badges.join('')}</div>` : ''}
               </div>
             `;
@@ -3732,20 +3387,12 @@
       isPoolBulkEditMode = false;
       closeDashboardDrilldown();
       await loadWorkspaceDetails({ force: true });
-      if (!$('tab-admin')?.classList.contains('hidden') && isAnyAdmin()) {
-        await loadFullAdminConsole();
-      }
+      if (!$('tab-admin')?.classList.contains('hidden') && isAnyAdmin()) await loadFullAdminConsole();
       if (showToast) toast('Latest data synced from server', 'success');
     }
 
-    $('globalRefreshBtn')?.addEventListener('click', async () => {
-      try { await runCleanRefresh(true); } catch (err) { toast(err.message, 'error'); }
-    });
-
-    $('dashRefreshBtn')?.addEventListener('click', async () => {
-      try { await runCleanRefresh(true); } catch (err) { toast(err.message, 'error'); }
-    });
-
+    $('globalRefreshBtn')?.addEventListener('click', async () => { try { await runCleanRefresh(true); } catch (err) { toast(err.message, 'error'); } });
+    $('dashRefreshBtn')?.addEventListener('click', async () => { try { await runCleanRefresh(true); } catch (err) { toast(err.message, 'error'); } });
     $('dashPrintBtn')?.addEventListener('click', () => {
       if ($('printGeneratedAt')) $('printGeneratedAt').textContent = `Generated: ${new Date().toLocaleString()}`;
       window.print();
@@ -3767,9 +3414,7 @@
     async function openReceipt(key) {
       let url = '';
       try {
-        const res = await fetch(getApiUrl(`/api/receipts/${encodeURIComponent(key)}`), {
-          headers: { Authorization: `Bearer ${state.token}` }
-        });
+        const res = await fetch(getApiUrl(`/api/receipts/${encodeURIComponent(key)}`), { headers: { Authorization: `Bearer ${state.token}` } });
         if (!res.ok) throw new Error('Receipt fetch failed');
         const blob = await res.blob();
         url = URL.createObjectURL(blob);
@@ -3793,15 +3438,8 @@
       const rows = getFilteredTransactions();
       const visibleIds = rows.map((r) => Number(r.id));
       const checkedVisibleCount = visibleIds.filter((id) => selectedTxIds.has(id)).length;
-
-      if (btn) {
-        btn.classList.toggle('hidden', selectedTxIds.size === 0);
-        btn.textContent = `Delete Selected (${selectedTxIds.size})`;
-      }
-      if (selectAllCb) {
-        selectAllCb.checked = visibleIds.length > 0 && checkedVisibleCount === visibleIds.length;
-        selectAllCb.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < visibleIds.length;
-      }
+      if (btn) { btn.classList.toggle('hidden', selectedTxIds.size === 0); btn.textContent = `Delete Selected (${selectedTxIds.size})`; }
+      if (selectAllCb) { selectAllCb.checked = visibleIds.length > 0 && checkedVisibleCount === visibleIds.length; selectAllCb.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < visibleIds.length; }
     }
 
     window.toggleSelectTx = function(id, checked) {
@@ -3822,21 +3460,13 @@
       const ids = [...selectedTxIds];
       if (!ids.length) return;
       if (!confirm(`Delete ${ids.length} selected transaction(s)?`)) return;
-
       const btn = $('deleteSelectedTxBtn');
-      btn.disabled = true;
-      btn.textContent = `Deleting (${ids.length})...`;
-
+      btn.disabled = true; btn.textContent = `Deleting (${ids.length})...`;
       let okCount = 0, failCount = 0;
       const encWs = encodeURIComponent(state.wsId);
       for (const id of ids) {
-        try {
-          await apiFetch(`/api/workspaces/${encWs}/transactions/${id}`, { method: 'DELETE' });
-          selectedTxIds.delete(id);
-          okCount++;
-        } catch { failCount++; }
+        try { await apiFetch(`/api/workspaces/${encWs}/transactions/${id}`, { method: 'DELETE' }); selectedTxIds.delete(id); okCount++; } catch { failCount++; }
       }
-
       btn.disabled = false;
       updateBulkDeleteUi();
       toast(failCount > 0 ? `Deleted ${okCount}, failed ${failCount}` : `Deleted ${okCount} selected transaction(s)`, failCount > 0 ? 'error' : 'success');
@@ -3887,15 +3517,8 @@
       if (wrap) wrap.scrollLeft = prevLeft;
     }
 
-    window.startEditTx = function(id) {
-      inlineEditingTxId = Number(id);
-      rerenderTxPreservingScroll();
-    };
-
-    window.cancelInlineEditTx = function() {
-      inlineEditingTxId = null;
-      rerenderTxPreservingScroll();
-    };
+    window.startEditTx = function(id) { inlineEditingTxId = Number(id); rerenderTxPreservingScroll(); };
+    window.cancelInlineEditTx = function() { inlineEditingTxId = null; rerenderTxPreservingScroll(); };
 
     window.saveInlineEditTx = async function(id) {
       const numId = Number(id);
@@ -3907,21 +3530,14 @@
       const amountMmk = Number($(`inTxAmt_${numId}`)?.value || 0);
       const paymentMethod = $(`inTxPay_${numId}`)?.value || 'Cash';
       const notes = ($(`inTxNote_${numId}`)?.value || '').trim();
-
       if (!txDate) { toast('Date is required', 'error'); return; }
       if (!(amountMmk > 0)) { toast('Amount must be greater than 0', 'error'); return; }
-
       const saveBtn = $(`inTxSaveBtn_${numId}`);
       if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
-
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${numId}`, {
           method: 'PATCH',
-          body: JSON.stringify({
-            tx_date: txDate, member_name: memberName, entry_type: entryType,
-            category, amount_mmk: amountMmk, payment_method: paymentMethod,
-            notes, pool_id: poolVal ? Number(poolVal) : null
-          })
+          body: JSON.stringify({ tx_date: txDate, member_name: memberName, entry_type: entryType, category, amount_mmk: amountMmk, payment_method: paymentMethod, notes, pool_id: poolVal ? Number(poolVal) : null })
         });
         inlineEditingTxId = null;
         toast('Transaction updated', 'success');
@@ -3937,7 +3553,6 @@
       const s = state.settings || {};
       const members = Array.isArray(s.members) && s.members.length ? s.members : [state.user?.display_name || 'Member'];
       const payments = Array.isArray(s.payment_methods) && s.payment_methods.length ? s.payment_methods : ['Cash'];
-
       const rows = getFilteredTransactions();
       const tbody = $('txTableBody');
       tbody.innerHTML = rows.length
@@ -3946,7 +3561,6 @@
             const isChecked = selectedTxIds.has(rowId);
             const isEditing = inlineEditingTxId === rowId;
             const displayDate = normalizeIsoDate(r.tx_date) || r.tx_date || '';
-
             if (isEditing) {
               return `
                 <tr class="is-editing-row" onkeydown="if(event.key==='Enter'){event.preventDefault();saveInlineEditTx(${rowId});}else if(event.key==='Escape'){event.preventDefault();cancelInlineEditTx();}">
@@ -3960,16 +3574,10 @@
                   <td class="tx-edit-cell"><select id="inTxPay_${rowId}" class="inline-tx-input">${buildInlineOptions(payments, r.payment_method || 'Cash', 'Cash')}</select></td>
                   <td class="tx-edit-cell"><input type="text" id="inTxNote_${rowId}" class="inline-tx-input" value="${escapeHtml(r.notes || '')}" placeholder="Notes" /></td>
                   <td>${r.receipt_key ? `<button type="button" class="small view-receipt-btn" data-receipt-key="${escapeHtml(r.receipt_key)}">View</button>` : '-'}</td>
-                  <td class="tx-edit-cell">
-                    <div class="row-actions">
-                      <button type="button" class="small primary" id="inTxSaveBtn_${rowId}" onclick="saveInlineEditTx(${rowId})">Save</button>
-                      <button type="button" class="small" onclick="cancelInlineEditTx()">Cancel</button>
-                    </div>
-                  </td>
+                  <td class="tx-edit-cell"><div class="row-actions"><button type="button" class="small primary" id="inTxSaveBtn_${rowId}" onclick="saveInlineEditTx(${rowId})">Save</button><button type="button" class="small" onclick="cancelInlineEditTx()">Cancel</button></div></td>
                 </tr>
               `;
             }
-
             return `
               <tr>
                 <td><input type="checkbox" class="tx-row-cb" ${isChecked ? 'checked' : ''} onchange="toggleSelectTx(${rowId}, this.checked)" /></td>
@@ -3982,20 +3590,13 @@
                 <td>${escapeHtml(r.payment_method || '-')}</td>
                 <td>${escapeHtml(r.notes || '-')}</td>
                 <td>${r.receipt_key ? `<button type="button" class="small view-receipt-btn" data-receipt-key="${escapeHtml(r.receipt_key)}">View</button>` : '-'}</td>
-                <td>
-                  <div class="row-actions">
-                    <button type="button" class="small" onclick="startEditTx(${rowId})">Edit</button>
-                    <button type="button" class="small danger" onclick="deleteTx(${rowId})">Delete</button>
-                  </div>
-                </td>
+                <td><div class="row-actions"><button type="button" class="small" onclick="startEditTx(${rowId})">Edit</button><button type="button" class="small danger" onclick="deleteTx(${rowId})">Delete</button></div></td>
               </tr>
             `;
           }).join('')
         : '<tr><td colspan="11" class="muted">No transactions found for this filter.</td></tr>';
 
-      tbody.querySelectorAll('.view-receipt-btn[data-receipt-key]').forEach((btn) => {
-        btn.addEventListener('click', () => openReceipt(btn.dataset.receiptKey));
-      });
+      tbody.querySelectorAll('.view-receipt-btn[data-receipt-key]').forEach((btn) => btn.addEventListener('click', () => openReceipt(btn.dataset.receiptKey)));
       updateBulkDeleteUi();
     }
 
@@ -4045,13 +3646,9 @@
       const btn = $('adminDeleteSelectedTxBtn');
       const selectAllCb = $('adminSelectAllTxCb');
       const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
-      const visibleRows = (state.adminTransactions || []).filter((r) => {
-        if (!q) return true;
-        return `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q);
-      });
+      const visibleRows = (state.adminTransactions || []).filter((r) => !q || `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q));
       const visibleKeys = visibleRows.map((r) => getAdminTxKey(r.workspace_id, r.id));
       const checkedVisibleCount = visibleKeys.filter((k) => adminSelectedTxKeys.has(k)).length;
-
       if (btn) { btn.classList.toggle('hidden', adminSelectedTxKeys.size === 0); btn.textContent = `Delete Selected (${adminSelectedTxKeys.size})`; }
       if (selectAllCb) { selectAllCb.checked = visibleKeys.length > 0 && checkedVisibleCount === visibleKeys.length; selectAllCb.indeterminate = checkedVisibleCount > 0 && checkedVisibleCount < visibleKeys.length; }
     }
@@ -4065,10 +3662,7 @@
 
     $('adminSelectAllTxCb')?.addEventListener('change', (e) => {
       const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
-      const visibleRows = (state.adminTransactions || []).filter((r) => {
-        if (!q) return true;
-        return `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q);
-      });
+      const visibleRows = (state.adminTransactions || []).filter((r) => !q || `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q));
       visibleRows.forEach((r) => {
         const key = getAdminTxKey(r.workspace_id, r.id);
         if (e.target.checked) adminSelectedTxKeys.add(key);
@@ -4081,11 +3675,8 @@
       const keys = [...adminSelectedTxKeys];
       if (!keys.length) return;
       if (!confirm(`Delete ${keys.length} selected transaction(s) from database?`)) return;
-
       const btn = $('adminDeleteSelectedTxBtn');
-      btn.disabled = true;
-      btn.textContent = `Deleting (${keys.length})...`;
-
+      btn.disabled = true; btn.textContent = `Deleting (${keys.length})...`;
       let okCount = 0, failCount = 0, touchedCurrentWs = false;
       for (const key of keys) {
         const sepIdx = key.indexOf('::');
@@ -4093,17 +3684,14 @@
         const id = Number(sepIdx >= 0 ? key.slice(sepIdx + 2) : 0);
         try {
           await apiFetch(`/api/workspaces/${encodeURIComponent(wsId)}/transactions/${id}`, { method: 'DELETE' });
-          adminSelectedTxKeys.delete(key);
-          okCount++;
+          adminSelectedTxKeys.delete(key); okCount++;
           if (String(wsId) === String(state.wsId)) {
-            touchedCurrentWs = true;
-            selectedTxIds.delete(id);
+            touchedCurrentWs = true; selectedTxIds.delete(id);
             state.transactions = (state.transactions || []).filter((r) => Number(r.id) !== id);
             state.yearlyTransactions = (state.yearlyTransactions || []).filter((r) => Number(r.id) !== id);
           }
         } catch { failCount++; }
       }
-
       btn.disabled = false;
       updateAdminBulkDeleteUi();
       toast(failCount > 0 ? `Deleted ${okCount}, failed ${failCount}` : `Deleted ${okCount} selected transaction(s)`, failCount > 0 ? 'error' : 'success');
@@ -4135,11 +3723,7 @@
       const tbody = $('adminTxTableBody');
       if (!tbody) return;
       const q = ($('adminTxSearch')?.value || '').trim().toLowerCase();
-      const rows = (state.adminTransactions || []).filter((r) => {
-        if (!q) return true;
-        return `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q);
-      });
-
+      const rows = (state.adminTransactions || []).filter((r) => !q || `${r.workspace_id || ''} ${r.pool_name || ''} ${r.member_name || ''} ${r.creator_email || ''} ${r.category || ''} ${r.notes || ''}`.toLowerCase().includes(q));
       tbody.innerHTML = rows.length
         ? rows.map((r) => {
             const checked = adminSelectedTxKeys.has(getAdminTxKey(r.workspace_id, r.id));
@@ -4182,39 +3766,19 @@
     async function loadFullAdminConsole() {
       if (!isAnyAdmin()) return;
       try {
-        const [ovRes, usersRes, wsAllRes] = await Promise.all([
-          apiFetch('/api/admin/overview'),
-          apiFetch('/api/admin/users'),
-          apiFetch('/api/admin/workspaces')
-        ]);
-
+        const [ovRes, usersRes, wsAllRes] = await Promise.all([apiFetch('/api/admin/overview'), apiFetch('/api/admin/users'), apiFetch('/api/admin/workspaces')]);
         state.adminAdmins = ovRes.admins || [];
         state.adminUsers = usersRes.data || [];
         state.adminWorkspaces = wsAllRes.data || [];
-
         if ($('adminStatUsers')) $('adminStatUsers').textContent = String(ovRes.counts?.users ?? state.adminUsers.length);
         if ($('adminStatWorkspaces')) $('adminStatWorkspaces').textContent = String(ovRes.counts?.workspaces ?? state.adminWorkspaces.length);
         if ($('adminStatTransactions')) $('adminStatTransactions').textContent = String(ovRes.counts?.transactions ?? 0);
 
-        const wsOptionsHtml = state.adminWorkspaces
-          .map((w) => `<option value="${escapeHtml(w.workspace_id)}">${escapeHtml(w.workspace_name)} (${escapeHtml(w.workspace_id)})</option>`)
-          .join('');
+        const wsOptionsHtml = state.adminWorkspaces.map((w) => `<option value="${escapeHtml(w.workspace_id)}">${escapeHtml(w.workspace_name)} (${escapeHtml(w.workspace_id)})</option>`).join('');
+        if ($('adminImportWs')) { const prevImp = $('adminImportWs').value; $('adminImportWs').innerHTML = wsOptionsHtml; $('adminImportWs').value = prevImp || state.wsId || ''; }
+        if ($('adminInspectorWs')) { const prev = $('adminInspectorWs').value; $('adminInspectorWs').innerHTML = '<option value="">All Workspaces</option>' + wsOptionsHtml; if (prev) $('adminInspectorWs').value = prev; }
 
-        if ($('adminImportWs')) {
-          const prevImp = $('adminImportWs').value;
-          $('adminImportWs').innerHTML = wsOptionsHtml;
-          $('adminImportWs').value = prevImp || state.wsId || '';
-        }
-
-        if ($('adminInspectorWs')) {
-          const prev = $('adminInspectorWs').value;
-          $('adminInspectorWs').innerHTML = '<option value="">All Workspaces</option>' + wsOptionsHtml;
-          if (prev) $('adminInspectorWs').value = prev;
-        }
-
-        renderAdminUsersTable();
-        renderAdminAccessTable();
-        renderAdminWorkspacesTable();
+        renderAdminUsersTable(); renderAdminAccessTable(); renderAdminWorkspacesTable();
         await loadAdminInspectorTransactions();
       } catch (err) { toast(err.message, 'error'); }
     }
@@ -4223,11 +3787,7 @@
       const tbody = $('adminUsersTableBody');
       if (!tbody) return;
       const q = ($('adminUserSearch')?.value || '').trim().toLowerCase();
-      const users = (state.adminUsers || []).filter((u) => {
-        if (!q) return true;
-        return `${u.id || ''} ${u.display_name || ''} ${u.email || ''} ${u.role || ''}`.toLowerCase().includes(q);
-      });
-
+      const users = (state.adminUsers || []).filter((u) => !q || `${u.id || ''} ${u.display_name || ''} ${u.email || ''} ${u.role || ''}`.toLowerCase().includes(q));
       const adminSet = new Set((state.adminAdmins || []).map((a) => normalizeEmail(a.email)));
       adminSet.add(normalizeEmail(GLOBAL_ADMIN_EMAIL));
 
@@ -4236,28 +3796,10 @@
             const em = normalizeEmail(u.email);
             const isGlobal = em === normalizeEmail(GLOBAL_ADMIN_EMAIL);
             const hasAdmin = adminSet.has(em);
-            const wsList = Array.isArray(u.workspaces)
-              ? u.workspaces.map((w) => escapeHtml(typeof w === 'string' ? w : (w.workspace_name || w.workspace_id || ''))).filter(Boolean).join(', ')
-              : escapeHtml(u.workspace_count ?? u.workspaces ?? '-');
-
+            const wsList = Array.isArray(u.workspaces) ? u.workspaces.map((w) => escapeHtml(typeof w === 'string' ? w : (w.workspace_name || w.workspace_id || ''))).filter(Boolean).join(', ') : escapeHtml(u.workspace_count ?? u.workspaces ?? '-');
             let actionHtml = '<span class="muted">-</span>';
-            if (isGlobalAdmin() && !isGlobal) {
-              actionHtml = hasAdmin
-                ? `<button type="button" class="small danger adm-revoke-btn" data-email="${escapeHtml(u.email)}">Revoke Admin</button>`
-                : `<button type="button" class="small primary adm-grant-btn" data-email="${escapeHtml(u.email)}">Make Admin</button>`;
-            }
-
-            return `
-              <tr>
-                <td>${escapeHtml(u.id ?? '-')}</td>
-                <td><strong>${escapeHtml(u.display_name || '-')}</strong></td>
-                <td>${escapeHtml(u.email || '-')}</td>
-                <td>${wsList || '-'}</td>
-                <td>${escapeHtml(u.created_at ? String(u.created_at).slice(0, 10) : '-')}</td>
-                <td><span class="pill ${hasAdmin ? 'Income' : 'Pool'}">${isGlobal ? 'Global Admin' : (hasAdmin ? 'Admin' : escapeHtml(u.role || 'Member'))}</span></td>
-                <td>${actionHtml}</td>
-              </tr>
-            `;
+            if (isGlobalAdmin() && !isGlobal) actionHtml = hasAdmin ? `<button type="button" class="small danger adm-revoke-btn" data-email="${escapeHtml(u.email)}">Revoke Admin</button>` : `<button type="button" class="small primary adm-grant-btn" data-email="${escapeHtml(u.email)}">Make Admin</button>`;
+            return `<tr><td>${escapeHtml(u.id ?? '-')}</td><td><strong>${escapeHtml(u.display_name || '-')}</strong></td><td>${escapeHtml(u.email || '-')}</td><td>${wsList || '-'}</td><td>${escapeHtml(u.created_at ? String(u.created_at).slice(0, 10) : '-')}</td><td><span class="pill ${hasAdmin ? 'Income' : 'Pool'}">${isGlobal ? 'Global Admin' : (hasAdmin ? 'Admin' : escapeHtml(u.role || 'Member'))}</span></td><td>${actionHtml}</td></tr>`;
           }).join('')
         : '<tr><td colspan="7" class="muted">No users found.</td></tr>';
 
@@ -4269,25 +3811,14 @@
       const tbody = $('adminListBody');
       if (!tbody) return;
       const list = [...(state.adminAdmins || [])];
-      if (!list.some((a) => normalizeEmail(a.email) === normalizeEmail(GLOBAL_ADMIN_EMAIL))) {
-        list.unshift({ email: GLOBAL_ADMIN_EMAIL, level: 'Global Admin', added_by: 'System' });
-      }
-
+      if (!list.some((a) => normalizeEmail(a.email) === normalizeEmail(GLOBAL_ADMIN_EMAIL))) list.unshift({ email: GLOBAL_ADMIN_EMAIL, level: 'Global Admin', added_by: 'System' });
       tbody.innerHTML = list.length
         ? list.map((a) => {
             const em = normalizeEmail(a.email);
             const isGlobal = em === normalizeEmail(GLOBAL_ADMIN_EMAIL);
-            return `
-              <tr>
-                <td><strong>${escapeHtml(a.email)}</strong></td>
-                <td><span class="pill ${isGlobal ? 'Income' : 'Saving'}">${escapeHtml(a.level || (isGlobal ? 'Global Admin' : 'Portal Admin'))}</span></td>
-                <td>${escapeHtml(a.added_by || '-')}</td>
-                <td>${(!isGlobal && isGlobalAdmin()) ? `<button type="button" class="small danger adm-rem-btn" data-email="${escapeHtml(a.email)}">Remove</button>` : '<span class="muted">Protected</span>'}</td>
-              </tr>
-            `;
+            return `<tr><td><strong>${escapeHtml(a.email)}</strong></td><td><span class="pill ${isGlobal ? 'Income' : 'Saving'}">${escapeHtml(a.level || (isGlobal ? 'Global Admin' : 'Portal Admin'))}</span></td><td>${escapeHtml(a.added_by || '-')}</td><td>${(!isGlobal && isGlobalAdmin()) ? `<button type="button" class="small danger adm-rem-btn" data-email="${escapeHtml(a.email)}">Remove</button>` : '<span class="muted">Protected</span>'}</td></tr>`;
           }).join('')
         : '<tr><td colspan="4" class="muted">No admin records.</td></tr>';
-
       tbody.querySelectorAll('.adm-rem-btn[data-email]').forEach((btn) => btn.addEventListener('click', () => removeExtraAdmin(btn.dataset.email)));
     }
 
@@ -4295,31 +3826,12 @@
       const tbody = $('adminWorkspaceTableBody');
       if (!tbody) return;
       const rows = state.adminWorkspaces || [];
-
       tbody.innerHTML = rows.length
         ? rows.map((w) => {
-            const ownerText = w.owner_name || w.owner_email
-              ? `${escapeHtml(w.owner_name || '')}${w.owner_email ? ` <span class="muted">(${escapeHtml(w.owner_email)})</span>` : ''}`
-              : '<span class="muted">- (-)</span>';
-            return `
-              <tr data-ws-id="${escapeHtml(w.workspace_id)}">
-                <td><strong>${escapeHtml(w.workspace_name || w.workspace_id)}</strong></td>
-                <td><code>${escapeHtml(w.workspace_id)}</code></td>
-                <td>${ownerText}</td>
-                <td>${escapeHtml(w.member_count ?? 0)}</td>
-                <td>${escapeHtml(w.transaction_count ?? 0)}</td>
-                <td>${escapeHtml(w.currency || 'MMK')}</td>
-                <td>
-                  <div class="row-actions">
-                    <button type="button" class="small adm-ws-view">View</button>
-                    <button type="button" class="small primary adm-ws-pools">Pools & Settings</button>
-                  </div>
-                </td>
-              </tr>
-            `;
+            const ownerText = w.owner_name || w.owner_email ? `${escapeHtml(w.owner_name || '')}${w.owner_email ? ` <span class="muted">(${escapeHtml(w.owner_email)})</span>` : ''}` : '<span class="muted">- (-)</span>';
+            return `<tr data-ws-id="${escapeHtml(w.workspace_id)}"><td><strong>${escapeHtml(w.workspace_name || w.workspace_id)}</strong></td><td><code>${escapeHtml(w.workspace_id)}</code></td><td>${ownerText}</td><td>${escapeHtml(w.member_count ?? 0)}</td><td>${escapeHtml(w.transaction_count ?? 0)}</td><td>${escapeHtml(w.currency || 'MMK')}</td><td><div class="row-actions"><button type="button" class="small adm-ws-view">View</button><button type="button" class="small primary adm-ws-pools">Pools & Settings</button></div></td></tr>`;
           }).join('')
         : '<tr><td colspan="7" class="muted">No workspaces found.</td></tr>';
-
       tbody.querySelectorAll('tr[data-ws-id]').forEach((tr) => {
         const wsId = tr.dataset.wsId;
         tr.querySelector('.adm-ws-view')?.addEventListener('click', () => switchToWorkspaceFromAdmin(wsId, 'dashboard'));
@@ -4335,23 +3847,14 @@
       { key: 'lifestyle_debt', name: 'Lifestyle, Debt & Other Pool', color: '#f43f5e' }
     ];
 
-    function normalizePoolKey(v) {
-      return String(v || '').toLowerCase().replace(/^pool_/, '').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-    }
+    function normalizePoolKey(v) { return String(v || '').toLowerCase().replace(/^pool_/, '').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, ''); }
 
     const SLUG_TO_MERGED_KEY = {
-      food_groceries: 'food_dining', dining_snacks: 'food_dining', food_and_groceries_pool: 'food_dining',
-      dining_out_and_snacks_pool: 'food_dining', food_and_dining_pool: 'food_dining',
-      household_housing: 'home_bills', bills_utilities_tax: 'home_bills', household_and_housing_pool: 'home_bills',
-      bills_utilities_and_tax_pool: 'home_bills', bills_and_utilities_pool: 'home_bills', home_and_bills_pool: 'home_bills',
+      food_groceries: 'food_dining', dining_snacks: 'food_dining', food_and_groceries_pool: 'food_dining', dining_out_and_snacks_pool: 'food_dining', food_and_dining_pool: 'food_dining',
+      household_housing: 'home_bills', bills_utilities_tax: 'home_bills', household_and_housing_pool: 'home_bills', bills_utilities_and_tax_pool: 'home_bills', bills_and_utilities_pool: 'home_bills', home_and_bills_pool: 'home_bills',
       transport_fuel: 'transport', transport_and_fuel_pool: 'transport', transport_pool: 'transport',
-      tps_personal: 'personal_family', family_support: 'personal_family', family_general: 'personal_family',
-      kids_education: 'personal_family', health_medical: 'personal_family', family_and_personal_pool: 'personal_family',
-      kids_and_education_pool: 'personal_family', health_and_medical_pool: 'personal_family', personal_and_family_pool: 'personal_family',
-      shopping_lifestyle: 'lifestyle_debt', gifts_social: 'lifestyle_debt', pet_care: 'lifestyle_debt',
-      charity_donations: 'lifestyle_debt', debt_repayment: 'lifestyle_debt', shopping_and_lifestyle_pool: 'lifestyle_debt',
-      gifts_and_social_pool: 'lifestyle_debt', pet_care_pool: 'lifestyle_debt', charity_and_donations_pool: 'lifestyle_debt',
-      debt_and_credit_repayment_pool: 'lifestyle_debt', lifestyle_debt_and_other_pool: 'lifestyle_debt'
+      tps_personal: 'personal_family', family_support: 'personal_family', family_general: 'personal_family', kids_education: 'personal_family', health_medical: 'personal_family', family_and_personal_pool: 'personal_family', kids_and_education_pool: 'personal_family', health_and_medical_pool: 'personal_family', personal_and_family_pool: 'personal_family',
+      shopping_lifestyle: 'lifestyle_debt', gifts_social: 'lifestyle_debt', pet_care: 'lifestyle_debt', charity_donations: 'lifestyle_debt', debt_repayment: 'lifestyle_debt', shopping_and_lifestyle_pool: 'lifestyle_debt', gifts_and_social_pool: 'lifestyle_debt', pet_care_pool: 'lifestyle_debt', charity_and_donations_pool: 'lifestyle_debt', debt_and_credit_repayment_pool: 'lifestyle_debt', lifestyle_debt_and_other_pool: 'lifestyle_debt'
     };
 
     function resolveMergedPoolKey(entryType, poolColText, catText, poolIdText = '') {
@@ -4360,7 +3863,6 @@
       const pName = normalizePoolKey(poolColText);
       if (pidSlug && SLUG_TO_MERGED_KEY[pidSlug]) return SLUG_TO_MERGED_KEY[pidSlug];
       if (pName && SLUG_TO_MERGED_KEY[pName]) return SLUG_TO_MERGED_KEY[pName];
-
       const c = String(catText || '').toLowerCase();
       if (c.includes('grocer') || c.includes('food') || c.includes('အစားအသောက်') || c.includes('entertainment') || c.includes('ဖျော်ဖြေရေး') || c.includes('မုန့်စား')) return 'food_dining';
       if (c.includes('bill') || c.includes('internet') || c.includes('electric') || c.includes('tax') || c.includes('housing') || c.includes('အိမ်') || c.includes('household')) return 'home_bills';
@@ -4374,7 +3876,6 @@
       const encM = encodeURIComponent(month || state.month);
       const res = await apiFetch(`/api/workspaces/${encWs}/pools?month=${encM}`);
       let pools = res.data || [];
-
       const findIdByKey = (mergedKey, list) => {
         const def = MERGED_POOL_DEFS.find((d) => d.key === mergedKey);
         if (!def) return null;
@@ -4382,25 +3883,19 @@
         const found = (list || []).find((p) => normalizePoolKey(p.pool_name) === targetNorm);
         return found ? Number(found.id) : null;
       };
-
       let createdAny = false;
       for (const key of neededKeys) {
         if (!findIdByKey(key, pools)) {
           const def = MERGED_POOL_DEFS.find((d) => d.key === key);
           if (!def) continue;
-          await apiFetch(`/api/workspaces/${encWs}/pools`, {
-            method: 'POST',
-            body: JSON.stringify({ pool_name: def.name, default_amount: Number(defaultAmount) || 0, color_tag: def.color })
-          });
+          await apiFetch(`/api/workspaces/${encWs}/pools`, { method: 'POST', body: JSON.stringify({ pool_name: def.name, default_amount: Number(defaultAmount) || 0, color_tag: def.color }) });
           createdAny = true;
         }
       }
-
       if (createdAny) {
         const refreshed = await apiFetch(`/api/workspaces/${encWs}/pools?month=${encM}`);
         pools = refreshed.data || [];
       }
-
       const keyToId = {};
       for (const key of neededKeys) keyToId[key] = findIdByKey(key, pools);
       return { pools, keyToId };
@@ -4411,92 +3906,47 @@
       const file = $('adminImportCsvFile')?.files?.[0];
       const prevEl = $('adminImportPreview');
       state.preparedCsvRows = [];
-
       if (!file || !targetWs) { prevEl?.classList.add('hidden'); return; }
-
       try {
         const text = await file.text();
         const rows = parseCsvText(text);
         if (rows.length < 2) throw new Error('CSV file has no data rows');
-
         const headers = (rows[0] || []).map((h) => String(h || '').trim().toLowerCase());
-        const findCol = (keywords, fallbackIdx) => {
-          const idx = headers.findIndex((h) => keywords.some((k) => h.includes(k)));
-          return idx >= 0 ? idx : fallbackIdx;
-        };
-
-        const colDate = findCol(['date', 'နေ့စွဲ'], 0);
-        const colMember = findCol(['member', 'family', 'ထည့်သွင်းသူ'], 1);
-        const colType = findCol(['type', 'အမျိုးအစား |'], 2);
-        const colCategory = findCol(['category', 'အမျိုးအစားခွဲ'], 3);
-        const colAmount = findCol(['amount', 'ငွေပမာဏ'], 4);
-        const colPayment = findCol(['payment', 'ငွေပေးချေမှု'], 5);
-        const colNotes = findCol(['notes', 'မှတ်ချက်'], 6);
-        const colPoolName = findCol(['budget pool'], 8);
-        const colPoolId = findCol(['pool id'], 9);
-
+        const findCol = (keywords, fallbackIdx) => { const idx = headers.findIndex((h) => keywords.some((k) => h.includes(k))); return idx >= 0 ? idx : fallbackIdx; };
+        const colDate = findCol(['date', 'နေ့စွဲ'], 0), colMember = findCol(['member', 'family', 'ထည့်သွင်းသူ'], 1), colType = findCol(['type', 'အမျိုးအစား |'], 2), colCategory = findCol(['category', 'အမျိုးအစားခွဲ'], 3), colAmount = findCol(['amount', 'ငွေပမာဏ'], 4), colPayment = findCol(['payment', 'ငွေပေးချေမှု'], 5), colNotes = findCol(['notes', 'မှတ်ချက်'], 6), colPoolName = findCol(['budget pool'], 8), colPoolId = findCol(['pool id'], 9);
         const existingTxRes = await apiFetch(`/api/workspaces/${encodeURIComponent(targetWs)}/transactions`);
         const existingTx = existingTxRes.data || [];
-        const existingMap = new Map();
-        const dateAmtMap = new Map();
-
+        const existingMap = new Map(), dateAmtMap = new Map();
         existingTx.forEach((t) => {
           const normD = normalizeIsoDate(t.tx_date) || t.tx_date;
           existingMap.set(`${normD}|${Number(t.amount_mmk)}|${normalizeNoteKey(t.notes)}`, t);
           const looseKey = `${normD}|${Number(t.amount_mmk)}`;
           if (!dateAmtMap.has(looseKey)) dateAmtMap.set(looseKey, t);
         });
-
         let invalidCount = 0, newCount = 0, updateCount = 0, sumInc = 0, sumExp = 0;
         const parsedItems = [], neededPoolKeys = new Set();
-
         for (let i = 1; i < rows.length; i++) {
           const r = rows[i];
           if (!r || r.every((cell) => !cell)) continue;
-
-          const txDate = normalizeSheetDate(r[colDate]);
-          const memberName = String(r[colMember] || state.user?.display_name || 'Member').trim();
-          const entryType = normalizeSheetType(r[colType]) || 'Expense';
-          const category = String(r[colCategory] || 'General').trim();
-          const amountMmk = normalizeSheetAmount(r[colAmount]);
-          const paymentMethod = String(r[colPayment] || 'Cash').trim();
-          const notes = String(r[colNotes] || '').trim();
-          const csvPoolName = String(r[colPoolName] || '').trim();
-          const csvPoolId = String(r[colPoolId] || '').trim();
-
+          const txDate = normalizeSheetDate(r[colDate]), memberName = String(r[colMember] || state.user?.display_name || 'Member').trim(), entryType = normalizeSheetType(r[colType]) || 'Expense', category = String(r[colCategory] || 'General').trim(), amountMmk = normalizeSheetAmount(r[colAmount]), paymentMethod = String(r[colPayment] || 'Cash').trim(), notes = String(r[colNotes] || '').trim(), csvPoolName = String(r[colPoolName] || '').trim(), csvPoolId = String(r[colPoolId] || '').trim();
           if (!txDate || amountMmk <= 0) { invalidCount++; continue; }
-
           const mergedKey = resolveMergedPoolKey(entryType, csvPoolName, category, csvPoolId);
           if (mergedKey) neededPoolKeys.add(mergedKey);
-
-          const exactKey = `${txDate}|${Number(amountMmk)}|${normalizeNoteKey(notes)}`;
-          const looseKey = `${txDate}|${Number(amountMmk)}`;
-          const existingRow = existingMap.get(exactKey) || dateAmtMap.get(looseKey) || null;
-
+          const existingRow = existingMap.get(`${txDate}|${Number(amountMmk)}|${normalizeNoteKey(notes)}`) || dateAmtMap.get(`${txDate}|${Number(amountMmk)}`) || null;
           if (entryType === 'Income') sumInc += amountMmk;
           if (entryType === 'Expense') sumExp += amountMmk;
           if (existingRow) updateCount++; else newCount++;
-
           parsedItems.push({ existing_id: existingRow ? existingRow.id : null, tx_date: txDate, member_name: memberName, entry_type: entryType, category, amount_mmk: amountMmk, payment_method: paymentMethod, notes, merged_pool_key: mergedKey, csv_pool_name: csvPoolName });
         }
-
         const primaryMonth = parsedItems.length ? parsedItems[0].tx_date.slice(0, 7) : state.month;
         const { keyToId } = await ensureMergedPoolsAndMap(targetWs, primaryMonth, neededPoolKeys, 0);
         state.preparedCsvRows = parsedItems.map((item) => ({ ...item, pool_id: item.merged_pool_key ? (keyToId[item.merged_pool_key] ?? null) : null }));
-
         if (prevEl) {
           prevEl.classList.remove('hidden');
-          prevEl.innerHTML = `
-            <div><strong>Smart Import Preview (${escapeHtml(targetWs)})</strong></div>
-            <div style="margin-top:4px;">New Rows: <strong style="color:var(--income);">${newCount}</strong> · Existing Rows to Update Pool: <strong style="color:var(--gold);">${updateCount}</strong> · Invalid Skipped: <strong>${invalidCount}</strong></div>
-            <div class="muted" style="margin-top:4px;">Preview Income (Unpooled): <strong>${fmtNum(sumInc)}</strong> · Preview Expense (5 Merged Pools): <strong>${fmtNum(sumExp)}</strong></div>
-          `;
+          prevEl.innerHTML = `<div><strong>Smart Import Preview (${escapeHtml(targetWs)})</strong></div><div style="margin-top:4px;">New Rows: <strong style="color:var(--income);">${newCount}</strong> · Existing Rows to Update Pool: <strong style="color:var(--gold);">${updateCount}</strong> · Invalid Skipped: <strong>${invalidCount}</strong></div><div class="muted" style="margin-top:4px;">Preview Income (Unpooled): <strong>${fmtNum(sumInc)}</strong> · Preview Expense (5 Merged Pools): <strong>${fmtNum(sumExp)}</strong></div>`;
         }
       } catch (err) {
-        if (prevEl) {
-          prevEl.classList.remove('hidden');
-          prevEl.innerHTML = `<span style="color:var(--expense);">${escapeHtml(err.message)}</span>`;
-        }
+        if (prevEl) { prevEl.classList.remove('hidden'); prevEl.innerHTML = `<span style="color:var(--expense);">${escapeHtml(err.message)}</span>`; }
       }
     }
 
@@ -4510,28 +3960,20 @@
       if (!state.preparedCsvRows.length) await buildCsvPreview();
       const readyList = state.preparedCsvRows || [];
       if (!readyList.length) { toast('No valid rows found in CSV', 'error'); return; }
-
       const btn = $('adminImportSubmitBtn');
       btn.disabled = true; btn.textContent = 'Syncing CSV...';
       setStatus('adminImportStatus', '');
-
       try {
         let insertedCount = 0, updatedCount = 0, failedCount = 0, lastErr = '';
         const encWs = encodeURIComponent(targetWs);
-
         for (const item of readyList) {
           try {
             if (item.existing_id) {
-              await apiFetch(`/api/workspaces/${encWs}/transactions/${item.existing_id}`, {
-                method: 'PATCH',
-                body: JSON.stringify({ tx_date: item.tx_date, member_name: item.member_name, entry_type: item.entry_type, category: item.category, amount_mmk: item.amount_mmk, payment_method: item.payment_method, notes: item.notes, pool_id: item.pool_id })
-              });
+              await apiFetch(`/api/workspaces/${encWs}/transactions/${item.existing_id}`, { method: 'PATCH', body: JSON.stringify({ tx_date: item.tx_date, member_name: item.member_name, entry_type: item.entry_type, category: item.category, amount_mmk: item.amount_mmk, payment_method: item.payment_method, notes: item.notes, pool_id: item.pool_id }) });
               updatedCount++;
             } else {
               const fd = new FormData();
-              fd.append('tx_date', item.tx_date); fd.append('member_name', item.member_name);
-              fd.append('entry_type', item.entry_type); fd.append('category', item.category);
-              fd.append('amount_mmk', String(item.amount_mmk)); fd.append('payment_method', item.payment_method);
+              fd.append('tx_date', item.tx_date); fd.append('member_name', item.member_name); fd.append('entry_type', item.entry_type); fd.append('category', item.category); fd.append('amount_mmk', String(item.amount_mmk)); fd.append('payment_method', item.payment_method);
               if (item.pool_id) fd.append('pool_id', String(item.pool_id));
               if (item.notes) fd.append('notes', item.notes);
               await apiFetch(`/api/workspaces/${encWs}/transactions`, { method: 'POST', body: fd });
@@ -4539,25 +3981,17 @@
             }
           } catch (rowErr) { failedCount++; lastErr = rowErr?.message || 'Row failed'; }
         }
-
-        if (insertedCount > 0 || updatedCount > 0) {
-          $('adminImportCsvFile').value = ''; state.preparedCsvRows = []; $('adminImportPreview')?.classList.add('hidden');
-        }
-
+        if (insertedCount > 0 || updatedCount > 0) { $('adminImportCsvFile').value = ''; state.preparedCsvRows = []; $('adminImportPreview')?.classList.add('hidden'); }
         const msg = failedCount > 0 ? `Inserted ${insertedCount}, Updated ${updatedCount}, Failed ${failedCount} (${lastErr})` : `Done: ${insertedCount} new rows inserted, ${updatedCount} existing rows updated in ${targetWs}`;
         setStatus('adminImportStatus', msg, failedCount > 0 ? 'err' : 'ok');
         toast(msg, failedCount > 0 ? 'error' : 'success');
         if (targetWs === state.wsId) await loadWorkspaceDetails();
         await loadFullAdminConsole();
-      } catch (err) {
-        setStatus('adminImportStatus', err.message, 'err'); toast(err.message, 'error');
-      } finally { btn.disabled = false; btn.textContent = 'Import CSV to D1'; }
+      } catch (err) { setStatus('adminImportStatus', err.message, 'err'); toast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Import CSV to D1'; }
     });
 
-    $('adminReloadBtn')?.addEventListener('click', async () => {
-      await loadWorkspacesAndData(); await loadFullAdminConsole(); toast('Admin portal data refreshed', 'success');
-    });
-
+    $('adminReloadBtn')?.addEventListener('click', async () => { await loadWorkspacesAndData(); await loadFullAdminConsole(); toast('Admin portal data refreshed', 'success'); });
     $('adminJumpWorkspaceBtn')?.addEventListener('click', () => activateTab('workspace', true));
     $('dashManagePoolsBtn')?.addEventListener('click', () => activateTab('workspace', true));
     $('adminUserSearch')?.addEventListener('input', renderAdminUsersTable);
@@ -4569,11 +4003,7 @@
       const headers = ['Date', 'Workspace', 'Member', 'CreatorEmail', 'Type', 'Pool', 'Category', 'Amount', 'Payment', 'Notes'];
       const lines = [headers.join(',')].concat(rows.map((r) => [r.tx_date, r.workspace_id, r.member_name, r.creator_email || '', r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')));
       const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `sayin-admin-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(a.href);
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sayin-admin-transactions-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); URL.revokeObjectURL(a.href);
     });
 
     $('addAdminEmailForm')?.addEventListener('submit', async (e) => {
@@ -4581,25 +4011,15 @@
       if (!isGlobalAdmin()) { toast('Only Global Admin can add admins.', 'error'); return; }
       const email = normalizeEmail($('newAdminEmail')?.value);
       if (!email) return;
-      try {
-        await apiFetch('/api/admin/users/admins', { method: 'POST', body: JSON.stringify({ email }) });
-        $('newAdminEmail').value = '';
-        toast('Admin added', 'success');
-        await loadFullAdminConsole();
-      } catch (err) { toast(err.message, 'error'); }
+      try { await apiFetch('/api/admin/users/admins', { method: 'POST', body: JSON.stringify({ email }) }); $('newAdminEmail').value = ''; toast('Admin added', 'success'); await loadFullAdminConsole(); } catch (err) { toast(err.message, 'error'); }
     });
 
-    $('themeToggleBtn').addEventListener('click', () => {
-      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-    });
+    $('themeToggleBtn').addEventListener('click', () => applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
 
     function showAuthMode(mode) {
       const isLogin = mode === 'login', isReg = mode === 'register', isForgot = mode === 'forgot';
-      $('tabLogin').classList.toggle('active', isLogin || isForgot);
-      $('tabRegister').classList.toggle('active', isReg);
-      $('loginForm').classList.toggle('hidden', !isLogin);
-      $('registerForm').classList.toggle('hidden', !isReg);
-      $('forgotWrap').classList.toggle('hidden', !isForgot);
+      $('tabLogin').classList.toggle('active', isLogin || isForgot); $('tabRegister').classList.toggle('active', isReg);
+      $('loginForm').classList.toggle('hidden', !isLogin); $('registerForm').classList.toggle('hidden', !isReg); $('forgotWrap').classList.toggle('hidden', !isForgot);
       setStatus('loginStatus', ''); setStatus('regStatus', ''); setStatus('forgotStatus', '');
     }
 
@@ -4610,19 +4030,11 @@
 
     $('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = $('loginSubmitBtn');
-      btn.disabled = true; btn.textContent = 'Signing in...';
-      setStatus('loginStatus', '');
+      const btn = $('loginSubmitBtn'); btn.disabled = true; btn.textContent = 'Signing in...'; setStatus('loginStatus', '');
       try {
         const data = await apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: $('loginEmail').value.trim(), password: $('loginPassword').value }) });
-        state.token = data.token;
-        state.user = { ...data.user, default_workspace_id: data.default_workspace_id };
-        state.wsId = data.default_workspace_id || '';
-        localStorage.setItem(STORAGE_KEYS.token, state.token);
-        setAuthUi(true);
-        await activateTab('home', false);
-        toast('Signed in successfully', 'success');
-        await loadWorkspacesAndData();
+        state.token = data.token; state.user = { ...data.user, default_workspace_id: data.default_workspace_id }; state.wsId = data.default_workspace_id || '';
+        localStorage.setItem(STORAGE_KEYS.token, state.token); setAuthUi(true); await activateTab('home', false); toast('Signed in successfully', 'success'); await loadWorkspacesAndData();
       } catch (err) { setStatus('loginStatus', err.message, 'err'); toast(err.message, 'error'); }
       finally { btn.disabled = false; btn.textContent = 'Sign In'; }
     });
@@ -4631,33 +4043,22 @@
       e.preventDefault();
       const pw = $('regPassword').value, confirmPw = $('regConfirmPassword').value;
       if (pw !== confirmPw) { const msg = 'Passwords do not match'; setStatus('regStatus', msg, 'err'); toast(msg, 'error'); return; }
-      const btn = $('regSubmitBtn');
-      btn.disabled = true; btn.textContent = 'Creating account...';
-      setStatus('regStatus', '');
+      const btn = $('regSubmitBtn'); btn.disabled = true; btn.textContent = 'Creating account...'; setStatus('regStatus', '');
       try {
         const data = await apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify({ display_name: $('regName').value.trim(), email: $('regEmail').value.trim(), password: pw }) });
-        state.token = data.token;
-        state.user = { ...data.user, default_workspace_id: data.default_workspace_id };
-        state.wsId = data.default_workspace_id || '';
-        localStorage.setItem(STORAGE_KEYS.token, state.token);
-        setAuthUi(true);
-        await activateTab('home', false);
-        toast('Account created', 'success');
-        await loadWorkspacesAndData();
+        state.token = data.token; state.user = { ...data.user, default_workspace_id: data.default_workspace_id }; state.wsId = data.default_workspace_id || '';
+        localStorage.setItem(STORAGE_KEYS.token, state.token); setAuthUi(true); await activateTab('home', false); toast('Account created', 'success'); await loadWorkspacesAndData();
       } catch (err) { setStatus('regStatus', err.message, 'err'); toast(err.message, 'error'); }
       finally { btn.disabled = false; btn.textContent = 'Create Account'; }
     });
 
     $('forgotForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = $('sendCodeBtn');
-      btn.disabled = true; btn.textContent = 'Sending...';
-      setStatus('forgotStatus', '');
+      const btn = $('sendCodeBtn'); btn.disabled = true; btn.textContent = 'Sending...'; setStatus('forgotStatus', '');
       try {
         const res = await apiFetch('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email: $('forgotEmail').value.trim() }) });
         if (res.reset_code) $('resetCode').value = res.reset_code;
-        setStatus('forgotStatus', res.message + (res.reset_code ? ` (Code: ${res.reset_code})` : ''), 'ok');
-        toast('Reset code sent', 'success');
+        setStatus('forgotStatus', res.message + (res.reset_code ? ` (Code: ${res.reset_code})` : ''), 'ok'); toast('Reset code sent', 'success');
       } catch (err) { setStatus('forgotStatus', err.message, 'err'); toast(err.message, 'error'); }
       finally { btn.disabled = false; btn.textContent = 'Send Code'; }
     });
@@ -4666,15 +4067,10 @@
       e.preventDefault();
       const newPw = $('resetNewPassword').value, confirmPw = $('resetConfirmPassword').value;
       if (newPw !== confirmPw) { const msg = 'New passwords do not match'; setStatus('forgotStatus', msg, 'err'); toast(msg, 'error'); return; }
-      const btn = $('resetSubmitBtn');
-      btn.disabled = true; btn.textContent = 'Updating...';
-      setStatus('forgotStatus', '');
+      const btn = $('resetSubmitBtn'); btn.disabled = true; btn.textContent = 'Updating...'; setStatus('forgotStatus', '');
       try {
         const res = await apiFetch('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ email: $('forgotEmail').value.trim(), reset_code: $('resetCode').value.trim(), new_password: newPw }) });
-        toast(res.message || 'Password updated', 'success');
-        $('loginEmail').value = $('forgotEmail').value.trim();
-        showAuthMode('login');
-        setStatus('loginStatus', 'Password updated. Please sign in.', 'ok');
+        toast(res.message || 'Password updated', 'success'); $('loginEmail').value = $('forgotEmail').value.trim(); showAuthMode('login'); setStatus('loginStatus', 'Password updated. Please sign in.', 'ok');
       } catch (err) { setStatus('forgotStatus', err.message, 'err'); toast(err.message, 'error'); }
       finally { btn.disabled = false; btn.textContent = 'Update Password'; }
     });
@@ -4682,20 +4078,11 @@
     $('logoutBtn').addEventListener('click', () => handleLogout(true));
 
     $('workspaceSelect').addEventListener('change', async (e) => {
-      state.wsId = e.target.value;
-      localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
-      dirtyPoolIds.clear();
-      isPoolBulkEditMode = false;
-      closeDashboardDrilldown();
-      await loadWorkspaceDetails();
+      state.wsId = e.target.value; localStorage.setItem(STORAGE_KEYS.wsId, state.wsId); dirtyPoolIds.clear(); isPoolBulkEditMode = false; closeDashboardDrilldown(); await loadWorkspaceDetails();
     });
 
     $('monthFilter').addEventListener('change', async (e) => {
-      state.month = e.target.value;
-      dirtyPoolIds.clear();
-      isPoolBulkEditMode = false;
-      closeDashboardDrilldown();
-      await loadWorkspaceDetails();
+      state.month = e.target.value; dirtyPoolIds.clear(); isPoolBulkEditMode = false; closeDashboardDrilldown(); await loadWorkspaceDetails();
     });
 
     $('txType').addEventListener('change', updateCategoryDropdown);
@@ -4704,33 +4091,22 @@
     $('txForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const editId = $('editingTxId').value;
-      const btn = $('txSubmitBtn');
-      btn.disabled = true; btn.textContent = 'Saving...';
-
-      const poolVal = $('txPool').value;
-      const poolId = poolVal ? Number(poolVal) : null;
-
+      const btn = $('txSubmitBtn'); btn.disabled = true; btn.textContent = 'Saving...';
+      const poolVal = $('txPool').value; const poolId = poolVal ? Number(poolVal) : null;
       try {
         if (editId) {
-          await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${editId}`, {
-            method: 'PATCH',
-            body: JSON.stringify({ tx_date: $('txDate').value, member_name: $('txMember').value, entry_type: $('txType').value, category: $('txCategory').value, amount_mmk: Number($('txAmount').value), payment_method: $('txPayment').value, notes: $('txNotes').value.trim(), pool_id: poolId })
-          });
+          await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions/${editId}`, { method: 'PATCH', body: JSON.stringify({ tx_date: $('txDate').value, member_name: $('txMember').value, entry_type: $('txType').value, category: $('txCategory').value, amount_mmk: Number($('txAmount').value), payment_method: $('txPayment').value, notes: $('txNotes').value.trim(), pool_id: poolId }) });
           toast('Transaction updated', 'success');
         } else {
           const fd = new FormData();
-          fd.append('tx_date', $('txDate').value); fd.append('member_name', $('txMember').value);
-          fd.append('entry_type', $('txType').value); fd.append('category', $('txCategory').value);
-          fd.append('amount_mmk', $('txAmount').value); fd.append('payment_method', $('txPayment').value);
+          fd.append('tx_date', $('txDate').value); fd.append('member_name', $('txMember').value); fd.append('entry_type', $('txType').value); fd.append('category', $('txCategory').value); fd.append('amount_mmk', $('txAmount').value); fd.append('payment_method', $('txPayment').value);
           if (poolId) fd.append('pool_id', String(poolId));
           if ($('txNotes').value.trim()) fd.append('notes', $('txNotes').value.trim());
-          const file = $('txReceipt').files[0];
-          if (file) fd.append('receipt', file);
+          const file = $('txReceipt').files[0]; if (file) fd.append('receipt', file);
           await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/transactions`, { method: 'POST', body: fd });
           toast('Transaction added', 'success');
         }
-        closeTxModal(false);
-        await loadWorkspaceDetails();
+        closeTxModal(false); await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
       finally { btn.disabled = false; btn.textContent = $('editingTxId').value ? 'Update Transaction' : 'Save Transaction'; }
     });
@@ -4743,60 +4119,40 @@
       const headers = ['Date', 'Member', 'Type', 'Budget Pool', 'Category', 'Amount', 'Payment Method', 'Notes'];
       const lines = [headers.join(',')].concat(rows.map((r) => [r.tx_date, r.member_name, r.entry_type, r.pool_name || '', r.category, r.amount_mmk, r.payment_method || '', r.notes || ''].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')));
       const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `sayin-${state.wsId}-${state.month}.csv`;
-      a.click();
-      URL.revokeObjectURL(a.href);
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sayin-${state.wsId}-${state.month}.csv`; a.click(); URL.revokeObjectURL(a.href);
     });
 
     $('createPoolForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools`, {
-          method: 'POST',
-          body: JSON.stringify({ pool_name: $('newPoolName').value.trim(), default_amount: Number($('newPoolDefaultAmt').value || 0), color_tag: $('newPoolColor').value })
-        });
-        $('newPoolName').value = ''; $('newPoolDefaultAmt').value = '';
-        toast('Budget pool saved', 'success');
-        await loadWorkspaceDetails();
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/pools`, { method: 'POST', body: JSON.stringify({ pool_name: $('newPoolName').value.trim(), default_amount: Number($('newPoolDefaultAmt').value || 0), color_tag: $('newPoolColor').value }) });
+        $('newPoolName').value = ''; $('newPoolDefaultAmt').value = ''; toast('Budget pool saved', 'success'); await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
     });
 
     $('createWsForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        const res = await apiFetch('/api/workspaces', {
-          method: 'POST',
-          body: JSON.stringify({ workspace_name: $('newWsName').value.trim(), workspace_id: $('newWsId').value.trim() || undefined })
-        });
-        $('newWsName').value = ''; $('newWsId').value = '';
-        state.wsId = res.data.workspace_id;
-        localStorage.setItem(STORAGE_KEYS.wsId, state.wsId);
-        toast('Workspace created', 'success');
-        await loadWorkspacesAndData();
+        const res = await apiFetch('/api/workspaces', { method: 'POST', body: JSON.stringify({ workspace_name: $('newWsName').value.trim(), workspace_id: $('newWsId').value.trim() || undefined }) });
+        $('newWsName').value = ''; $('newWsId').value = ''; state.wsId = res.data.workspace_id; localStorage.setItem(STORAGE_KEYS.wsId, state.wsId); toast('Workspace created', 'success'); await loadWorkspacesAndData();
       } catch (err) { toast(err.message, 'error'); }
     });
 
     $('inviteMemberForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/members`, { method: 'POST', body: JSON.stringify({ email: $('inviteEmail').value.trim() }) });
-        $('inviteEmail').value = '';
-        toast(`Added ${res.added.display_name} to workspace`, 'success');
-        await loadWorkspaceDetails();
+        const res = await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/members/invite`, { method: 'POST', body: JSON.stringify({ email: $('inviteEmail').value.trim() }) });
+        $('inviteEmail').value = ''; toast(res.message || 'Member invited', 'success'); await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
     });
 
     $('settingsForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const members = $('setMembers').value.split(',').map((s) => s.trim()).filter(Boolean);
+      const payment_methods = $('setPayments').value.split(',').map((s) => s.trim()).filter(Boolean);
       try {
-        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/settings`, {
-          method: 'PATCH',
-          body: JSON.stringify({ workspace_name: $('setWsName').value.trim(), currency: $('setCurrency').value.trim().toUpperCase(), members: $('setMembers').value.split(',').map((s) => s.trim()).filter(Boolean), payment_methods: $('setPayments').value.split(',').map((s) => s.trim()).filter(Boolean) })
-        });
-        toast('Settings saved', 'success');
-        await loadWorkspacesAndData();
+        await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/settings`, { method: 'PATCH', body: JSON.stringify({ workspace_name: $('setWsName').value.trim(), currency: $('setCurrency').value.trim() || 'MMK', members, payment_methods }) });
+        toast('Workspace settings saved', 'success'); await loadWorkspacesAndData();
       } catch (err) { toast(err.message, 'error'); }
     });
 
@@ -4804,31 +4160,25 @@
       e.preventDefault();
       try {
         await apiFetch(`/api/workspaces/${encodeURIComponent(state.wsId)}/categories`, { method: 'POST', body: JSON.stringify({ name: $('newCatName').value.trim(), entry_type: $('newCatType').value }) });
-        $('newCatName').value = '';
-        toast('Category added', 'success');
-        await loadWorkspaceDetails();
+        $('newCatName').value = ''; toast('Category added', 'success'); await loadWorkspaceDetails();
       } catch (err) { toast(err.message, 'error'); }
     });
 
-    (async function init() {
-      const savedTheme = localStorage.getItem(STORAGE_KEYS.theme) || 'dark';
-      applyTheme(savedTheme);
+    (async function boot() {
+      applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
       syncSoundButton();
       syncSlicerButtons();
       $('monthFilter').value = state.month;
+      if ($('adminInspectorMonth')) $('adminInspectorMonth').value = state.month;
       $('txDate').value = new Date().toISOString().slice(0, 10);
-
       if (!state.token) { setAuthUi(false); return; }
-
       try {
         const me = await apiFetch('/api/auth/me');
-        state.user = me.user;
-        setAuthUi(true);
-        await activateTab('home', false);
-        await loadWorkspacesAndData();
-      } catch {
-        handleLogout(false);
-      }
+        state.user = { ...me.user, default_workspace_id: me.default_workspace_id };
+        if (!state.wsId && me.default_workspace_id) state.wsId = me.default_workspace_id;
+        setAuthUi(true); await activateTab('home', false); await loadWorkspacesAndData();
+      } catch { handleLogout(false); }
     })();
   </script>
+</body>
 </html>
