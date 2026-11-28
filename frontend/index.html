@@ -2,9 +2,14 @@
 <html lang="my" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0b192c" />
-  <link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sayin%20%E2%80%94%20Budget%20Pool%20Portal%22%2C%22short_name%22%3A%22Sayin%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23060d1a%22%2C%22theme_color%22%3A%22%230b192c%22%7D" />
+  <link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sayin%20%E2%80%94%20Budget%20Pool%20Portal%22%2C%22short_name%22%3A%22Sayin%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22background_color%22%3A%22%23060d1a%22%2C%22theme_color%22%3A%22%230b192c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22.%2Fsayin-logo-cropped-transparent.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Sayin" />
+  <link rel="apple-touch-icon" href="./sayin-logo-cropped-transparent.png" />
   <title>Sayin — စာရင်း & Budget Pool Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
@@ -59,6 +64,10 @@
     html, body { max-width: 100%; overflow-x: hidden; }
     body {
       margin: 0;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Myanmar", sans-serif;
       background-color: var(--bg);
       background-image:
@@ -355,7 +364,10 @@
     .hidden { display: none !important; }
 
     #toast {
-      position: fixed; right: 18px; bottom: 18px; z-index: 9999;
+      position: fixed;
+      right: calc(18px + env(safe-area-inset-right, 0px));
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      z-index: 9999;
       max-width: 360px; padding: 12px 16px; border-radius: 12px;
       background: var(--surface-solid); border: 1px solid var(--border);
       box-shadow: var(--shadow); font-size: 13px; font-weight: 600;
@@ -3981,12 +3993,39 @@
 
     if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       const swCode = `
-        self.addEventListener('install', () => self.skipWaiting());
-        self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+        const CACHE_NAME = 'sayin-pwa-v1';
+        self.addEventListener('install', (event) => {
+          event.waitUntil(
+            caches.open(CACHE_NAME).then((cache) => cache.addAll(['./sayin-logo-cropped-transparent.png']).catch(() => {}))
+          );
+          self.skipWaiting();
+        });
+        self.addEventListener('activate', (event) => {
+          event.waitUntil(
+            caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+          );
+          self.clients.claim();
+        });
+        self.addEventListener('fetch', (event) => {
+          const req = event.request;
+          if (req.method !== 'GET') return;
+          const url = new URL(req.url);
+          if (url.origin === self.location.origin && (req.mode === 'navigate' || url.pathname.endsWith('.png'))) {
+            event.respondWith(
+              fetch(req).then((res) => {
+                if (res && res.ok) {
+                  const copy = res.clone();
+                  caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
+                }
+                return res;
+              }).catch(() => caches.match(req).then((cached) => cached || caches.match('./')))
+            );
+          }
+        });
       `;
       const swBlob = new Blob([swCode], { type: 'application/javascript' });
       const swUrl = URL.createObjectURL(swBlob);
-      navigator.serviceWorker.register(swUrl).catch(() => {});
+      navigator.serviceWorker.register(swUrl, { scope: './' }).catch(() => {});
     }
 
     applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'dark');
